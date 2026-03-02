@@ -1,0 +1,17 @@
+# Raw source photos (unoptimized)
+IMG_*
+*.MOV
+*.textClipping
+
+# Instagram downloads
+instagram_photos/
+download_instagram.py
+
+# OS / editor
+.DS_Store
+
+# Environment
+.env
+
+# Local Netlify folder
+.netlify

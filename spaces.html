@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Space — Bridge Storage Arts & Events</title>
+    <meta name="description" content="Book the dance floor, commercial kitchen, gallery, woodshop, or courtyard at Bridge Storage Arts & Events in San Francisco.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bridge: { orange: '#DF562A', bg: '#faf7f3', dark: '#2a2520' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js" defer></script>
+</head>
+<body class="bg-bridge-bg text-bridge-dark font-sans">
+
+<!-- Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+        <a href="/" class="text-xl font-bold text-bridge-dark">Bridge</a>
+        <div class="hidden md:flex items-center gap-6">
+            <a href="storage.html" class="text-bridge-dark hover:text-bridge-orange transition-colors">Storage</a>
+            <a href="spaces.html" class="text-bridge-orange font-semibold">Spaces</a>
+            <a href="events.html" class="text-bridge-dark hover:text-bridge-orange transition-colors">Events</a>
+            <a href="/" class="text-bridge-dark hover:text-bridge-orange transition-colors">Community</a>
+            <a href="/portal/" class="text-white bg-bridge-orange hover:bg-orange-700 rounded-lg px-4 py-2 transition-colors">Sign In</a>
+        </div>
+        <button data-collapse-toggle="mobile-menu" type="button" class="md:hidden p-2 text-bridge-dark" aria-controls="mobile-menu" aria-expanded="false" aria-label="Toggle navigation">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+    </div>
+    <div class="hidden md:hidden" id="mobile-menu">
+        <div class="px-4 pb-4 space-y-2">
+            <a href="storage.html" class="block py-2 text-bridge-dark hover:text-bridge-orange">Storage</a>
+            <a href="spaces.html" class="block py-2 text-bridge-orange font-semibold">Spaces</a>
+            <a href="events.html" class="block py-2 text-bridge-dark hover:text-bridge-orange">Events</a>
+            <a href="/" class="block py-2 text-bridge-dark hover:text-bridge-orange">Community</a>
+            <a href="/portal/" class="block text-center text-white bg-bridge-orange hover:bg-orange-700 rounded-lg px-4 py-2">Sign In</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="relative h-72 md:h-96 mt-16">
+    <img src="photos/dancefloor.jpg" alt="Bridge dance floor and event space" class="absolute inset-0 w-full h-full object-cover">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
+        <h1 class="text-4xl md:text-5xl font-black mb-3">Book a Space</h1>
+        <p class="text-lg md:text-xl font-light">Dance floor, kitchen, gallery, woodshop, courtyard &mdash; your pick.</p>
+    </div>
+</section>
+
+<!-- Space Cards -->
+<section class="max-w-5xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Sprung Dance Floor -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="photos/dancefloor.jpg" alt="Professional sprung dance floor with lighting" class="w-full h-48 object-cover">
+            <div class="p-6">
+                <div class="flex gap-2 mb-3">
+                    <span class="text-xs font-bold text-white bg-bridge-orange rounded-full px-3 py-1">BOOKABLE</span>
+                </div>
+                <h3 class="text-xl font-bold mb-1">Sprung Dance Floor</h3>
+                <p class="text-sm text-bridge-orange font-semibold mb-2">From $75/hr · $400/day</p>
+                <p class="text-sm text-gray-600 mb-4">Professional sprung hardwood floor. Sound system, lighting rig, licensed bar available. Up to 80 guests.</p>
+                <div class="flex gap-2">
+                    <button class="text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Check Availability</button>
+                    <button class="text-bridge-dark border border-bridge-dark hover:bg-bridge-dark hover:text-white font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Ask a Question</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Outdoor Space -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="photos/courtyard-picnic.jpg" alt="Outdoor courtyard with picnic tables and garden" class="w-full h-48 object-cover">
+            <div class="p-6">
+                <div class="flex gap-2 mb-3">
+                    <span class="text-xs font-bold text-white bg-bridge-orange rounded-full px-3 py-1">BOOKABLE</span>
+                </div>
+                <h3 class="text-xl font-bold mb-1">Outdoor Space & Courtyard</h3>
+                <p class="text-sm text-bridge-orange font-semibold mb-2">From $50/hr · $300/day</p>
+                <p class="text-sm text-gray-600 mb-4">Covered courtyard with live-edge tables, picnic benches, garden sculptures, and the Golden Gate mosaic wall. Up to 120 guests.</p>
+                <div class="flex gap-2">
+                    <button class="text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Check Availability</button>
+                    <button class="text-bridge-dark border border-bridge-dark hover:bg-bridge-dark hover:text-white font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Ask a Question</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Artists Lounge -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="photos/lounge.jpg" alt="Artists lounge with leather couches and piano" class="w-full h-48 object-cover">
+            <div class="p-6">
+                <div class="flex gap-2 mb-3">
+                    <span class="text-xs font-bold text-white bg-green-600 rounded-full px-3 py-1">DROP-IN</span>
+                </div>
+                <h3 class="text-xl font-bold mb-1">Artists Lounge</h3>
+                <p class="text-sm text-gray-500 font-semibold mb-2">Included with any rental or membership</p>
+                <p class="text-sm text-gray-600">Leather couches, grand piano, original artwork. A place to sit, think, play.</p>
+            </div>
+        </div>
+
+        <!-- Commercial Kitchen -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="photos/kitchen-ovens.jpg" alt="Commercial kitchen with professional ovens" class="w-full h-48 object-cover">
+            <div class="p-6">
+                <div class="flex gap-2 mb-3">
+                    <span class="text-xs font-bold text-white bg-purple-600 rounded-full px-3 py-1">MEMBERSHIP</span>
+                    <span class="text-xs font-bold text-white bg-bridge-dark rounded-full px-3 py-1">24/7 ACCESS</span>
+                </div>
+                <h3 class="text-xl font-bold mb-1">Commercial Kitchen</h3>
+                <p class="text-sm text-bridge-orange font-semibold mb-2">$200/mo membership</p>
+                <p class="text-sm text-gray-600 mb-4">Fully permitted commercial kitchen. Southbend convection ovens, 6-burner range, deep fryer, 3-bay wash station, walk-in cooler, dry storage cages.</p>
+                <div class="flex gap-2">
+                    <button class="text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Join Kitchen</button>
+                    <button class="text-bridge-dark border border-bridge-dark hover:bg-bridge-dark hover:text-white font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Ask a Question</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Woodshop -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="photos/woodshop-woman-tablesaw.jpg" alt="Woodshop with table saw and tools" class="w-full h-48 object-cover">
+            <div class="p-6">
+                <div class="flex gap-2 mb-3">
+                    <span class="text-xs font-bold text-white bg-purple-600 rounded-full px-3 py-1">MEMBERSHIP</span>
+                </div>
+                <h3 class="text-xl font-bold mb-1">Woodshop</h3>
+                <p class="text-sm text-bridge-orange font-semibold mb-2">$150/mo membership</p>
+                <p class="text-sm text-gray-600 mb-4">Shared woodworking shop with table saw, band saw, drill press, and hand tools. Safety orientation required.</p>
+                <div class="flex gap-2">
+                    <button class="text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Join Woodshop</button>
+                    <button class="text-bridge-dark border border-bridge-dark hover:bg-bridge-dark hover:text-white font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Ask a Question</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="photos/gallery-interior.jpg" alt="Gallery space with track lighting and art" class="w-full h-48 object-cover">
+            <div class="p-6">
+                <div class="flex gap-2 mb-3">
+                    <span class="text-xs font-bold text-white bg-blue-600 rounded-full px-3 py-1">EXHIBITION</span>
+                </div>
+                <h3 class="text-xl font-bold mb-1">Gallery</h3>
+                <p class="text-sm text-gray-500 font-semibold mb-2">Apply for exhibition</p>
+                <p class="text-sm text-gray-600 mb-4">Track-lit gallery space with grand piano. Rotating exhibitions. Apply to show your work.</p>
+                <button class="text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Apply for Exhibition</button>
+            </div>
+        </div>
+
+        <!-- Art Studio -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <img src="photos/artist-studios.jpg" alt="Glass-front artist studio with natural light" class="w-full h-48 object-cover">
+            <div class="p-6">
+                <div class="flex gap-2 mb-3">
+                    <span class="text-xs font-bold text-white bg-purple-600 rounded-full px-3 py-1">MEMBERSHIP</span>
+                </div>
+                <h3 class="text-xl font-bold mb-1">Art Studio</h3>
+                <p class="text-sm text-bridge-orange font-semibold mb-2">$175/mo membership</p>
+                <p class="text-sm text-gray-600 mb-4">Glass-front private studios with natural light, high ceilings. Shared amenities including lounge and garden access.</p>
+                <div class="flex gap-2">
+                    <button class="text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Join Art Studio</button>
+                    <button class="text-bridge-dark border border-bridge-dark hover:bg-bridge-dark hover:text-white font-semibold rounded-lg text-sm px-4 py-2 transition-colors">Ask a Question</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-bridge-dark text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+            <h3 class="text-lg font-bold mb-4">Bridge Storage Arts & Events</h3>
+            <p class="text-gray-400">Make Room.</p>
+        </div>
+        <div>
+            <h4 class="font-semibold mb-3">Quick Links</h4>
+            <ul class="space-y-2 text-gray-400">
+                <li><a href="storage.html" class="hover:text-white transition-colors">Storage Units</a></li>
+                <li><a href="spaces.html" class="hover:text-white transition-colors">Book a Space</a></li>
+                <li><a href="events.html" class="hover:text-white transition-colors">Events Calendar</a></li>
+                <li><a href="/portal/" class="hover:text-white transition-colors">Tenant Portal</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-semibold mb-3">Contact</h4>
+            <ul class="space-y-2 text-gray-400 text-sm">
+                <li>1575 Wallace Ave</li>
+                <li>San Francisco, CA 94124</li>
+                <li><a href="tel:+14155551234" class="hover:text-white transition-colors">(415) 555-1234</a></li>
+                <li><a href="mailto:info@bridgestorage.com" class="hover:text-white transition-colors">info@bridgestorage.com</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-gray-700 text-gray-500 text-sm text-center">
+        &copy; 2026 Bridge Storage Arts & Events. All rights reserved.
+    </div>
+</footer>
+
+<script src="js/config.js"></script>
+</body>
+</html>
