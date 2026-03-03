@@ -1595,9 +1595,10 @@
     </div>
   </div>
 
+<script src="js/config.js"></script>
 <script>
 /* ===== API Config ===== */
-const API_BASE = 'http://localhost:8000/public';
+const API_BASE = BRIDGE_CONFIG.API_BASE + '/public';
 
 /* ===== Unit API ===== */
 let _unitsCache = null;
