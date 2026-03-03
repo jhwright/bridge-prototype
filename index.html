@@ -200,6 +200,15 @@
   .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: #d1ccc5; }
   .carousel-dot.active { background: #DF562A; width: 18px; border-radius: 3px; }
 
+  /* --- Carousel / Scroll Arrows --- */
+  .scroll-arrows { position: relative; }
+  .scroll-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.9); border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; transition: opacity 0.2s, background 0.2s; }
+  .scroll-arrow:hover { background: #fff; }
+  .scroll-arrow svg { width: 16px; height: 16px; stroke: #2a2520; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .scroll-arrow.left { left: 6px; }
+  .scroll-arrow.right { right: 6px; }
+  @media (max-width: 600px) { .scroll-arrow { display: none; } }
+
   /* --- Service Cards (mailbox, AI) --- */
   .service-card { margin: 0 24px 16px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
   .service-card-img { height: 160px; background-size: cover; background-position: center; position: relative; }
@@ -345,14 +354,18 @@
 
     <!-- Mural Gallery -->
     <div class="section-header"><h2>Murals on Every Door</h2><p>Over 50 original works by local artists</p></div>
-    <div class="mural-scroll">
-      <div class="mural-card" style="background-image: url('photos/mural-abstract-301.jpg');"></div>
-      <div class="mural-card" style="background-image: url('photos/mural-blue-abstract.jpg');"></div>
-      <div class="mural-card" style="background-image: url('photos/mural-flowers.jpg');"></div>
-      <div class="mural-card" style="background-image: url('photos/mural-icecream.jpg');"></div>
-      <div class="mural-card" style="background-image: url('photos/mural-stainedglass.jpg');"></div>
-      <div class="mural-card" style="background-image: url('photos/mural-waves.jpg');"></div>
-      <div class="mural-card" style="background-image: url('photos/mural-welcome-bridge.jpg');"></div>
+    <div class="scroll-arrows" id="mural-arrows">
+      <button class="scroll-arrow left" aria-label="Previous mural"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div class="mural-scroll" id="mural-scroll">
+        <div class="mural-card" style="background-image: url('photos/mural-abstract-301.jpg');"></div>
+        <div class="mural-card" style="background-image: url('photos/mural-blue-abstract.jpg');"></div>
+        <div class="mural-card" style="background-image: url('photos/mural-flowers.jpg');"></div>
+        <div class="mural-card" style="background-image: url('photos/mural-icecream.jpg');"></div>
+        <div class="mural-card" style="background-image: url('photos/mural-stainedglass.jpg');"></div>
+        <div class="mural-card" style="background-image: url('photos/mural-waves.jpg');"></div>
+        <div class="mural-card" style="background-image: url('photos/mural-welcome-bridge.jpg');"></div>
+      </div>
+      <button class="scroll-arrow right" aria-label="Next mural"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
 
     <!-- Identity Cards -->
@@ -419,6 +432,8 @@
     <!-- People of Bridge Carousel -->
     <div class="carousel-section">
       <div class="section-header"><h2>People of Bridge</h2></div>
+      <div class="scroll-arrows" id="carousel-arrows">
+      <button class="scroll-arrow left" aria-label="Previous"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
       <div class="carousel-track" id="people-carousel">
         <div class="carousel-card">
           <img src="photos/kitchen-fruit-flowers-prep.jpg" alt="Kitchen prep with edible flowers">
@@ -449,6 +464,8 @@
           <div class="carousel-caption"><h4>Miter Saw</h4><p>Safety glasses on, cut list ready</p></div>
         </div>
       </div>
+      <button class="scroll-arrow right" aria-label="Next"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
       <div class="carousel-dots">
         <div class="carousel-dot active"></div>
         <div class="carousel-dot"></div>
@@ -470,7 +487,7 @@
     <div class="tower-section">
       <div class="tower-bg" style="background-image: url('photos/tower-gardens.jpg');"></div>
       <div class="tower-overlay">
-        <h2>The Tower</h2>
+        <h2>Memorial Stupa</h2>
         <p>Three stories of metal and message. "Know Your Rights" on one side. "Conozca Sus Derechos" on the other. Visible from the freeway. A landmark that means something.</p>
       </div>
     </div>
@@ -1828,10 +1845,25 @@ function renderTracker() {
   }
 }
 
+/* ===== Mural Gallery Arrows ===== */
+(function() {
+  const container = document.getElementById('mural-arrows');
+  const track = document.getElementById('mural-scroll');
+  if (!container || !track) return;
+  const step = 260 + 12; // card width + gap
+  container.querySelector('.scroll-arrow.left').addEventListener('click', () => {
+    track.scrollBy({ left: -step * 2, behavior: 'smooth' });
+  });
+  container.querySelector('.scroll-arrow.right').addEventListener('click', () => {
+    track.scrollBy({ left: step * 2, behavior: 'smooth' });
+  });
+})();
+
 /* ===== People Carousel ===== */
 (function() {
   const track = document.getElementById('people-carousel');
   const dots = document.querySelectorAll('.carousel-dot');
+  const arrowContainer = document.getElementById('carousel-arrows');
   if (!track || !dots.length) return;
 
   const cards = track.querySelectorAll('.carousel-card');
@@ -1848,9 +1880,22 @@ function renderTracker() {
   }
 
   function updateDots() {
-    // Map card index to dot index (7 cards → 5 dots)
     const dotIndex = Math.min(Math.round(currentIndex * (visibleDots - 1) / (totalCards - 1)), visibleDots - 1);
     dots.forEach((dot, i) => dot.classList.toggle('active', i === dotIndex));
+  }
+
+  // Arrow buttons
+  if (arrowContainer) {
+    arrowContainer.querySelector('.scroll-arrow.left').addEventListener('click', () => {
+      currentIndex = Math.max(0, currentIndex - 1);
+      scrollToIndex(currentIndex);
+      resetAutoplay();
+    });
+    arrowContainer.querySelector('.scroll-arrow.right').addEventListener('click', () => {
+      currentIndex = Math.min(totalCards - 1, currentIndex + 1);
+      scrollToIndex(currentIndex);
+      resetAutoplay();
+    });
   }
 
   // Click dots to navigate
