@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bridge Logo System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  body { font-family: Inter, sans-serif; background: #faf7f3; color: #2a2520; padding: 40px; margin: 0; }
+  h1 { font-size: 24px; margin-bottom: 8px; }
+  .subtitle { color: #8a7e72; margin-bottom: 40px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 32px; }
+  .card { background: #fff; border-radius: 12px; padding: 32px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .card img { width: 100%; max-width: 260px; height: auto; margin-bottom: 16px; }
+  .card .name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .card .make { font-size: 13px; color: #8a7e72; }
+  .card .color { font-size: 11px; color: #aaa; font-family: monospace; }
+  .master-card { grid-column: 1 / -1; }
+  .master-card img { max-width: 300px; }
+</style>
+</head>
+<body>
+  <h1>BRIDGE Logo System</h1>
+  <p class="subtitle">Black wordmark + colored bar with white sub-label</p>
+  <div class="grid">
+    <div class="card">
+      <img src="BRIDGE_Storage_df562a.svg" alt="Bridge Storage">
+      <div class="name">Storage</div>
+      <div class="make">Make Room.</div>
+      <div class="color">#DF562A</div>
+    </div>
+    <div class="card">
+      <img src="BRIDGE_Studios_7b4dab.svg" alt="Bridge Studios">
+      <div class="name">Studios</div>
+      <div class="make">Make Art.</div>
+      <div class="color">#7B4DAB</div>
+    </div>
+    <div class="card">
+      <img src="BRIDGE_Kitchen_4a7c59.svg" alt="Bridge Kitchen">
+      <div class="name">Kitchen</div>
+      <div class="make">Make Food.</div>
+      <div class="color">#4A7C59</div>
+    </div>
+    <div class="card">
+      <img src="BRIDGE_Dance_d64078.svg" alt="Bridge Dance">
+      <div class="name">Dance</div>
+      <div class="make">Make Moves.</div>
+      <div class="color">#D64078</div>
+    </div>
+    <div class="card">
+      <img src="BRIDGE_Events_f3a225.svg" alt="Bridge Events">
+      <div class="name">Events</div>
+      <div class="make">Make Connections.</div>
+      <div class="color">#F3A225</div>
+    </div>
+    <div class="card">
+      <img src="BRIDGE_Coworking_2a8b8b.svg" alt="Bridge Coworking">
+      <div class="name">Coworking</div>
+      <div class="make">Make Work.</div>
+      <div class="color">#2A8B8B</div>
+    </div>
+    <div class="card">
+      <img src="BRIDGE_Woodshop_a0522d.svg" alt="Bridge Woodshop">
+      <div class="name">Woodshop</div>
+      <div class="make">Make Things.</div>
+      <div class="color">#A0522D</div>
+    </div>
+    <div class="card master-card">
+      <img src="BRIDGE_master.svg" alt="Bridge Master">
+      <div class="name">Master</div>
+      <div class="make">Make Room.</div>
+      <div class="color">Black (no bar)</div>
+    </div>
+  </div>
+</body>
+</html>
