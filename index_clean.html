@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Bridge Storage, Arts & Events</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  body { font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #faf7f3; color: #2a2520; max-width: 430px; margin: 0 auto; overflow-x: hidden; }
+
+  /* --- Navigation --- */
+  .screen-tabs { display: flex; background: #2a2520; position: sticky; top: 0; z-index: 100; }
+  .screen-tabs button { flex: 1; padding: 12px 4px; background: none; border: none; color: #8a7e72; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .screen-tabs button.active { color: #DF562A; border-bottom: 2px solid #DF562A; }
+
+  /* --- Screens --- */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* --- Header --- */
+  .screen-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #faf7f3; }
+  .screen-header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .portal-link { font-size: 13px; color: #DF562A; text-decoration: none; font-weight: 600; }
+  .hamburger { display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
+  .hamburger div { width: 20px; height: 2px; background: #2a2520; }
+
+  /* --- Hero --- */
+  .hero { position: relative; height: 480px; background-size: cover; background-position: center; }
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(42,37,32,0.95) 0%, rgba(42,37,32,0.4) 40%, transparent 70%); display: flex; flex-direction: column; justify-content: flex-end; padding: 32px 24px; }
+  .hero-tagline { font-size: 42px; font-weight: 800; color: #fff; line-height: 1.0; letter-spacing: -2px; margin-bottom: 8px; }
+  .hero-tagline span { color: #DF562A; }
+  .hero-sub { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 20px; line-height: 1.4; }
+  .hero-buttons { display: flex; gap: 10px; }
+
+  /* --- Buttons --- */
+  .btn-primary { padding: 14px 28px; background: #DF562A; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 0.3px; }
+  .btn-secondary { padding: 14px 28px; background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.4); border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn-outline-orange { padding: 12px 24px; background: transparent; color: #DF562A; border: 1.5px solid #DF562A; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+  /* --- Section Headers --- */
+  .section-header { padding: 32px 24px 16px; }
+  .section-header h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+  .section-header p { font-size: 13px; color: #8a7e72; margin-top: 4px; }
+
+  /* --- Mural Gallery (horizontal scroll) --- */
+  .mural-scroll { display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 24px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .mural-scroll::-webkit-scrollbar { display: none; }
+  .mural-card { flex: 0 0 260px; height: 200px; border-radius: 12px; background-size: cover; background-position: center; scroll-snap-align: start; position: relative; overflow: hidden; }
+  .mural-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 50%); }
+
+  /* --- Identity Cards --- */
+  .identity-section { display: flex; gap: 12px; overflow-x: auto; padding: 0 24px 24px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .identity-section::-webkit-scrollbar { display: none; }
+  .identity-card { flex: 0 0 280px; scroll-snap-align: start; border-radius: 16px; overflow: hidden; position: relative; height: 220px; background-size: cover; background-position: center; }
+  .identity-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
+  .identity-card h3 { color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .identity-card p { color: rgba(255,255,255,0.7); font-size: 12px; }
+  .identity-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; color: #fff; margin-bottom: 8px; }
+
+  /* --- Space Cards --- */
+  .space-card { background: #fff; border-radius: 12px; overflow: hidden; margin: 0 24px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .space-card-img { height: 180px; background-size: cover; background-position: center; position: relative; }
+  .space-card-body { padding: 16px 20px; }
+  .space-card-body h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .space-card-body .price { font-size: 14px; color: #DF562A; font-weight: 700; margin-bottom: 8px; }
+  .space-card-body .details { font-size: 12px; color: #8a7e72; line-height: 1.5; margin-bottom: 12px; }
+  .space-card-body .btn-row { display: flex; gap: 8px; }
+  .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; margin-right: 6px; margin-bottom: 8px; }
+  .badge-book { background: #DF562A; color: #fff; }
+  .badge-member { background: #7B4DAB; color: #fff; }
+  .badge-dropin { background: #2A8B8B; color: #fff; }
+  .badge-exhibit { background: #8B2332; color: #fff; }
+  .badge-24 { background: #2a2520; color: #fff; }
+
+  /* --- Storage Units --- */
+  .unit-card { background: #fff; border-radius: 12px; margin: 0 24px 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; }
+  .unit-card-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; }
+  .unit-card-header h3 { font-size: 16px; font-weight: 700; }
+  .unit-card-header .unit-price { font-size: 16px; font-weight: 700; color: #DF562A; }
+  .unit-card-header .unit-size { font-size: 12px; color: #8a7e72; }
+  .unit-card-details { display: none; padding: 0 20px 16px; border-top: 1px solid #f0ebe5; }
+  .unit-card-details.open { display: block; padding-top: 16px; }
+  .unit-card-details .features { font-size: 12px; color: #8a7e72; line-height: 1.8; }
+  .unit-card-img { height: 160px; background-size: cover; background-position: center; border-radius: 8px; margin-bottom: 12px; }
+
+  /* --- Tower Scroll Reveal --- */
+  .tower-section { position: relative; height: 500px; overflow: hidden; margin: 0 24px 24px; border-radius: 16px; }
+  .tower-bg { position: absolute; inset: 0; background-size: cover; background-position: center top; }
+  .tower-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(42,37,32,0.95) 0%, rgba(42,37,32,0.3) 40%, transparent 70%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
+  .tower-overlay h2 { color: #fff; font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
+  .tower-overlay p { color: rgba(255,255,255,0.6); font-size: 12px; line-height: 1.5; }
+
+  /* --- Events --- */
+  .event-card { background: #fff; border-radius: 12px; margin: 0 24px 12px; padding: 16px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .event-card .event-date { font-size: 11px; color: #DF562A; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .event-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .event-card p { font-size: 12px; color: #8a7e72; }
+
+  /* --- Mosaic Feature --- */
+  .mosaic-feature { margin: 0 24px 24px; border-radius: 16px; overflow: hidden; position: relative; height: 240px; background-size: cover; background-position: center; }
+  .mosaic-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(42,37,32,0.8) 0%, transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
+  .mosaic-overlay h3 { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .mosaic-overlay p { color: rgba(255,255,255,0.7); font-size: 12px; }
+
+  /* --- SMS --- */
+  .sms-section { background: #2a2520; margin: 0 24px 24px; border-radius: 16px; padding: 24px; text-align: center; }
+  .sms-section h2 { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .sms-section p { color: rgba(255,255,255,0.6); font-size: 13px; margin-bottom: 16px; }
+  .sms-input-row { display: flex; gap: 8px; }
+  .sms-input-row input { flex: 1; padding: 12px 16px; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; background: rgba(255,255,255,0.08); color: #fff; font-size: 14px; }
+  .sms-input-row button { padding: 12px 20px; background: #DF562A; color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; }
+
+  /* --- E-Truck Feature --- */
+  .feature-banner { margin: 0 24px 24px; border-radius: 16px; overflow: hidden; position: relative; height: 200px; background-size: cover; background-position: center; }
+  .feature-banner-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(42,37,32,0.9) 0%, rgba(42,37,32,0.4) 60%); display: flex; flex-direction: column; justify-content: center; padding: 24px; }
+  .feature-banner-overlay h3 { color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .feature-banner-overlay p { color: rgba(255,255,255,0.7); font-size: 12px; line-height: 1.5; }
+
+  /* --- Perks Row --- */
+  .perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 24px 24px; }
+  .perk { text-align: center; padding: 16px 8px; background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .perk-icon { font-size: 24px; margin-bottom: 6px; }
+  .perk-label { font-size: 11px; font-weight: 600; color: #2a2520; }
+  .perk-sub { font-size: 10px; color: #8a7e72; margin-top: 2px; }
+
+  /* --- Menu Screen --- */
+  .menu-fullscreen { min-height: 100vh; background: #2a2520; padding: 60px 32px; }
+  .menu-fullscreen a { display: block; color: #fff; text-decoration: none; font-size: 28px; font-weight: 700; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .nav-subtitle { display: block; font-size: 12px; color: #8a7e72; font-weight: 400; margin-top: 4px; }
+  .menu-footer { margin-top: 40px; color: #8a7e72; font-size: 12px; line-height: 1.8; }
+  .menu-footer a { font-size: 14px; border: none; padding: 4px 0; color: #8a7e72; }
+
+  /* --- Bottom Nav --- */
+  .bottom-nav { display: flex; justify-content: space-around; padding: 10px 0 20px; background: #faf7f3; border-top: 1px solid #e8e3dd; position: sticky; bottom: 0; }
+  .bottom-nav-item { text-align: center; font-size: 10px; color: #8a7e72; cursor: pointer; }
+  .bottom-nav-item .bottom-nav-icon { font-size: 18px; margin-bottom: 2px; }
+
+  /* --- Filter Bar --- */
+  .filter-bar { padding: 0 24px 16px; }
+  .filter-bar h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .filter-size-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .filter-size-row label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .filter-size-row select { flex: 1; padding: 10px 12px; border: 1px solid #d1ccc5; border-radius: 8px; font-size: 13px; background: #fff; color: #2a2520; }
+  .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .filter-chip { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1.5px solid #d1ccc5; border-radius: 20px; font-size: 12px; font-weight: 500; color: #2a2520; cursor: pointer; transition: all 0.15s; background: #fff; }
+  .filter-chip.active { border-color: #DF562A; background: rgba(223,86,42,0.06); color: #DF562A; }
+  .filter-chip input { display: none; }
+  .filter-chip-icon { font-size: 14px; }
+  .filter-results { padding: 0 24px; font-size: 12px; color: #8a7e72; margin-bottom: 12px; }
+
+  /* --- Payment Step --- */
+  .payment-summary { background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; }
+  .payment-summary .line { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; color: #2a2520; }
+  .payment-summary .line.total { font-weight: 700; font-size: 15px; border-top: 1px solid #e8e3dd; padding-top: 10px; margin-top: 6px; }
+  .payment-summary .line .sub { font-size: 11px; color: #8a7e72; }
+  .payment-methods { display: flex; gap: 8px; margin-bottom: 16px; }
+  .payment-method { flex: 1; padding: 12px; border: 2px solid #d1ccc5; border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.15s; background: #fff; }
+  .payment-method.selected { border-color: #DF562A; background: rgba(223,86,42,0.04); }
+  .payment-method .pm-icon { font-size: 20px; margin-bottom: 4px; }
+  .payment-method .pm-label { font-size: 11px; font-weight: 600; }
+  .payment-method .pm-sub { font-size: 9px; color: #8a7e72; margin-top: 2px; }
+  .payment-secure { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 10px; color: #8a7e72; margin-top: 10px; }
+  .ach-encourage { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px; padding: 10px 14px; font-size: 11px; color: #166534; margin-bottom: 14px; }
+
+  /* --- Calendar Picker --- */
+  .cal-month { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; margin-bottom: 8px; }
+  .cal-month span { font-weight: 700; font-size: 14px; }
+  .cal-month button { background: none; border: none; font-size: 18px; cursor: pointer; color: #8a7e72; padding: 4px 8px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 16px; }
+  .cal-day-header { text-align: center; font-size: 10px; font-weight: 600; color: #8a7e72; padding: 4px 0; }
+  .cal-day { text-align: center; padding: 8px 4px; font-size: 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+  .cal-day:hover { background: rgba(223,86,42,0.08); }
+  .cal-day.empty { visibility: hidden; }
+  .cal-day.booked { color: #d1ccc5; text-decoration: line-through; cursor: default; }
+  .cal-day.booked:hover { background: none; }
+  .cal-day.selected { background: #DF562A; color: #fff; font-weight: 700; }
+  .cal-day.today { border: 1px solid #DF562A; }
+  .cal-legend { display: flex; gap: 16px; font-size: 10px; color: #8a7e72; margin-bottom: 16px; }
+  .cal-legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+  .time-slots { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .time-slot { padding: 8px 14px; border: 1.5px solid #d1ccc5; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.15s; background: #fff; }
+  .time-slot.selected { border-color: #DF562A; background: rgba(223,86,42,0.06); color: #DF562A; font-weight: 600; }
+  .time-slot.unavailable { color: #d1ccc5; border-color: #e8e3dd; cursor: default; }
+  .price-calc { background: rgba(223,86,42,0.04); border: 1px solid rgba(223,86,42,0.15); border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; }
+  .price-calc .price-line { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+  .price-calc .price-total { font-weight: 700; font-size: 15px; color: #DF562A; border-top: 1px solid rgba(223,86,42,0.15); padding-top: 8px; margin-top: 4px; }
+
+  /* --- People Carousel --- */
+  .carousel-section { padding: 32px 0 24px; }
+  .carousel-section h2 { padding: 0 24px; margin-bottom: 16px; }
+  .carousel-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; gap: 12px; padding: 0 24px; scrollbar-width: none; }
+  .carousel-track::-webkit-scrollbar { display: none; }
+  .carousel-card { flex: 0 0 280px; scroll-snap-align: start; border-radius: 16px; overflow: hidden; position: relative; height: 340px; background: #2a2520; }
+  .carousel-card img { width: 100%; height: 100%; object-fit: cover; }
+  .carousel-card .carousel-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px 20px; background: linear-gradient(to top, rgba(42,37,32,0.9), transparent); }
+  .carousel-card .carousel-caption h4 { color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .carousel-card .carousel-caption p { color: rgba(255,255,255,0.7); font-size: 12px; }
+  .carousel-dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; padding: 0 24px; }
+  .carousel-dot { width: 6px; height: 6px; border-radius: 50%; background: #d1ccc5; }
+  .carousel-dot.active { background: #DF562A; width: 18px; border-radius: 3px; }
+
+  /* --- Service Cards (mailbox, AI) --- */
+  .service-card { margin: 0 24px 16px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .service-card-img { height: 160px; background-size: cover; background-position: center; position: relative; }
+  .service-card-body { padding: 20px; }
+  .service-card-body h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .service-card-body p { font-size: 13px; color: #5a534a; line-height: 1.5; margin-bottom: 12px; }
+  .service-card-body .service-features { list-style: none; padding: 0; }
+  .service-card-body .service-features li { font-size: 12px; color: #5a534a; padding: 4px 0; padding-left: 18px; position: relative; }
+  .service-card-body .service-features li::before { content: ''; position: absolute; left: 0; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: #DF562A; }
+
+  /* --- Portal Tabs --- */
+  .portal-tabs { display: flex; overflow-x: auto; gap: 0; border-bottom: 1px solid #e8e3dd; margin-bottom: 16px; padding: 0 20px; }
+  .portal-tabs::-webkit-scrollbar { display: none; }
+  .portal-tab { padding: 10px 14px; font-size: 11px; font-weight: 600; color: #8a7e72; white-space: nowrap; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; }
+  .portal-tab.active { color: #DF562A; border-bottom-color: #DF562A; }
+  .portal-pane { display: none; padding: 0 20px 20px; }
+  .portal-pane.active { display: block; }
+  .portal-action-card { background: #fff; border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; }
+  .portal-action-card .pac-left h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .portal-action-card .pac-left p { font-size: 11px; color: #8a7e72; }
+  .portal-action-card .pac-right { font-size: 13px; font-weight: 700; }
+  .portal-action-card .pac-right.due { color: #DF562A; }
+  .portal-action-card .pac-right.paid { color: #22c55e; }
+  .portal-action-card .pac-arrow { color: #d1ccc5; font-size: 16px; }
+  .autopay-banner { background: linear-gradient(135deg, #166534, #22c55e); border-radius: 12px; padding: 14px 18px; margin-bottom: 12px; color: #fff; }
+  .autopay-banner h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .autopay-banner p { font-size: 11px; opacity: 0.85; }
+  .portal-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0ebe5; font-size: 13px; }
+  .portal-list-item:last-child { border-bottom: none; }
+  .access-card { background: #2a2520; border-radius: 12px; padding: 20px; color: #fff; margin-bottom: 12px; text-align: center; }
+  .access-card .gate-code { font-size: 36px; font-weight: 800; letter-spacing: 4px; margin: 8px 0; }
+  .access-card .gate-label { font-size: 11px; color: rgba(255,255,255,0.5); }
+  .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #f0ebe5; }
+  .setting-row .setting-label { font-size: 13px; font-weight: 600; }
+  .setting-row .setting-value { font-size: 13px; color: #8a7e72; }
+  .toggle { width: 44px; height: 24px; border-radius: 12px; background: #d1ccc5; position: relative; cursor: pointer; transition: background 0.2s; display: inline-block; }
+  .toggle.on { background: #22c55e; }
+  .toggle::after { content: ''; position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: left 0.2s; }
+  .toggle.on::after { left: 22px; }
+
+  /* --- Golden Paths --- */
+  .gp-fab { position: fixed; bottom: 80px; right: 16px; z-index: 150; width: 48px; height: 48px; border-radius: 50%; background: #DF562A; color: #fff; border: none; font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(223,86,42,0.4); display: flex; align-items: center; justify-content: center; }
+  .gp-fab.hidden { display: none; }
+  .gp-overlay { display: none; position: fixed; inset: 0; background: rgba(42,37,32,0.95); z-index: 300; overflow-y: auto; padding: 0; }
+  .gp-overlay.open { display: block; }
+  .gp-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; position: sticky; top: 0; background: rgba(42,37,32,0.98); z-index: 1; }
+  .gp-header h2 { color: #fff; font-size: 20px; font-weight: 700; }
+  .gp-close { background: none; border: none; color: #8a7e72; font-size: 28px; cursor: pointer; }
+  .gp-list { padding: 0 24px 40px; }
+  .gp-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; cursor: pointer; transition: all 0.15s; }
+  .gp-card:hover { background: rgba(255,255,255,0.1); border-color: rgba(223,86,42,0.3); }
+  .gp-card-num { display: inline-block; width: 24px; height: 24px; border-radius: 50%; background: #DF562A; color: #fff; font-size: 12px; font-weight: 700; text-align: center; line-height: 24px; margin-right: 10px; }
+  .gp-card h3 { display: inline; color: #fff; font-size: 16px; font-weight: 700; }
+  .gp-card p { color: #8a7e72; font-size: 12px; margin-top: 6px; line-height: 1.5; }
+  .gp-card .gp-steps { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .gp-card .gp-step-pill { padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; background: rgba(255,255,255,0.08); color: #8a7e72; white-space: nowrap; }
+  .gp-tracker { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 180; background: #2a2520; padding: 8px 16px; max-width: 430px; margin: 0 auto; }
+  .gp-tracker.active { display: block; }
+  .gp-tracker-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .gp-tracker-title { color: #DF562A; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .gp-tracker-exit { background: none; border: none; color: #8a7e72; font-size: 11px; cursor: pointer; font-weight: 600; }
+  .gp-tracker-steps { display: flex; gap: 4px; }
+  .gp-tracker-dot { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,0.12); transition: background 0.2s; }
+  .gp-tracker-dot.done { background: #DF562A; }
+  .gp-tracker-dot.current { background: #DF562A; opacity: 0.6; }
+  .gp-tracker-label { color: #8a7e72; font-size: 10px; margin-top: 4px; }
+  .gp-tracker-nav { display: flex; justify-content: space-between; margin-top: 6px; }
+  .gp-tracker-btn { background: none; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 14px; border-radius: 6px; cursor: pointer; }
+  .gp-tracker-btn:disabled { opacity: 0.3; cursor: default; }
+  .gp-tracker-btn.next { background: #DF562A; border-color: #DF562A; }
+
+  /* --- Hours bar --- */
+  .hours-bar { background: #2a2520; color: rgba(255,255,255,0.5); text-align: center; padding: 8px 20px; font-size: 10px; letter-spacing: 0.3px; }
+
+  /* --- Modals --- */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: flex-end; }
+  .modal-overlay.open { display: flex; }
+  .modal-sheet { width: 100%; max-width: 430px; max-height: 85vh; background: #faf7f3; border-radius: 20px 20px 0 0; padding: 20px 24px 40px; overflow-y: auto; animation: slideUp 0.3s ease; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle { width: 40px; height: 4px; background: #d1ccc5; border-radius: 2px; margin: 0 auto 20px; }
+  .modal-sheet h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .modal-sheet .modal-sub { font-size: 13px; color: #8a7e72; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: #2a2520; margin-bottom: 6px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid #d1ccc5; border-radius: 8px; font-size: 14px; background: #fff; color: #2a2520; font-family: inherit; }
+  .form-group textarea { height: 80px; resize: none; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .size-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .size-option { padding: 14px; border: 2px solid #d1ccc5; border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.2s; }
+  .size-option.selected { border-color: #DF562A; background: rgba(223,86,42,0.04); }
+  .size-option .size-name { font-weight: 700; font-size: 14px; }
+  .size-option .size-info { font-size: 11px; color: #8a7e72; margin-top: 2px; }
+  .success-msg { display: none; text-align: center; padding: 40px 20px; }
+  .success-msg.show { display: block; }
+  .success-msg .check { font-size: 48px; margin-bottom: 16px; }
+  .success-msg h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .success-msg p { font-size: 13px; color: #8a7e72; line-height: 1.5; }
+
+  /* --- Portal --- */
+  .portal-section { padding: 20px; }
+  .portal-card { background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .portal-card h4 { font-size: 13px; color: #8a7e72; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .portal-card .value { font-size: 20px; font-weight: 700; }
+  .portal-card .detail { font-size: 12px; color: #8a7e72; margin-top: 4px; }
+  .portal-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .login-form { max-width: 300px; margin: 40px auto; text-align: center; }
+  .login-form h2 { margin-bottom: 8px; }
+  .login-form p { font-size: 13px; color: #8a7e72; margin-bottom: 20px; }
+  .login-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .login-actions button { flex: 1; }
+</style>
+</head>
+<body>
+
+  <!-- Tab Navigation -->
+  <div class="screen-tabs">
+    <button class="active" onclick="showScreen('home')">Home</button>
+    <button onclick="showScreen('store')">Store</button>
+    <button onclick="showScreen('make')">Make</button>
+    <button onclick="showScreen('gather')">Gather</button>
+    <button onclick="showScreen('profile')">Profile</button>
+  </div>
+
+  <!-- ==================== HOME ==================== -->
+  <div class="screen active" id="screen-home">
+    <div class="screen-header">
+      <h1>BRIDGE</h1>
+      <div class="header-right"><a href="#" class="portal-link" onclick="showScreen('profile'); return false;">Log In</a><div class="hamburger" onclick="showScreen('profile')"><div></div><div></div><div></div></div></div>
+    </div>
+
+    <div class="hero" style="background-image: url('photos/tower-bridge-sign.jpg');">
+      <div class="hero-overlay">
+        <div class="hero-tagline">Make<br>Room<span>.</span></div>
+        <div class="hero-sub">Storage with murals on the doors. A dance floor in a warehouse. A kitchen that never closes. Richmond, CA.</div>
+        <div class="hero-buttons">
+          <button class="btn-primary" onclick="showScreen('store')">Find Space</button>
+          <button class="btn-secondary" onclick="showScreen('gather')">What's On</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hours-bar">Artists 7a–11p · Storage 7a–8p · Kitchen 24/7 · Office M–F 12–4</div>
+
+    <!-- Mural Gallery -->
+    <div class="section-header"><h2>Murals on Every Door</h2><p>Over 50 original works by local artists</p></div>
+    <div class="mural-scroll">
+      <div class="mural-card" style="background-image: url('photos/storage-green-mural-aisle.jpg');"></div>
+      <div class="mural-card" style="background-image: url('photos/mural-abstract-301.jpg');"></div>
+      <div class="mural-card" style="background-image: url('photos/mural-flowers.jpg');"></div>
+      <div class="mural-card" style="background-image: url('photos/mural-icecream.jpg');"></div>
+      <div class="mural-card" style="background-image: url('photos/mural-stainedglass.jpg');"></div>
+      <div class="mural-card" style="background-image: url('photos/mural-waves.jpg');"></div>
+      <div class="mural-card" style="background-image: url('photos/mural-blue-abstract.jpg');"></div>
+    </div>
+
+    <!-- Identity Cards -->
+    <div class="section-header"><h2>The Spaces</h2></div>
+    <div class="identity-section">
+      <div class="identity-card" onclick="showScreen('store')" style="cursor:pointer; background-image: url('photos/storage-green-mural-aisle.jpg');">
+        <div class="identity-card-overlay">
+          <div class="identity-badge" style="background: #DF562A;">STORE</div>
+          <h3>Make Room.</h3>
+          <p>Units with murals on the doors. Climate-controlled. Every aisle is different.</p>
+        </div>
+      </div>
+      <div class="identity-card" onclick="showScreen('make'); setTimeout(()=>filterMake('food'),100);" style="cursor:pointer; background-image: url('photos/kitchen-prep.jpg');">
+        <div class="identity-card-overlay">
+          <div class="identity-badge" style="background: #4A7C59;">MAKE · FOOD</div>
+          <h3>Make Food.</h3>
+          <p>Fully permitted commercial kitchen. 24/7 access. Ovens, range, fryer, walk-in cooler.</p>
+        </div>
+      </div>
+      <div class="identity-card" onclick="showScreen('make'); setTimeout(()=>filterMake('things'),100);" style="cursor:pointer; background-image: url('photos/woodshop-mentoring.jpg');">
+        <div class="identity-card-overlay">
+          <div class="identity-badge" style="background: #A0522D;">MAKE · THINGS</div>
+          <h3>Make Things.</h3>
+          <p>Shared woodshop with table saw, band saw, drill press, and hand tools.</p>
+        </div>
+      </div>
+      <div class="identity-card" onclick="showScreen('make'); setTimeout(()=>filterMake('art'),100);" style="cursor:pointer; background-image: url('photos/artist-studios.jpg');">
+        <div class="identity-card-overlay">
+          <div class="identity-badge" style="background: #7B4DAB;">MAKE · ART</div>
+          <h3>Make Art.</h3>
+          <p>Glass-front studios with natural light. Creative community.</p>
+        </div>
+      </div>
+      <div class="identity-card" onclick="showScreen('make'); setTimeout(()=>filterMake('work'),100);" style="cursor:pointer; background-image: url('photos/lounge.jpg');">
+        <div class="identity-card-overlay">
+          <div class="identity-badge" style="background: #2A8B8B;">MAKE · WORK</div>
+          <h3>Make Work.</h3>
+          <p>Desks, wifi, coffee. Work alongside artists, chefs, and makers. Not your average office.</p>
+        </div>
+      </div>
+      <div class="identity-card" onclick="showScreen('gather')" style="cursor:pointer; background-image: url('photos/gallery-interior.jpg');">
+        <div class="identity-card-overlay">
+          <div class="identity-badge" style="background: #F3A225;">GATHER</div>
+          <h3>Make Connections.</h3>
+          <p>80-person capacity. Sound system. Licensed bar. First Fridays, DJ nights, markets.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- People of Bridge Carousel -->
+    <div class="carousel-section">
+      <div class="section-header"><h2>People of Bridge</h2></div>
+      <div class="carousel-track" id="people-carousel">
+        <div class="carousel-card">
+          <img src="photos/kitchen-fruit-flowers-prep.jpg" alt="Kitchen prep with edible flowers">
+          <div class="carousel-caption"><h4>Edible Art</h4><p>Fruit, flowers, and color in the commercial kitchen</p></div>
+        </div>
+        <div class="carousel-card">
+          <img src="photos/woodshop-mentoring.jpg" alt="Woman at table saw">
+          <div class="carousel-caption"><h4>Making Things</h4><p>Table saw, focus, flannel. The woodshop is open.</p></div>
+        </div>
+        <div class="carousel-card">
+          <img src="photos/kitchen-hotsauce-production.jpg" alt="Hot sauce production">
+          <div class="carousel-caption"><h4>The Final Sauce</h4><p>Small-batch hot sauce, bottled in the Bridge kitchen</p></div>
+        </div>
+        <div class="carousel-card">
+          <img src="photos/woodshop-mentoring.jpg" alt="Woman at drill press">
+          <div class="carousel-caption"><h4>Drill Press</h4><p>Precision work in the community woodshop</p></div>
+        </div>
+        <div class="carousel-card">
+          <img src="photos/woodshop-mentoring.jpg" alt="Woodshop mentoring">
+          <div class="carousel-caption"><h4>Learn by Doing</h4><p>Side by side at the saw. That's how it works here.</p></div>
+        </div>
+        <div class="carousel-card">
+          <img src="photos/kitchen-woman-oven.jpg" alt="Woman checking oven">
+          <div class="carousel-caption"><h4>24/7 Kitchen</h4><p>Commercial ovens, your schedule</p></div>
+        </div>
+        <div class="carousel-card">
+          <img src="photos/woodshop-mentoring.jpg" alt="Woman at miter saw">
+          <div class="carousel-caption"><h4>Miter Saw</h4><p>Safety glasses on, cut list ready</p></div>
+        </div>
+      </div>
+      <div class="carousel-dots">
+        <div class="carousel-dot active"></div>
+        <div class="carousel-dot"></div>
+        <div class="carousel-dot"></div>
+        <div class="carousel-dot"></div>
+        <div class="carousel-dot"></div>
+        <div class="carousel-dot"></div>
+        <div class="carousel-dot"></div>
+      </div>
+    </div>
+
+    <!-- Mosaic Feature -->
+    <div class="mosaic-feature" style="background-image: url('photos/mosaic-goldengate.jpg');">
+      <div class="mosaic-overlay">
+        <h3>The Golden Gate Mosaic</h3>
+        <p>Community-built mixed-media mural spanning the courtyard entrance</p>
+      </div>
+    </div>
+
+    <!-- Tower Reveal -->
+    <div class="tower-section">
+      <div class="tower-bg" style="background-image: url('photos/tower-gardens.jpg');"></div>
+      <div class="tower-overlay">
+        <h2>Memorial Stupa</h2>
+        <p>Three stories of metal and message. "Know Your Rights" on one side. "Conozca Sus Derechos" on the other. A landmark that means something.</p>
+      </div>
+    </div>
+
+    <!-- E-Truck -->
+    <div class="feature-banner" style="background-image: url('photos/etruck.jpg');">
+      <div class="feature-banner-overlay">
+        <h3>Free E-Truck</h3>
+        <p>Complimentary electric moving truck with every rental. Bay Area map right on the side.</p>
+      </div>
+    </div>
+
+    <!-- Perks -->
+    <div class="section-header"><h2>The Basics</h2></div>
+    <div class="perks">
+      <div class="perk"><div class="perk-icon">&#x1F512;</div><div class="perk-label">Gated</div><div class="perk-sub">Code entry</div></div>
+      <div class="perk"><div class="perk-icon">&#x1F4F9;</div><div class="perk-label">Cameras</div><div class="perk-sub">Always on</div></div>
+      <div class="perk"><div class="perk-icon">&#x1F69A;</div><div class="perk-label">E-Truck</div><div class="perk-sub">Free w/ rental</div></div>
+      <div class="perk"><div class="perk-icon">&#x1F4B3;</div><div class="perk-label">Pay Online</div><div class="perk-sub">Card or ACH</div></div>
+      <div class="perk"><div class="perk-icon">&#x2600;</div><div class="perk-label">Solar</div><div class="perk-sub">Powered</div></div>
+      <div class="perk"><div class="perk-icon">&#x1F3A8;</div><div class="perk-label">Murals</div><div class="perk-sub">50+ artworks</div></div>
+    </div>
+
+    <!-- Mailbox & Package Delivery -->
+    <div class="section-header"><h2>Mailbox & Packages</h2></div>
+    <div class="service-card">
+      <div class="service-card-body">
+        <h3>Your Business Address</h3>
+        <p>A real street address for your business. Packages accepted on your behalf, secure and waiting when you need them.</p>
+        <ul class="service-features">
+          <li>Private mailbox with street address (not a P.O. box)</li>
+          <li>Package acceptance from all carriers — USPS, UPS, FedEx, Amazon</li>
+          <li>Package notification when deliveries arrive</li>
+          <li>Available with any storage unit or as standalone service</li>
+        </ul>
+        <div style="margin-top: 14px;">
+          <button class="btn-primary" onclick="showScreen('store')">Add to Your Unit</button>
+          <span style="font-size: 12px; color: #8a7e72; margin-left: 12px;">from $25/mo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Business Coaching -->
+    <div class="service-card" style="margin-top: 24px;">
+      <div class="service-card-body">
+        <h3>Business Tools & AI Coaching</h3>
+        <p>Bridge tenants get access to workshops on using AI tools to grow their business — from inventory management to marketing your craft.</p>
+        <ul class="service-features">
+          <li>Monthly drop-in sessions on AI for small business</li>
+          <li>One-on-one coaching available for kitchen and studio tenants</li>
+          <li>Help with online presence, pricing, and operations</li>
+        </ul>
+        <p style="font-size: 11px; color: #8a7e72; margin-top: 12px; font-style: italic;">Fun fact: this website was built by Bridge's owner using AI tools — the same ones we teach in these sessions.</p>
+      </div>
+    </div>
+
+    <!-- SMS -->
+    <div class="sms-section">
+      <h2>Stay in the loop</h2>
+      <p>Events, openings, and community news. No spam.</p>
+      <div style="font-size: 20px; font-weight: 800; color: #DF562A; letter-spacing: 1px; margin-bottom: 8px;">Text BRIDGE to 55888</div>
+      <p style="font-size: 11px; color: rgba(255,255,255,0.4); margin: 0;">Or enter your number below</p>
+      <div class="sms-input-row"><input type="tel" placeholder="(510) 555-0000"><button>Join</button></div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="bottom-nav-item" style="color: #DF562A;"><div class="bottom-nav-icon">&#x2B21;</div>Home</div>
+      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Store</div>
+      <div class="bottom-nav-item" onclick="showScreen('make')"><div class="bottom-nav-icon">&#x25FB;</div>Make</div>
+      <div class="bottom-nav-item" onclick="showScreen('gather')"><div class="bottom-nav-icon">&#x25C8;</div>Gather</div>
+    </div>
+  </div>
+
+  <!-- ==================== MAKE ==================== -->
+  <div class="screen" id="screen-make">
+    <div class="screen-header">
+      <h1>Make</h1>
+      <div class="header-right"><a href="#" class="portal-link" onclick="showScreen('profile'); return false;">Log In</a><div class="hamburger" onclick="showScreen('profile')"><div></div><div></div><div></div></div></div>
+    </div>
+    <div style="text-align:center; color:#8a7e72; font-size:13px; margin: -8px 0 16px;">Kitchens, studios, woodshop, coworking — find your creative space.</div>
+
+    <!-- Pill filters -->
+    <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:20px;" id="make-pills">
+      <button class="pill-filter active" data-cat="all" onclick="filterMake('all')" style="background:#2a2520; color:#fff; border:none; padding:8px 18px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer;">All</button>
+      <button class="pill-filter" data-cat="food" onclick="filterMake('food')" style="background:#e8f0e8; color:#4A7C59; border:2px solid #4A7C59; padding:8px 18px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer;">Food</button>
+      <button class="pill-filter" data-cat="things" onclick="filterMake('things')" style="background:#f0e8df; color:#A0522D; border:2px solid #A0522D; padding:8px 18px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer;">Things</button>
+      <button class="pill-filter" data-cat="art" onclick="filterMake('art')" style="background:#efe6f5; color:#7B4DAB; border:2px solid #7B4DAB; padding:8px 18px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer;">Art</button>
+      <button class="pill-filter" data-cat="work" onclick="filterMake('work')" style="background:#e0f0f0; color:#2A8B8B; border:2px solid #2A8B8B; padding:8px 18px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer;">Work</button>
+    </div>
+
+    <!-- Kitchen -->
+    <div class="space-card make-card" data-category="food">
+      <div class="space-card-img" style="background-image: url('photos/kitchen-prep.jpg');"></div>
+      <div class="space-card-body">
+        <span class="badge" style="background:#4A7C59; color:#fff;">FOOD</span><span class="badge badge-member">MEMBERSHIP</span>
+        <h3>Commercial Kitchen</h3>
+        <div class="price">$99/mo + $30–60/hr usage</div>
+        <div class="details">Fully permitted commercial kitchen. Southbend convection ovens, 6-burner range, deep fryer, 3-bay wash station, walk-in cooler, dry storage cages. 24/7 access.</div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="openModal('membership-kitchen')">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Woodshop -->
+    <div class="space-card make-card" data-category="things">
+      <div class="space-card-img" style="background-image: url('photos/woodshop-mentoring.jpg');"></div>
+      <div class="space-card-body">
+        <span class="badge" style="background:#A0522D; color:#fff;">THINGS</span><span class="badge badge-member">MEMBERSHIP</span>
+        <h3>Woodshop</h3>
+        <div class="price">$150/mo membership</div>
+        <div class="details">Shared woodworking shop with table saw, band saw, drill press, and hand tools. Safety orientation required.</div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="openModal('membership-woodshop')">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Art Studio -->
+    <div class="space-card make-card" data-category="art">
+      <div class="space-card-img" style="background-image: url('photos/artist-studios.jpg');"></div>
+      <div class="space-card-body">
+        <span class="badge" style="background:#7B4DAB; color:#fff;">ART</span><span class="badge badge-member">MEMBERSHIP</span>
+        <h3>Art Studio</h3>
+        <div class="price">$175/mo membership</div>
+        <div class="details">Glass-front private studios with natural light, high ceilings. Shared amenities including lounge and garden access.</div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="openModal('membership-art')">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coworking -->
+    <div class="space-card make-card" data-category="work">
+      <div class="space-card-img" style="background-image: url('photos/lounge.jpg');"></div>
+      <div class="space-card-body">
+        <span class="badge" style="background:#2A8B8B; color:#fff;">WORK</span><span class="badge badge-dropin">DROP-IN</span>
+        <h3>Coworking</h3>
+        <div class="price">$25/day · $150/mo membership</div>
+        <div class="details">Desks, wifi, coffee. Work alongside artists, chefs, and makers in the lounge or courtyard. Not your average office.</div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="openModal('membership-cowork')">Join</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="bottom-nav-item" onclick="showScreen('home')"><div class="bottom-nav-icon">&#x2B21;</div>Home</div>
+      <div class="bottom-nav-item" style="color: #DF562A;"><div class="bottom-nav-icon">&#x25FB;</div>Make</div>
+      <div class="bottom-nav-item" onclick="showScreen('gather')"><div class="bottom-nav-icon">&#x25C8;</div>Gather</div>
+      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Store</div>
+    </div>
+  </div>
+
+  <!-- ==================== GATHER ==================== -->
+  <div class="screen" id="screen-gather">
+    <div class="screen-header">
+      <h1>Gather</h1>
+      <div class="header-right"><a href="#" class="portal-link" onclick="showScreen('profile'); return false;">Log In</a><div class="hamburger" onclick="showScreen('profile')"><div></div><div></div><div></div></div></div>
+    </div>
+
+    <!-- Bookable Spaces -->
+    <!-- API: GET /public/spaces/{id}/calendar.json -->
+
+    <div class="space-card">
+      <div class="space-card-img" style="background-image: url('photos/gallery-interior.jpg');"></div>
+      <div class="space-card-body">
+        <span class="badge badge-book">BOOKABLE</span>
+        <h3>The Gallery</h3>
+        <div class="price">From $75/hr · $400/day</div>
+        <div class="details">Sprung hardwood floor, sound system, lighting rig, licensed bar. Configurable for dance, ceremony, reception, banquet, performance, or exhibition. Up to 80 guests.</div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="openModal('booking-gallery')">Book The Gallery</button>
+          <button class="btn-outline-orange" onclick="openModal('inquiry-general')">Ask a Question</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-card">
+      <div class="space-card-img" style="background-image: url('photos/courtyard-night-event.jpg');"></div>
+      <div class="space-card-body">
+        <span class="badge badge-book">BOOKABLE</span>
+        <h3>The Courtyard</h3>
+        <div class="price">From $50/hr · $300/day</div>
+        <div class="details">Covered outdoor space with live-edge tables, picnic benches, garden sculptures, and the Golden Gate mosaic wall. Up to 120 guests.</div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="openModal('booking-outdoor')">Book The Courtyard</button>
+          <button class="btn-outline-orange" onclick="openModal('inquiry-general')">Ask a Question</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-card">
+      <div class="space-card-img" style="background-image: url('photos/lounge-piano-art.jpeg');"></div>
+      <div class="space-card-body">
+        <span class="badge badge-book">BOOKABLE</span>
+        <h3>The Lounge</h3>
+        <div class="price">From $40/hr</div>
+        <div class="details">Couches, upright piano, original artwork. Intimate setting for small gatherings, listening parties, or private events. Up to 30 guests.</div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="openModal('booking-lounge')">Book The Lounge</button>
+          <button class="btn-outline-orange" onclick="openModal('inquiry-general')">Ask a Question</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Events Calendar -->
+    <!-- API: GET /public/events/calendar.json -->
+    <div style="padding: 0 24px; margin-top: 24px;">
+      <h2 style="font-size: 18px; font-weight: 800; color: #2a2520; margin-bottom: 12px;">Upcoming Events</h2>
+    </div>
+
+    <div class="event-card"><div class="event-date">Friday, March 7</div><h3>First Friday Art Walk</h3><p>Gallery opening + live music in the courtyard. Free, all ages. 6–9pm.</p><button class="btn-primary" style="margin-top:10px; padding:10px 20px; font-size:12px;" onclick="openRsvp('First Friday Art Walk')">RSVP — Free</button></div>
+    <div class="event-card"><div class="event-date">Saturday, March 15</div><h3>Bachata Social</h3><p>Beginner lesson 7pm, open dance 8–11pm. $15 at the door.</p><button class="btn-primary" style="margin-top:10px; padding:10px 20px; font-size:12px;" onclick="openRsvp('Bachata Social')">RSVP — $15</button></div>
+    <div class="event-card"><div class="event-date">Saturday, March 22</div><h3>Makers Market</h3><p>Local vendors, food trucks, live painting. Courtyard + indoor. 10am–4pm. Free entry.</p><button class="btn-primary" style="margin-top:10px; padding:10px 20px; font-size:12px;" onclick="openRsvp('Makers Market')">RSVP — Free</button></div>
+    <div class="event-card"><div class="event-date">Friday, March 28</div><h3>DJ Night: Tropical Bass</h3><p>Dance floor opens 9pm. Full bar. $10 advance / $15 door.</p><button class="btn-primary" style="margin-top:10px; padding:10px 20px; font-size:12px;" onclick="openRsvp('DJ Night: Tropical Bass')">RSVP — $10</button></div>
+
+    <div class="sms-section" style="margin-top: 20px;">
+      <h2>Never miss an event</h2>
+      <p>Get texts when new events drop.</p>
+      <div style="font-size: 18px; font-weight: 800; color: #DF562A; letter-spacing: 1px; margin-bottom: 8px;">Text BRIDGE to 55888</div>
+      <p style="font-size: 11px; color: rgba(255,255,255,0.4); margin: 0;">Or enter your number below</p>
+      <div class="sms-input-row"><input type="tel" placeholder="(510) 555-0000"><button>Join</button></div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="bottom-nav-item" onclick="showScreen('home')"><div class="bottom-nav-icon">&#x2B21;</div>Home</div>
+      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Store</div>
+      <div class="bottom-nav-item" onclick="showScreen('make')"><div class="bottom-nav-icon">&#x25FB;</div>Make</div>
+      <div class="bottom-nav-item" style="color: #DF562A;"><div class="bottom-nav-icon">&#x25C8;</div>Gather</div>
+    </div>
+  </div>
+
+  <!-- ==================== STORE ==================== -->
+  <div class="screen" id="screen-store">
+    <div class="screen-header">
+      <h1>Rent Storage</h1>
+      <div class="header-right"><a href="#" class="portal-link" onclick="showScreen('profile'); return false;">Log In</a><div class="hamburger" onclick="showScreen('profile')"><div></div><div></div><div></div></div></div>
+    </div>
+
+    <div class="identity-card" style="background-image: url('photos/hero-outdoor-tables.jpg'); height: 200px; margin: 0 24px 20px; border-radius: 16px;">
+      <div class="identity-card-overlay">
+        <h3>Not Your Average Storage</h3>
+        <p>Every door is a canvas. Green, red, purple, blue — pick your vibe.</p>
+      </div>
+    </div>
+
+    <!-- Storage Filter -->
+    <div class="filter-bar">
+      <h3>Find Your Unit</h3>
+      <div class="filter-size-row">
+        <label>Size</label>
+        <select id="filter-size" onchange="filterUnits()">
+          <option value="all">All sizes</option>
+          <option value="0-50">Small (up to 50 sf)</option>
+          <option value="50-100">Medium (50–100 sf)</option>
+          <option value="100-200">Large (100–200 sf)</option>
+          <option value="200-9999">Extra Large (200+ sf)</option>
+        </select>
+      </div>
+      <div class="filter-chips" id="filter-chips">
+        <label class="filter-chip" onclick="this.classList.toggle('active'); filterUnits()"><input type="checkbox" value="swing_door"> Swing Door</label>
+        <label class="filter-chip" onclick="this.classList.toggle('active'); filterUnits()"><input type="checkbox" value="outside_rollup"> Outside Roll-Up</label>
+        <label class="filter-chip" onclick="this.classList.toggle('active'); filterUnits()"><input type="checkbox" value="climate_ground"> Climate · Ground</label>
+        <label class="filter-chip" onclick="this.classList.toggle('active'); filterUnits()"><input type="checkbox" value="climate_2nd"> Climate · 2nd Floor</label>
+        <label class="filter-chip" onclick="this.classList.toggle('active'); filterUnits()"><input type="checkbox" value="mailbox"> Mailbox + Packages</label>
+      </div>
+    </div>
+    <div class="filter-results" id="filter-results">Showing all 4 unit types</div>
+
+    <!-- Loading spinner -->
+    <div id="units-spinner" style="display:none;justify-content:center;padding:40px;">
+      <div style="width:32px;height:32px;border:3px solid #e0d6cc;border-top-color:#DF562A;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+    </div>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+    <!-- Error banner (API unavailable) -->
+    <div id="units-error-banner" style="display:none;margin:0 24px 12px;padding:12px 16px;background:#fef3cd;border:1px solid #ffc107;border-radius:8px;font-size:13px;color:#856404;">
+      Live availability unavailable — showing sample units.
+      <button onclick="this.parentElement.style.display='none'" style="float:right;background:none;border:none;font-size:16px;cursor:pointer;color:#856404;">&times;</button>
+    </div>
+
+    <!-- Dynamic units from API -->
+    <div id="units-dynamic" style="display:none;"></div>
+
+    <!-- Static fallback units -->
+    <div id="units-static">
+    <div class="unit-card" onclick="toggleUnit(this)" data-unit-id="nook" data-sqft="25" data-amenities="swing_door,outside_rollup">
+      <div class="unit-card-header">
+        <div><h3>The Nook</h3><div class="unit-size">25 sq ft · 5×5</div></div>
+        <div class="unit-price">$85/mo</div>
+      </div>
+      <div class="unit-card-details">
+        <div class="unit-card-img" style="background-image: url('photos/storage-green-mural-aisle.jpg');"></div>
+        <div class="features">Ground floor · Roll-up door · Drive-up access · Gate: 7a–8p<br>Perfect for: boxes, seasonal items, small furniture</div>
+        <div class="grab-form" style="display:none;">
+          <h4 style="font-size:14px;font-weight:700;margin:12px 0 8px;">Grab This Unit</h4>
+          <input type="text" class="grab-name" placeholder="Your full name" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <input type="email" class="grab-email" placeholder="Email" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <input type="tel" class="grab-phone" placeholder="Phone" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <button class="btn-primary" style="width:100%;" onclick="event.stopPropagation(); submitGrab(this.closest('.unit-card'))">Grab It!</button>
+          <p class="grab-error" style="display:none;color:#dc2626;font-size:12px;margin-top:8px;"></p>
+          <p class="grab-success" style="display:none;color:#16a34a;font-size:13px;margin-top:8px;"></p>
+        </div>
+        <button class="btn-primary" style="width: 100%; margin-top: 12px;" onclick="event.stopPropagation(); toggleGrabForm(this.closest('.unit-card'))">Grab It!</button>
+      </div>
+    </div>
+
+    <div class="unit-card" onclick="toggleUnit(this)" data-unit-id="room" data-sqft="50" data-amenities="outside_rollup,mailbox">
+      <div class="unit-card-header">
+        <div><h3>The Room</h3><div class="unit-size">50 sq ft · 5×10</div></div>
+        <div class="unit-price">$145/mo</div>
+      </div>
+      <div class="unit-card-details">
+        <div class="unit-card-img" style="background-image: url('photos/storage-red-mural-aisle.jpg');"></div>
+        <div class="features">Ground floor · Roll-up door · Drive-up access · Gate: 7a–8p<br>Perfect for: apartment contents, art supplies, band gear</div>
+        <div class="grab-form" style="display:none;">
+          <h4 style="font-size:14px;font-weight:700;margin:12px 0 8px;">Grab This Unit</h4>
+          <input type="text" class="grab-name" placeholder="Your full name" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <input type="email" class="grab-email" placeholder="Email" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <input type="tel" class="grab-phone" placeholder="Phone" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <button class="btn-primary" style="width:100%;" onclick="event.stopPropagation(); submitGrab(this.closest('.unit-card'))">Grab It!</button>
+          <p class="grab-error" style="display:none;color:#dc2626;font-size:12px;margin-top:8px;"></p>
+          <p class="grab-success" style="display:none;color:#16a34a;font-size:13px;margin-top:8px;"></p>
+        </div>
+        <button class="btn-primary" style="width: 100%; margin-top: 12px;" onclick="event.stopPropagation(); toggleGrabForm(this.closest('.unit-card'))">Grab It!</button>
+      </div>
+    </div>
+
+    <div class="unit-card" onclick="toggleUnit(this)" data-unit-id="studio" data-sqft="100" data-amenities="outside_rollup,climate_ground,mailbox">
+      <div class="unit-card-header">
+        <div><h3>The Studio</h3><div class="unit-size">100 sq ft · 10×10</div></div>
+        <div class="unit-price">$225/mo</div>
+      </div>
+      <div class="unit-card-details">
+        <div class="unit-card-img" style="background-image: url('photos/storage-multicolor.jpg');"></div>
+        <div class="features">Ground floor · Roll-up door · Drive-up access · Gate: 7a–8p<br>Perfect for: house contents, business inventory, workshop overflow</div>
+        <div class="grab-form" style="display:none;">
+          <h4 style="font-size:14px;font-weight:700;margin:12px 0 8px;">Grab This Unit</h4>
+          <input type="text" class="grab-name" placeholder="Your full name" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <input type="email" class="grab-email" placeholder="Email" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <input type="tel" class="grab-phone" placeholder="Phone" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <button class="btn-primary" style="width:100%;" onclick="event.stopPropagation(); submitGrab(this.closest('.unit-card'))">Grab It!</button>
+          <p class="grab-error" style="display:none;color:#dc2626;font-size:12px;margin-top:8px;"></p>
+          <p class="grab-success" style="display:none;color:#16a34a;font-size:13px;margin-top:8px;"></p>
+        </div>
+        <button class="btn-primary" style="width: 100%; margin-top: 12px;" onclick="event.stopPropagation(); toggleGrabForm(this.closest('.unit-card'))">Grab It!</button>
+      </div>
+    </div>
+
+    <div class="unit-card" onclick="toggleUnit(this)" data-unit-id="workshop" data-sqft="200" data-amenities="outside_rollup,climate_ground,climate_2nd,mailbox">
+      <div class="unit-card-header">
+        <div><h3>The Workshop</h3><div class="unit-size">200 sq ft · 10×20</div></div>
+        <div class="unit-price">$375/mo</div>
+      </div>
+      <div class="unit-card-details">
+        <div class="unit-card-img" style="background-image: url('photos/mural-welcome-bridge.jpg');"></div>
+        <div class="features">Ground floor · Roll-up door · Drive-up access · Gate: 7a–8p · Power available<br>Perfect for: full household, vehicles, contractor equipment, large projects</div>
+        <div class="grab-form" style="display:none;">
+          <h4 style="font-size:14px;font-weight:700;margin:12px 0 8px;">Grab This Unit</h4>
+          <input type="text" class="grab-name" placeholder="Your full name" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <input type="email" class="grab-email" placeholder="Email" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <input type="tel" class="grab-phone" placeholder="Phone" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">
+          <button class="btn-primary" style="width:100%;" onclick="event.stopPropagation(); submitGrab(this.closest('.unit-card'))">Grab It!</button>
+          <p class="grab-error" style="display:none;color:#dc2626;font-size:12px;margin-top:8px;"></p>
+          <p class="grab-success" style="display:none;color:#16a34a;font-size:13px;margin-top:8px;"></p>
+        </div>
+        <button class="btn-primary" style="width: 100%; margin-top: 12px;" onclick="event.stopPropagation(); toggleGrabForm(this.closest('.unit-card'))">Grab It!</button>
+      </div>
+    </div>
+    </div><!-- /units-static -->
+
+    <!-- Mailboxes -->
+    <div style="margin: 24px 24px 0; padding: 20px; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+      <div style="display:flex; gap:12px; margin-bottom:12px;">
+        <img src="photos/mailboxes-wide.jpg" alt="Mailbox wall at Bridge Storage" style="width:50%; border-radius:10px; object-fit:cover; height:120px;">
+        <img src="photos/mailboxes-closeup.jpg" alt="Mailbox detail" style="width:50%; border-radius:10px; object-fit:cover; height:120px;">
+      </div>
+      <h3 style="font-size:16px; font-weight:700; margin-bottom:4px;">Mailboxes &amp; Package Receiving</h3>
+      <div class="price">From $25/mo — standalone or add-on</div>
+      <div style="font-size:13px; color:#8a7e72; margin:8px 0 12px; line-height:1.5;">Real street address for your business. Package receiving, mail forwarding available. Add to any storage rental or get a standalone mailbox.</div>
+      <button class="btn-primary" onclick="openModal('inquiry-general')">Inquire</button>
+    </div>
+
+    <!-- E-Truck banner -->
+    <div class="feature-banner" style="background-image: url('photos/etruck.jpg'); margin-top: 12px;">
+      <div class="feature-banner-overlay">
+        <h3>Free E-Truck</h3>
+        <p>Electric moving truck included with every rental. We'll help you move in.</p>
+      </div>
+    </div>
+
+    <!-- API: GET /public/units/available.json -->
+
+    <div class="bottom-nav">
+      <div class="bottom-nav-item" onclick="showScreen('home')"><div class="bottom-nav-icon">&#x2B21;</div>Home</div>
+      <div class="bottom-nav-item" onclick="showScreen('make')"><div class="bottom-nav-icon">&#x25FB;</div>Make</div>
+      <div class="bottom-nav-item" onclick="showScreen('gather')"><div class="bottom-nav-icon">&#x25C8;</div>Gather</div>
+      <div class="bottom-nav-item" style="color: #DF562A;"><div class="bottom-nav-icon">&#x25A3;</div>Store</div>
+    </div>
+  </div>
+
+  <!-- ==================== PROFILE ==================== -->
+  <div class="screen" id="screen-profile">
+    <div class="screen-header">
+      <h1>Profile</h1>
+      <div class="header-right"><div class="hamburger" onclick="toggleProfileMenu()"><div></div><div></div><div></div></div></div>
+    </div>
+
+    <!-- Profile Menu (slide-down) -->
+    <div id="profile-menu" class="menu-fullscreen" style="display:none;">
+      <a href="#" onclick="showScreen('home')">Home<span class="nav-subtitle">Make Room.</span></a>
+      <a href="#" onclick="showScreen('store')">Store<span class="nav-subtitle">Storage units with murals on the doors</span></a>
+      <a href="#" onclick="showScreen('make')">Make<span class="nav-subtitle">Kitchen, woodshop, studios, coworking</span></a>
+      <a href="#" onclick="showScreen('gather')">Gather<span class="nav-subtitle">Book a space, attend events</span></a>
+      <div class="menu-footer">
+        <a href="#" onclick="openModal('inquiry-general'); return false;">About</a><br>
+        <a href="#" onclick="openModal('inquiry-general'); return false;">Contact</a><br>
+        <a href="#" onclick="openModal('inquiry-general'); return false;">FAQ</a><br><br>
+        23 Maine Avenue<br>Richmond, CA 94804<br>(510) 233-3348<br><br>
+        <a href="https://instagram.com/onlyatbridge" target="_blank">@onlyatbridge</a>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="portal-login-view">
+      <div class="login-form">
+        <h2>Log In</h2>
+        <p>Access your units, bookings, and billing.</p>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        <div class="form-group"><label>Password</label><input type="password" placeholder="••••••••"></div>
+        <div class="login-actions">
+          <button class="btn-primary" onclick="showPortalDash()">Log In</button>
+          <button class="btn-outline-orange" onclick="showPortalAdmin()">Admin</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Portal -->
+    <div id="portal-customer-view" style="display:none;">
+      <h2 style="margin-bottom:4px;">My Bridge</h2>
+      <div class="modal-sub" style="margin-bottom:12px;">Welcome back, Jeff.</div>
+      <!-- Portal Tabs -->
+      <div class="portal-tabs">
+        <button class="portal-tab active" onclick="showPortalTab('dash')">Dashboard</button>
+        <button class="portal-tab" onclick="showPortalTab('billing')">Billing</button>
+        <button class="portal-tab" onclick="showPortalTab('bookings')">Bookings</button>
+        <button class="portal-tab" onclick="showPortalTab('access')">Access</button>
+        <button class="portal-tab" onclick="showPortalTab('account')">Account</button>
+        <button class="portal-tab" onclick="showPortalTab('maint')">Maintenance</button>
+      </div>
+
+      <!-- Dashboard Pane -->
+      <div class="portal-pane" id="portal-pane-dash">
+        <div class="portal-action-card" style="border-left: 3px solid #DF562A;">
+          <h4>&#x1F4E6; My Unit</h4>
+          <div class="value">The Room · Unit B-134</div>
+          <div class="detail">50 sqft · $145/mo · Active since Jan 2025</div>
+        </div>
+        <div class="portal-action-card">
+          <h4>&#x1F527; Memberships</h4>
+          <div class="value">Woodshop Access</div>
+          <div class="detail">$150/mo · Renews Mar 1</div>
+        </div>
+        <div class="portal-action-card">
+          <h4>&#x1F4C5; Next Booking</h4>
+          <div class="value">Dance Floor · Mar 15</div>
+          <div class="detail">Bachata Social · 7pm–11pm · Confirmed</div>
+        </div>
+        <div class="portal-action-card" style="border-left: 3px solid #22c55e;">
+          <h4>&#x1F4B3; Balance</h4>
+          <div class="value" style="color: #22c55e;">$0.00 due</div>
+          <div class="detail">Next charge: Mar 1 · Autopay on</div>
+        </div>
+        <!-- Community: what's happening at Bridge this week -->
+        <div style="margin-top: 16px; padding: 16px; background: #faf7f3; border-radius: 12px; border: 1px solid #e5e0db;">
+          <h4 style="font-size: 13px; font-weight: 700; color: #2a2520; margin-bottom: 10px;">&#x1F525; This Week at Bridge</h4>
+          <div style="font-size: 12px; color: #5a5248; line-height: 1.8;">
+            <div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom: 1px solid #e5e0db;">
+              <span><strong>Movement Night</strong> · Dance Floor</span><span style="color:#8a7e72;">Thu 7pm</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom: 1px solid #e5e0db;">
+              <span><strong>Open Studios</strong> · Building A</span><span style="color:#8a7e72;">Sat 12pm</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding: 4px 0;">
+              <span><strong>Makers Market</strong> · Courtyard</span><span style="color:#8a7e72;">Sat 10am</span>
+            </div>
+          </div>
+          <div style="text-align:center; margin-top:10px;"><a href="#" style="font-size: 11px; color: #DF562A; font-weight: 600; text-decoration: none;">See all events &rarr;</a></div>
+        </div>
+        <!-- Community spotlight -->
+        <div style="margin-top: 12px; padding: 16px; background: #fff; border-radius: 12px; border: 1px solid #e5e0db;">
+          <h4 style="font-size: 13px; font-weight: 700; color: #2a2520; margin-bottom: 8px;">&#x1F3A8; Community Spotlight</h4>
+          <div style="font-size: 12px; color: #5a5248; line-height: 1.6;">
+            <strong>Maria G.</strong> just launched her hot sauce line from the kitchen. <span style="color:#8a7e72;">3 days ago</span><br>
+            <strong>Tenz Collective</strong> opened their exhibition in the gallery. <span style="color:#8a7e72;">This week</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Billing Pane -->
+      <div class="portal-pane" id="portal-pane-billing" style="display:none;">
+        <div class="autopay-banner">
+          &#x2705; <strong>Autopay is ON</strong> · ACH from Chase ···8842 · Saves 2.9% vs card
+        </div>
+        <h4 style="margin-bottom:8px; font-size:13px; color:#2a2520;">Recent Invoices</h4>
+        <div class="portal-list-item">
+          <div><strong>Mar 2026</strong><br><span style="font-size:11px; color:#8a7e72;">Unit B-134 · The Room</span></div>
+          <div style="text-align:right;"><span style="color:#DF562A; font-weight:600;">$145.00</span><br><span style="font-size:11px; color:#8a7e72;">Due Mar 1</span></div>
+        </div>
+        <div class="portal-list-item">
+          <div><strong>Feb 2026</strong><br><span style="font-size:11px; color:#8a7e72;">Unit B-134 + Woodshop</span></div>
+          <div style="text-align:right;"><span style="color:#22c55e; font-weight:600;">Paid</span><br><span style="font-size:11px; color:#8a7e72;">$295.00 · Feb 1</span></div>
+        </div>
+        <div class="portal-list-item">
+          <div><strong>Jan 2026</strong><br><span style="font-size:11px; color:#8a7e72;">Unit B-134 + Woodshop</span></div>
+          <div style="text-align:right;"><span style="color:#22c55e; font-weight:600;">Paid</span><br><span style="font-size:11px; color:#8a7e72;">$295.00 · Jan 1</span></div>
+        </div>
+        <button class="btn-primary" style="width:100%; margin-top:12px;">Make a Payment</button>
+        <div style="text-align:center; font-size:11px; color:#8a7e72; margin-top:8px;">Payments are processed securely via Stripe</div>
+      </div>
+
+      <!-- Bookings Pane -->
+      <div class="portal-pane" id="portal-pane-bookings" style="display:none;">
+        <h4 style="margin-bottom:8px; font-size:13px; color:#2a2520;">Upcoming</h4>
+        <div class="portal-list-item">
+          <div><strong>Dance Floor</strong><br><span style="font-size:11px; color:#8a7e72;">Mar 15 · 7pm–11pm · Bachata Social</span></div>
+          <div style="text-align:right;"><span style="color:#22c55e; font-size:11px; font-weight:600;">Confirmed</span></div>
+        </div>
+        <h4 style="margin: 16px 0 8px; font-size:13px; color:#2a2520;">Past</h4>
+        <div class="portal-list-item" style="opacity:0.6;">
+          <div><strong>Courtyard</strong><br><span style="font-size:11px; color:#8a7e72;">Feb 14 · 4pm–8pm · Birthday party</span></div>
+          <div style="text-align:right;"><span style="font-size:11px; color:#8a7e72;">Completed</span></div>
+        </div>
+        <button class="btn-outline-orange" style="width:100%; margin-top:16px;">Book a Space</button>
+      </div>
+
+      <!-- Access Pane -->
+      <div class="portal-pane" id="portal-pane-access" style="display:none;">
+        <div class="access-card">
+          <div class="gate-label">YOUR GATE CODE</div>
+          <div class="gate-code">4827</div>
+          <div class="gate-label">Gate hours: 7am – 8pm daily</div>
+        </div>
+        <div class="portal-action-card" style="margin-top:12px;">
+          <h4>&#x1F4E6; Unit B-134</h4>
+          <div class="detail">Building B · 2nd Floor · Elevator access<br>Your key code: same as gate code</div>
+        </div>
+        <div class="portal-action-card">
+          <h4>&#x1F527; Woodshop</h4>
+          <div class="detail">Building A · Ground Floor<br>Shared access · Hours: 8am–10pm</div>
+        </div>
+        <div class="portal-action-card">
+          <h4>&#x1F69A; E-Truck</h4>
+          <div class="detail">Free for tenants · Reserve 24hr in advance<br>Pickup at front gate</div>
+        </div>
+      </div>
+
+      <!-- Account Pane -->
+      <div class="portal-pane" id="portal-pane-account" style="display:none;">
+        <h4 style="margin-bottom:12px; font-size:13px; color:#2a2520;">Your Information</h4>
+        <div class="form-group"><label>Name</label><input type="text" value="Jeff Bridge"></div>
+        <div class="form-group"><label>Email</label><input type="email" value="jeff@vrtxx.me"></div>
+        <div class="form-group"><label>Phone</label><input type="tel" value="(510) 555-0142"></div>
+        <div class="form-group"><label>Photo</label>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:48px; height:48px; border-radius:50%; background:#e5e0db; display:flex; align-items:center; justify-content:center; font-size:18px; color:#8a7e72;">JB</div>
+            <button class="btn-outline-orange" style="font-size:11px; padding:4px 12px;">Upload Photo</button>
+          </div>
+        </div>
+        <h4 style="margin: 16px 0 8px; font-size:13px; color:#2a2520;">Payment Method</h4>
+        <div class="portal-list-item">
+          <div><strong>ACH · Chase ···8842</strong><br><span style="font-size:11px; color:#8a7e72;">Primary · Autopay enabled</span></div>
+          <div><button style="font-size:11px; color:#DF562A; background:none; border:none; cursor:pointer;">Edit</button></div>
+        </div>
+        <h4 style="margin: 16px 0 8px; font-size:13px; color:#2a2520;">Preferences</h4>
+        <div class="setting-row">
+          <span>Autopay</span>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="setting-row">
+          <span>Email receipts</span>
+          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <div class="setting-row">
+          <span>SMS reminders</span>
+          <div class="toggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+        <button class="btn-primary" style="width:100%; margin-top:16px;">Save Changes</button>
+      </div>
+
+      <!-- Maintenance Pane -->
+      <div class="portal-pane" id="portal-pane-maint" style="display:none;">
+        <h4 style="margin-bottom:8px; font-size:13px; color:#2a2520;">Submit a Request</h4>
+        <div class="form-group"><label>Unit</label>
+          <select><option>B-134 (The Room)</option><option>Woodshop</option><option>Common area</option><option>Other</option></select>
+        </div>
+        <div class="form-group"><label>Issue type</label>
+          <select><option>Door / lock problem</option><option>Lighting</option><option>Pest control</option><option>Temperature / HVAC</option><option>Water / leak</option><option>Other</option></select>
+        </div>
+        <div class="form-group"><label>Description</label>
+          <textarea placeholder="Describe the issue..."></textarea>
+        </div>
+        <div class="form-group"><label>Photo (optional)</label>
+          <div style="border: 2px dashed #d5cfc8; border-radius:8px; padding:24px; text-align:center; color:#8a7e72; font-size:12px; cursor:pointer;">
+            Tap to attach a photo
+          </div>
+        </div>
+        <button class="btn-primary" style="width:100%;">Submit Request</button>
+        <h4 style="margin: 20px 0 8px; font-size:13px; color:#2a2520;">Recent Requests</h4>
+        <div class="portal-list-item">
+          <div><strong>Light out in hallway B</strong><br><span style="font-size:11px; color:#8a7e72;">Feb 20 · Building B</span></div>
+          <div style="text-align:right;"><span style="color:#22c55e; font-size:11px; font-weight:600;">Resolved</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Admin Portal -->
+    <div id="portal-admin-view" style="display:none;">
+      <h2>Admin Dashboard</h2>
+      <div class="modal-sub">Bridge Storage, Arts & Events</div>
+      <div class="portal-section">
+        <div class="portal-stat-row">
+          <div class="portal-card"><h4>Occupancy</h4><div class="value">87%</div><div class="detail">312 of 358 units</div></div>
+          <div class="portal-card"><h4>Available</h4><div class="value">46 units</div><div class="detail">12 Nook · 18 Room · 10 Studio · 6 Workshop</div></div>
+        </div>
+        <div class="portal-stat-row">
+          <div class="portal-card"><h4>Pending</h4><div class="value">8 inquiries</div><div class="detail">3 storage · 2 kitchen · 1 dance · 1 coworking · 1 studios</div></div>
+          <div class="portal-card"><h4>Revenue MTD</h4><div class="value">$47,200</div><div class="detail">+12% vs last month</div></div>
+        </div>
+        <div class="portal-card"><h4>Recent Leads</h4>
+          <div style="font-size: 12px; color: #8a7e72; line-height: 2;">
+            Maria G. · Kitchen membership · Today<br>
+            David K. · The Studio rental · Yesterday<br>
+            Priya S. · Dance floor booking · Yesterday<br>
+            Art Collective · Gallery exhibition · 2 days ago
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="bottom-nav-item" onclick="showScreen('home')"><div class="bottom-nav-icon">&#x2B21;</div>Home</div>
+      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Store</div>
+      <div class="bottom-nav-item" onclick="showScreen('make')"><div class="bottom-nav-icon">&#x25FB;</div>Make</div>
+      <div class="bottom-nav-item" onclick="showScreen('gather')"><div class="bottom-nav-icon">&#x25C8;</div>Gather</div>
+    </div>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Storage Rental (multi-step: select → info → payment → confirmation) -->
+  <!-- Booking: Gallery (self-booking with calendar + payment) -->
+  <div class="modal-overlay" id="modal-booking-gallery" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <!-- Step 1: Configuration + Calendar + Time -->
+      <div id="gallery-step-1">
+        <h2>Book The Gallery</h2>
+        <div class="modal-sub">Sprung hardwood · Sound system · Lighting rig · Up to 80 guests</div>
+        <div class="form-group"><label>Room Configuration</label>
+          <select id="gallery-config">
+            <option value="open-floor">Open Floor (dance)</option>
+            <option value="chairs">Chairs (ceremony)</option>
+            <option value="round-tables">Round Tables (reception)</option>
+            <option value="rect-tables">Rectangular Tables (banquet)</option>
+            <option value="stage">Stage (performance)</option>
+            <option value="gallery-walk">Gallery Walk (exhibition)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Type of event</label>
+          <select><option>Dance class / workshop</option><option>Performance / show</option><option>DJ night / party</option><option>Reception / dinner</option><option>Exhibition</option><option>Rehearsal</option><option>Private event</option></select>
+        </div>
+        <div style="background:#faf7f3; border:1px solid #e5e0db; border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:11px; color:#5a5248;">
+          Hosting a catered event? Our <strong>commercial kitchen</strong> is available for your caterer. <a href="#" onclick="showScreen('make'); return false;" style="color:#DF562A;">Learn more</a>
+        </div>
+        <div class="cal-month">
+          <button class="cal-nav">&larr;</button>
+          <span>March 2026</span>
+          <button class="cal-nav">&rarr;</button>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-day header">S</div><div class="cal-day header">M</div><div class="cal-day header">T</div><div class="cal-day header">W</div><div class="cal-day header">T</div><div class="cal-day header">F</div><div class="cal-day header">S</div>
+          <div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day past">1</div>
+          <div class="cal-day past">2</div><div class="cal-day past">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day booked">6</div><div class="cal-day">7</div><div class="cal-day selected">8</div>
+          <div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day booked">12</div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day">15</div>
+          <div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day booked">20</div><div class="cal-day">21</div><div class="cal-day">22</div>
+          <div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div>
+          <div class="cal-day">30</div><div class="cal-day">31</div>
+        </div>
+        <div class="cal-legend"><span class="dot avail"></span> Available <span class="dot booked"></span> Booked <span class="dot selected"></span> Selected</div>
+        <div class="form-group"><label>Time slot</label></div>
+        <div class="time-slots">
+          <div class="time-slot">9am – 12pm</div>
+          <div class="time-slot selected">2pm – 5pm</div>
+          <div class="time-slot">6pm – 9pm</div>
+          <div class="time-slot">9pm – 12am</div>
+        </div>
+        <div class="form-group"><label>Expected attendance</label><input type="number" placeholder="e.g. 40" max="80"></div>
+        <div class="price-calc">
+          <div class="line"><span>Dance Floor · 3 hours</span><span>$225.00</span></div>
+          <div class="line"><span>Sound system (included)</span><span>$0.00</span></div>
+          <div class="line total"><span>Total</span><span>$225.00</span></div>
+        </div>
+        <button class="btn-primary" style="width: 100%;" onclick="showBookingStep('gallery', 2)">Continue to Payment</button>
+      </div>
+      <!-- Step 2: Payment -->
+      <div id="gallery-step-2" style="display:none;">
+        <h2>Payment</h2>
+        <div class="modal-sub">Dance Floor · Mar 8 · 2pm–5pm</div>
+        <div class="payment-summary">
+          <div class="line"><span>Dance Floor · 3 hours</span><span>$225.00</span></div>
+          <div class="line total"><span>Due now</span><span>$225.00</span></div>
+        </div>
+        <div class="ach-encourage">&#x1F4B0; <strong>Save with ACH:</strong> Skip the 2.9% processing fee.</div>
+        <div class="payment-methods">
+          <div class="payment-method selected" onclick="selectPayment(this)"><div class="pm-icon">&#x1F3E6;</div><div class="pm-label">ACH / Bank</div><div class="pm-sub">No fees</div></div>
+          <div class="payment-method" onclick="selectPayment(this)"><div class="pm-icon">&#x1F4B3;</div><div class="pm-label">Card</div><div class="pm-sub">+2.9%</div></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Your name</label><input type="text" placeholder="Full name"></div>
+          <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        </div>
+        <div class="form-group"><label>Card number</label><input type="text" placeholder="•••• •••• •••• ••••" style="letter-spacing: 2px;"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Expiry</label><input type="text" placeholder="MM / YY"></div>
+          <div class="form-group"><label>CVC</label><input type="text" placeholder="•••"></div>
+        </div>
+        <button class="btn-primary" style="width: 100%; margin-top:8px;" onclick="showBookingStep('gallery', 3)">Pay $225.00 &amp; Book</button>
+        <div class="payment-secure">&#x1F512; Encrypted · Powered by Stripe</div>
+        <div style="text-align:center; margin-top:8px;"><button style="background:none; border:none; color:#8a7e72; font-size:12px; cursor:pointer;" onclick="showBookingStep('gallery', 1)">&larr; Back</button></div>
+      </div>
+      <!-- Step 3: Confirmation -->
+      <div id="gallery-step-3" style="display:none;">
+        <div class="success-msg show">
+          <div class="check">&#10003;</div>
+          <h3>Booking Confirmed!</h3>
+          <p>The Gallery · Sunday, March 8 · 2pm – 5pm</p>
+          <div style="text-align:left; font-size:12px; color:#8a7e72; line-height:2; margin-top:16px;">
+            &#x2705; Payment confirmed — $225.00<br>
+            &#x1F4E7; Confirmation email sent<br>
+            &#x1F511; Access instructions in email<br>
+            &#x1F3B5; Sound system ready on arrival
+          </div>
+          <button class="btn-primary" style="width: 100%; margin-top:16px;" onclick="closeModal()">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking: Outdoor (self-booking with calendar + payment) -->
+  <div class="modal-overlay" id="modal-booking-outdoor" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div id="outdoor-step-1">
+        <h2>Book the Courtyard</h2>
+        <div class="modal-sub">Covered courtyard · Live-edge tables · Mosaic wall · Up to 120 guests</div>
+        <div class="form-group"><label>Type of event</label>
+          <select><option>Market / vendor event</option><option>Reception / celebration</option><option>Community gathering</option><option>Corporate event</option><option>Other</option></select>
+        </div>
+        <div class="cal-month">
+          <button class="cal-nav">&larr;</button>
+          <span>March 2026</span>
+          <button class="cal-nav">&rarr;</button>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-day header">S</div><div class="cal-day header">M</div><div class="cal-day header">T</div><div class="cal-day header">W</div><div class="cal-day header">T</div><div class="cal-day header">F</div><div class="cal-day header">S</div>
+          <div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day past">1</div>
+          <div class="cal-day past">2</div><div class="cal-day past">3</div><div class="cal-day">4</div><div class="cal-day booked">5</div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div>
+          <div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day selected">14</div><div class="cal-day">15</div>
+          <div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day booked">18</div><div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22</div>
+          <div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day booked">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div>
+          <div class="cal-day">30</div><div class="cal-day">31</div>
+        </div>
+        <div class="cal-legend"><span class="dot avail"></span> Available <span class="dot booked"></span> Booked <span class="dot selected"></span> Selected</div>
+        <div class="form-group"><label>Time slot</label></div>
+        <div class="time-slots">
+          <div class="time-slot">10am – 2pm</div>
+          <div class="time-slot selected">3pm – 7pm</div>
+          <div class="time-slot">5pm – 9pm</div>
+        </div>
+        <div class="form-group"><label>Expected attendance</label><input type="number" placeholder="e.g. 60"></div>
+        <div class="price-calc">
+          <div class="line"><span>Courtyard · 4 hours</span><span>$350.00</span></div>
+          <div class="line"><span>Tables & chairs (included)</span><span>$0.00</span></div>
+          <div class="line total"><span>Total</span><span>$350.00</span></div>
+        </div>
+        <button class="btn-primary" style="width: 100%;" onclick="showBookingStep('outdoor', 2)">Continue to Payment</button>
+      </div>
+      <div id="outdoor-step-2" style="display:none;">
+        <h2>Payment</h2>
+        <div class="modal-sub">Courtyard · Mar 14 · 3pm–7pm</div>
+        <div class="payment-summary">
+          <div class="line"><span>Courtyard · 4 hours</span><span>$350.00</span></div>
+          <div class="line total"><span>Due now</span><span>$350.00</span></div>
+        </div>
+        <div class="payment-methods">
+          <div class="payment-method selected" onclick="selectPayment(this)"><div class="pm-icon">&#x1F3E6;</div><div class="pm-label">ACH / Bank</div><div class="pm-sub">No fees</div></div>
+          <div class="payment-method" onclick="selectPayment(this)"><div class="pm-icon">&#x1F4B3;</div><div class="pm-label">Card</div><div class="pm-sub">+2.9%</div></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Your name</label><input type="text" placeholder="Full name"></div>
+          <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        </div>
+        <div class="form-group"><label>Card number</label><input type="text" placeholder="•••• •••• •••• ••••" style="letter-spacing: 2px;"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Expiry</label><input type="text" placeholder="MM / YY"></div>
+          <div class="form-group"><label>CVC</label><input type="text" placeholder="•••"></div>
+        </div>
+        <button class="btn-primary" style="width: 100%; margin-top:8px;" onclick="showBookingStep('outdoor', 3)">Pay $350.00 &amp; Book</button>
+        <div class="payment-secure">&#x1F512; Encrypted · Powered by Stripe</div>
+        <div style="text-align:center; margin-top:8px;"><button style="background:none; border:none; color:#8a7e72; font-size:12px; cursor:pointer;" onclick="showBookingStep('outdoor', 1)">&larr; Back</button></div>
+      </div>
+      <div id="outdoor-step-3" style="display:none;">
+        <div class="success-msg show">
+          <div class="check">&#10003;</div>
+          <h3>Booking Confirmed!</h3>
+          <p>Courtyard · Saturday, March 14 · 3pm – 7pm</p>
+          <div style="text-align:left; font-size:12px; color:#8a7e72; line-height:2; margin-top:16px;">
+            &#x2705; Payment confirmed — $350.00<br>
+            &#x1F4E7; Confirmation email sent<br>
+            &#x1F511; Gate code & access instructions in email<br>
+            &#x1FA91; Tables and chairs set up on arrival
+          </div>
+          <button class="btn-primary" style="width: 100%; margin-top:16px;" onclick="closeModal()">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kitchen Intake (fields from backend: OnboardingRequirement + kitchen contract) -->
+  <div class="modal-overlay" id="modal-membership-kitchen" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div id="form-membership-kitchen">
+        <h2>Kitchen Membership Application</h2>
+        <div class="modal-sub">$99/mo membership + $30–60/hr usage · 24/7 · Contra Costa County permitted</div>
+
+        <div style="font-size: 11px; background: #fff; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; color: #8a7e72; line-height: 1.6;">
+          <strong style="color: #2a2520;">What's required:</strong> Health permit, food safety cert, business license, insurance ($1M), $200 deposit. We'll walk you through everything after you apply.
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>First name *</label><input type="text" placeholder="First"></div>
+          <div class="form-group"><label>Last name *</label><input type="text" placeholder="Last"></div>
+        </div>
+        <div class="form-group"><label>Email *</label><input type="email" placeholder="you@email.com"></div>
+        <div class="form-group"><label>Phone *</label><input type="tel" placeholder="(510) 555-0000"></div>
+        <div class="form-group"><label>Business name</label><input type="text" placeholder="Your food business name"></div>
+        <div class="form-group"><label>What type of food business? *</label>
+          <select>
+            <option value="">Select one...</option>
+            <option>Catering</option>
+            <option>Meal prep / delivery</option>
+            <option>Baked goods</option>
+            <option>Food truck prep</option>
+            <option>Private chef</option>
+            <option>Packaged food (cottage food scaling up)</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label>What do you cook / produce?</label><textarea placeholder="Describe your food products, cuisine type, and typical production volume..."></textarea></div>
+        <div class="form-group"><label>Food Safety Manager Certification (ServSafe or equiv)?</label>
+          <select>
+            <option>Yes, current</option>
+            <option>Expired — will renew</option>
+            <option>No, but I'll get one</option>
+            <option>Not sure what's needed</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Contra Costa County Health Permit?</label>
+          <select>
+            <option>Yes, I have one</option>
+            <option>Applied, waiting on approval</option>
+            <option>No — need to apply</option>
+            <option>I have a permit from another county</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Business license?</label>
+          <select>
+            <option>Yes</option>
+            <option>In process</option>
+            <option>No — need guidance</option>
+          </select>
+        </div>
+        <div class="form-group"><label>General liability insurance ($1M min)?</label>
+          <select>
+            <option>Yes, current policy</option>
+            <option>Need to get it</option>
+            <option>Not sure what's required</option>
+          </select>
+        </div>
+        <div class="form-group"><label>How many people will use the kitchen with you?</label>
+          <select>
+            <option>Just me (1 person — $30/hr)</option>
+            <option>2 people ($30/hr)</option>
+            <option>3+ people ($60/hr)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Preferred start date</label><input type="date"></div>
+        <div class="form-group"><label>Anything else we should know?</label><textarea placeholder="Questions, special requirements, preferred hours..."></textarea></div>
+        <button class="btn-primary" style="width: 100%;" onclick="showSuccess('form-membership-kitchen')">Submit Kitchen Application</button>
+        <div style="font-size: 10px; color: #8a7e72; text-align: center; margin-top: 10px;">After approval we'll schedule a kitchen tour and orientation.</div>
+      </div>
+      <div class="success-msg" id="success-membership-kitchen"><div class="check">&#10003;</div><h3>Application Received</h3><p>We'll review your info and schedule a kitchen tour within 48 hours. Meanwhile, start gathering your permits — we'll send a checklist to your email.</p></div>
+    </div>
+  </div>
+
+  <!-- Membership: Woodshop -->
+  <div class="modal-overlay" id="modal-membership-woodshop" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div id="form-membership-woodshop">
+        <h2>Join the Woodshop</h2>
+        <div class="modal-sub">$150/mo · Shared tools · Safety orientation required</div>
+        <div class="form-group"><label>Your name</label><input type="text" placeholder="Full name"></div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        <div class="form-group"><label>Phone</label><input type="tel"></div>
+        <div class="form-group"><label>Experience level</label><select><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Professional</option></select></div>
+        <div class="form-group"><label>What do you make?</label><textarea placeholder="Furniture, sculptures, repairs..."></textarea></div>
+        <button class="btn-primary" style="width: 100%;" onclick="showSuccess('form-membership-woodshop')">Apply for Woodshop</button>
+      </div>
+      <div class="success-msg" id="success-membership-woodshop"><div class="check">&#10003;</div><h3>Application Sent</h3><p>We'll schedule your safety orientation within a week.</p></div>
+    </div>
+  </div>
+
+  <!-- Membership: Art Studio -->
+  <div class="modal-overlay" id="modal-membership-art" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div id="form-membership-art">
+        <h2>Join Art Studio</h2>
+        <div class="modal-sub">$175/mo · Private glass-front studio · Lounge & garden access</div>
+        <div class="form-group"><label>Your name</label><input type="text" placeholder="Full name"></div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        <div class="form-group"><label>Phone</label><input type="tel"></div>
+        <div class="form-group"><label>Your medium</label><select><option>Painting</option><option>Sculpture</option><option>Mixed media</option><option>Photography</option><option>Other</option></select></div>
+        <div class="form-group"><label>Portfolio link (optional)</label><input type="url" placeholder="https://"></div>
+        <button class="btn-primary" style="width: 100%;" onclick="showSuccess('form-membership-art')">Apply for Studio</button>
+      </div>
+      <div class="success-msg" id="success-membership-art"><div class="check">&#10003;</div><h3>Application Sent</h3><p>We'll review and schedule a studio tour within a week.</p></div>
+    </div>
+  </div>
+
+  <!-- Booking: Lounge (simple inquiry) -->
+  <div class="modal-overlay" id="modal-booking-lounge" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div id="form-booking-lounge">
+        <h2>Book the Lounge</h2>
+        <div class="modal-sub">Couches · Upright piano · Original artwork · Up to 30 guests</div>
+        <div class="form-row">
+          <div class="form-group"><label>First name *</label><input type="text" placeholder="First"></div>
+          <div class="form-group"><label>Last name *</label><input type="text" placeholder="Last"></div>
+        </div>
+        <div class="form-group"><label>Email *</label><input type="email" placeholder="you@email.com"></div>
+        <div class="form-group"><label>Phone *</label><input type="tel" placeholder="(510) 555-0000"></div>
+        <div class="form-group"><label>Type of event *</label>
+          <select>
+            <option value="">Select one...</option>
+            <option>Intimate gathering</option>
+            <option>Listening party / salon</option>
+            <option>Small reception</option>
+            <option>Meeting / presentation</option>
+            <option>Private party</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Expected attendance</label><input type="number" placeholder="e.g. 15" max="30"></div>
+        <div class="form-group"><label>Preferred date</label><input type="date"></div>
+        <div class="form-group"><label>Preferred time</label>
+          <select>
+            <option value="">Select...</option>
+            <option>Morning (10am – 1pm)</option>
+            <option>Afternoon (2pm – 5pm)</option>
+            <option>Evening (6pm – 10pm)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Anything else?</label><textarea placeholder="Special requests, A/V needs, catering..."></textarea></div>
+        <button class="btn-primary" style="width: 100%;" onclick="showSuccess('form-booking-lounge')">Submit Inquiry</button>
+        <div style="font-size: 10px; color: #8a7e72; text-align: center; margin-top: 10px;">We'll confirm availability and pricing within 24 hours.</div>
+      </div>
+      <div class="success-msg" id="success-booking-lounge"><div class="check">&#10003;</div><h3>Inquiry Sent</h3><p>We'll get back to you within 24 hours with availability and pricing details.</p></div>
+    </div>
+  </div>
+
+  <!-- Event RSVP -->
+  <div class="modal-overlay" id="modal-event-rsvp" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div id="form-event-rsvp">
+        <h2 id="rsvp-title">RSVP</h2>
+        <div class="modal-sub" id="rsvp-subtitle">Reserve your spot. We'll send a confirmation.</div>
+        <div class="form-group"><label>Your name</label><input type="text" placeholder="Full name"></div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        <div class="form-group"><label>How many guests?</label><select><option>Just me (1)</option><option>2</option><option>3</option><option>4+</option></select></div>
+        <button class="btn-primary" style="width: 100%;" onclick="showSuccess('form-event-rsvp')">Confirm RSVP</button>
+      </div>
+      <div class="success-msg" id="success-event-rsvp"><div class="check">&#10003;</div><h3>You're In!</h3><p>Confirmation sent to your email. See you at Bridge.</p></div>
+    </div>
+  </div>
+
+  <!-- Membership: Coworking -->
+  <div class="modal-overlay" id="modal-membership-cowork" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div id="form-membership-cowork">
+        <h2>Join Coworking</h2>
+        <div class="modal-sub">$25/day drop-in · $150/mo membership · Wifi, coffee, courtyard</div>
+        <div class="form-group"><label>Your name</label><input type="text" placeholder="Full name"></div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        <div class="form-group"><label>Phone</label><input type="tel"></div>
+        <div class="form-group"><label>Plan</label><select><option>Drop-in ($25/day)</option><option>Monthly membership ($150/mo)</option></select></div>
+        <div class="form-group"><label>What kind of work do you do?</label><textarea placeholder="Freelance, small business, remote work..."></textarea></div>
+        <div class="form-group"><label>Preferred start date</label><input type="date"></div>
+        <button class="btn-primary" style="width: 100%;" onclick="showSuccess('form-membership-cowork')">Join Coworking</button>
+      </div>
+      <div class="success-msg" id="success-membership-cowork"><div class="check">&#10003;</div><h3>Welcome to Coworking!</h3><p>We'll send you access details and a welcome guide within 24 hours. See you at Bridge.</p></div>
+    </div>
+  </div>
+
+  <!-- General Inquiry -->
+  <div class="modal-overlay" id="modal-inquiry-general" onclick="if(event.target===this)closeModal()">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div id="form-inquiry-general">
+        <h2>Ask Us Anything</h2>
+        <div class="modal-sub">We'll get back to you within 24 hours.</div>
+        <div class="form-group"><label>Your name</label><input type="text" placeholder="Full name"></div>
+        <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
+        <div class="form-group"><label>What's on your mind?</label><textarea placeholder="Questions about spaces, pricing, availability, events..."></textarea></div>
+        <button class="btn-primary" style="width: 100%;" onclick="showSuccess('form-inquiry-general')">Send Message</button>
+      </div>
+      <div class="success-msg" id="success-inquiry-general"><div class="check">&#10003;</div><h3>Message Sent</h3><p>We'll get back to you within 24 hours.</p></div>
+    </div>
+  </div>
+
+  <!-- Portal: moved to screen-profile — old modal content deleted -->
+  <!-- Golden Paths FAB -->
+  <button class="gp-fab" onclick="openGoldenPaths()" title="Customer Golden Paths">&#x2694;</button>
+
+  <!-- Golden Paths Overlay -->
+  <div class="gp-overlay" id="gp-overlay">
+    <div class="gp-header">
+      <h2>Customer Golden Paths</h2>
+      <button class="gp-close" onclick="closeGoldenPaths()">&times;</button>
+    </div>
+    <div class="gp-list">
+      <div class="gp-card" onclick="startPath('storage')">
+        <span class="gp-card-num">1</span><h3>Storage Renter</h3>
+        <p>Browse units, filter by size, select a unit, enter info, pay deposit + first month, get gate code.</p>
+        <div class="gp-steps">
+          <span class="gp-step-pill">Home</span>
+          <span class="gp-step-pill">Storage</span>
+          <span class="gp-step-pill">Filter</span>
+          <span class="gp-step-pill">Unit Detail</span>
+          <span class="gp-step-pill">Select</span>
+          <span class="gp-step-pill">Info</span>
+          <span class="gp-step-pill">Pay</span>
+          <span class="gp-step-pill">Done</span>
+        </div>
+      </div>
+      <div class="gp-card" onclick="startPath('event-booker')">
+        <span class="gp-card-num">2</span><h3>Event Booker</h3>
+        <p>Browse spaces, pick the dance floor, check calendar availability, select time slot, pay and book.</p>
+        <div class="gp-steps">
+          <span class="gp-step-pill">Home</span>
+          <span class="gp-step-pill">Spaces</span>
+          <span class="gp-step-pill">Dance Floor</span>
+          <span class="gp-step-pill">Calendar</span>
+          <span class="gp-step-pill">Pay</span>
+          <span class="gp-step-pill">Done</span>
+        </div>
+      </div>
+      <div class="gp-card" onclick="startPath('kitchen')">
+        <span class="gp-card-num">3</span><h3>Kitchen Member</h3>
+        <p>View commercial kitchen, apply for membership. Requires health permit, ServSafe, insurance.</p>
+        <div class="gp-steps">
+          <span class="gp-step-pill">Home</span>
+          <span class="gp-step-pill">Spaces</span>
+          <span class="gp-step-pill">Kitchen Card</span>
+          <span class="gp-step-pill">Application</span>
+          <span class="gp-step-pill">Confirmation</span>
+        </div>
+      </div>
+      <div class="gp-card" onclick="startPath('gallery')">
+        <span class="gp-card-num">4</span><h3>Gallery Exhibitor</h3>
+        <p>Browse spaces, find the gallery, submit an exhibition application with portfolio.</p>
+        <div class="gp-steps">
+          <span class="gp-step-pill">Home</span>
+          <span class="gp-step-pill">Spaces</span>
+          <span class="gp-step-pill">Gallery Card</span>
+          <span class="gp-step-pill">Application</span>
+          <span class="gp-step-pill">Confirmation</span>
+        </div>
+      </div>
+      <div class="gp-card" onclick="startPath('attendee')">
+        <span class="gp-card-num">5</span><h3>Event Attendee</h3>
+        <p>See upcoming events, pick one, sign up. Free and paid events.</p>
+        <div class="gp-steps">
+          <span class="gp-step-pill">Home</span>
+          <span class="gp-step-pill">Events</span>
+          <span class="gp-step-pill">Event Detail</span>
+        </div>
+      </div>
+      <div class="gp-card" onclick="startPath('portal')">
+        <span class="gp-card-num">6</span><h3>Returning Customer</h3>
+        <p>Log in, view dashboard, check billing & invoices, see access info, manage account, submit maintenance.</p>
+        <div class="gp-steps">
+          <span class="gp-step-pill">Login</span>
+          <span class="gp-step-pill">Dashboard</span>
+          <span class="gp-step-pill">Billing</span>
+          <span class="gp-step-pill">Access</span>
+          <span class="gp-step-pill">Account</span>
+          <span class="gp-step-pill">Maintenance</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Golden Path Step Tracker -->
+  <div class="gp-tracker" id="gp-tracker">
+    <div class="gp-tracker-top">
+      <span class="gp-tracker-title" id="gp-tracker-title">Path</span>
+      <button class="gp-tracker-exit" onclick="exitPath()">Exit Path &times;</button>
+    </div>
+    <div class="gp-tracker-steps" id="gp-tracker-steps"></div>
+    <div class="gp-tracker-label" id="gp-tracker-label">Step 1</div>
+    <div class="gp-tracker-nav">
+      <button class="gp-tracker-btn" id="gp-prev" onclick="pathStep(-1)" disabled>&larr; Back</button>
+      <button class="gp-tracker-btn next" id="gp-next" onclick="pathStep(1)">Next &rarr;</button>
+    </div>
+  </div>
+
+<script>
+/* ===== API Config ===== */
+const API_BASE = 'http://localhost:8000/public';
+
+/* ===== Unit API ===== */
+let _unitsCache = null;
+
+async function fetchUnits(params = {}) {
+  const url = new URL(API_BASE + '/units/available.json');
+  Object.entries(params).forEach(([k, v]) => { if (v) url.searchParams.set(k, v); });
+  const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  if (!resp.ok) throw new Error('API ' + resp.status);
+  return resp.json();
+}
+
+function renderUnits(data) {
+  const units = data.units || [];
+  if (!units.length) return '<div style="text-align:center;padding:40px 24px;color:#8a7e72;">No units available right now. Call us at (510) 280-0024.</div>';
+  return units.map(u => {
+    const img = u.image_url || 'photos/storage-green-mural-aisle.jpg';
+    const tags = (u.tags || []).map(t => t.replace(/_/g, ' ')).join(' · ');
+    const desc = u.website_description || '';
+    const canRent = u.can_rent !== false;
+    const btnLabel = canRent ? 'Grab It!' : (u.can_reserve ? 'Reserve' : 'Call for Availability');
+    const btnAction = canRent || u.can_reserve
+      ? 'event.stopPropagation(); toggleGrabForm(this.closest(\'.unit-card\'))'
+      : 'event.stopPropagation(); window.location.href=\'tel:+15102800024\'';
+    return '<div class="unit-card" onclick="toggleUnit(this)" data-unit-id="' + (u.unit_number || u.id) + '" data-sqft="' + (u.square_feet || 0) + '" data-amenities="' + (u.tags || []).join(',') + '">'
+      + '<div class="unit-card-header"><div><h3>' + escapeHtml(u.size_label || u.unit_number) + '</h3><div class="unit-size">' + (u.square_feet || '?') + ' sq ft</div></div>'
+      + '<div class="unit-price">$' + (u.price || '?') + '/mo</div></div>'
+      + '<div class="unit-card-details">'
+      + '<div class="unit-card-img" style="background-image: url(\'' + escapeHtml(img) + '\');"></div>'
+      + '<div class="features">' + escapeHtml(desc || tags) + '</div>'
+      + '<div class="grab-form" style="display:none;">'
+      + '<h4 style="font-size:14px;font-weight:700;margin:12px 0 8px;">Grab This Unit</h4>'
+      + '<input type="text" class="grab-name" placeholder="Your full name" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">'
+      + '<input type="email" class="grab-email" placeholder="Email" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">'
+      + '<input type="tel" class="grab-phone" placeholder="Phone" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">'
+      + '<button class="btn-primary" style="width:100%;" onclick="event.stopPropagation(); submitGrab(this.closest(\'.unit-card\'))">Grab It!</button>'
+      + '<p class="grab-error" style="display:none;color:#dc2626;font-size:12px;margin-top:8px;"></p>'
+      + '<p class="grab-success" style="display:none;color:#16a34a;font-size:13px;margin-top:8px;"></p>'
+      + '</div>'
+      + '<button class="btn-primary" style="width:100%;margin-top:12px;" onclick="' + btnAction + '">' + btnLabel + '</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function toggleGrabForm(card) {
+  const form = card.querySelector('.grab-form');
+  const btn = card.querySelector('.unit-card-details > button.btn-primary');
+  if (form.style.display === 'none') {
+    form.style.display = 'block';
+    if (btn) btn.style.display = 'none';
+    form.querySelector('.grab-name').focus();
+  } else {
+    form.style.display = 'none';
+    if (btn) btn.style.display = '';
+  }
+}
+
+async function submitGrab(card) {
+  const unitId = card.dataset.unitId;
+  const nameVal = card.querySelector('.grab-name').value.trim();
+  const email = card.querySelector('.grab-email').value.trim();
+  const phone = card.querySelector('.grab-phone').value.trim();
+  const errEl = card.querySelector('.grab-error');
+  const successEl = card.querySelector('.grab-success');
+  const btn = card.querySelector('.grab-form .btn-primary');
+
+  errEl.style.display = 'none';
+  successEl.style.display = 'none';
+
+  if (!nameVal || !email || !phone) {
+    errEl.textContent = 'All fields are required.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const parts = nameVal.split(/\s+/);
+  const firstName = parts[0];
+  const lastName = parts.slice(1).join(' ') || firstName;
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  try {
+    const resp = await fetch(API_BASE + '/units/' + encodeURIComponent(unitId) + '/apply/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ first_name: firstName, last_name: lastName, email, phone, source: 'website-grab-it' })
+    });
+    const data = await resp.json();
+    if (resp.ok) {
+      successEl.innerHTML = '<strong>It\'s yours!</strong> Check your email to finish setup. <a href="' + (data.portal_url || '/portal/') + '" style="color:#DF562A;font-weight:600;">Go to Portal &rarr;</a>';
+      successEl.style.display = 'block';
+      card.querySelector('.grab-form input.grab-name').disabled = true;
+      card.querySelector('.grab-form input.grab-email').disabled = true;
+      card.querySelector('.grab-form input.grab-phone').disabled = true;
+      btn.style.display = 'none';
+    } else {
+      errEl.textContent = data.message || 'Something went wrong. Try again.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Grab It!';
+    }
+  } catch (e) {
+    errEl.textContent = 'Could not connect. Please call (510) 280-0024.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Grab It!';
+  }
+}
+
+async function loadStoreUnits() {
+  const dynEl = document.getElementById('units-dynamic');
+  const staticEl = document.getElementById('units-static');
+  const spinner = document.getElementById('units-spinner');
+  const errBanner = document.getElementById('units-error-banner');
+
+  if (spinner) spinner.style.display = 'flex';
+  if (errBanner) errBanner.style.display = 'none';
+
+  try {
+    const data = await fetchUnits();
+    _unitsCache = data;
+    dynEl.innerHTML = renderUnits(data);
+    dynEl.style.display = 'block';
+    staticEl.style.display = 'none';
+    // Rebuild filters from API metadata
+    if (data.filters) rebuildFilters(data.filters);
+  } catch (e) {
+    // Keep static fallback visible
+    staticEl.style.display = '';
+    dynEl.style.display = 'none';
+    if (errBanner) errBanner.style.display = 'block';
+  } finally {
+    if (spinner) spinner.style.display = 'none';
+  }
+}
+
+function rebuildFilters(filters) {
+  // Rebuild size dropdown
+  const sizeSelect = document.getElementById('filter-size');
+  if (sizeSelect && filters.available_sizes && filters.available_sizes.length) {
+    const current = sizeSelect.value;
+    sizeSelect.innerHTML = '<option value="all">All sizes</option>';
+    filters.available_sizes.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = s;
+      sizeSelect.appendChild(opt);
+    });
+    sizeSelect.value = current;
+  }
+  // Rebuild filter chips
+  const chipsEl = document.getElementById('filter-chips');
+  if (chipsEl && filters.available_tags && filters.available_tags.length) {
+    chipsEl.innerHTML = '';
+    filters.available_tags.forEach(tag => {
+      const label = tag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      const el = document.createElement('label');
+      el.className = 'filter-chip';
+      el.onclick = function() { this.classList.toggle('active'); filterUnits(); };
+      el.innerHTML = '<input type="checkbox" value="' + escapeHtml(tag) + '"> ' + escapeHtml(label);
+      chipsEl.appendChild(el);
+    });
+  }
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  document.querySelectorAll('.screen-tabs button').forEach((b, i) => {
+    b.classList.toggle('active', ['home','store','make','gather','profile'][i] === id);
+  });
+  window.scrollTo(0, 0);
+  if (id === 'store' && !_unitsCache) loadStoreUnits();
+}
+
+function toggleUnit(el) {
+  const details = el.querySelector('.unit-card-details');
+  details.classList.toggle('open');
+}
+
+function openModal(id) {
+  closeModal();
+  const modal = document.getElementById('modal-' + id);
+  if (modal) {
+    modal.classList.add('open');
+  }
+}
+
+function openRsvp(eventName) {
+  closeModal();
+  const title = document.getElementById('rsvp-title');
+  const subtitle = document.getElementById('rsvp-subtitle');
+  if (title) title.textContent = eventName ? 'RSVP: ' + eventName : 'RSVP';
+  if (subtitle) subtitle.textContent = eventName ? eventName + ' — Reserve your spot.' : 'Reserve your spot. We\'ll send a confirmation.';
+  const modal = document.getElementById('modal-event-rsvp');
+  if (modal) modal.classList.add('open');
+}
+
+function filterMake(category) {
+  const cards = document.querySelectorAll('.make-card');
+  cards.forEach(card => {
+    card.style.display = (category === 'all' || card.dataset.category === category) ? '' : 'none';
+  });
+  const pills = document.querySelectorAll('#make-pills .pill-filter');
+  pills.forEach(pill => {
+    const isActive = pill.dataset.cat === category;
+    if (pill.dataset.cat === 'all') {
+      pill.style.background = isActive ? '#2a2520' : '#f5f2ef';
+      pill.style.color = isActive ? '#fff' : '#2a2520';
+      pill.style.border = isActive ? 'none' : '2px solid #ccc';
+    } else {
+      const colors = { food: ['#4A7C59','#e8f0e8'], things: ['#A0522D','#f0e8df'], art: ['#7B4DAB','#efe6f5'], work: ['#2A8B8B','#e0f0f0'] };
+      const c = colors[pill.dataset.cat];
+      pill.style.background = isActive ? c[0] : c[1];
+      pill.style.color = isActive ? '#fff' : c[0];
+      pill.style.border = isActive ? 'none' : '2px solid ' + c[0];
+    }
+    pill.classList.toggle('active', isActive);
+  });
+}
+
+function closeModal() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  document.querySelectorAll('.success-msg').forEach(s => s.classList.remove('show'));
+  document.querySelectorAll('.modal-sheet > div[id^="form-"]').forEach(f => f.style.display = '');
+  // Reset RSVP modal title
+  const rsvpTitle = document.getElementById('rsvp-title');
+  if (rsvpTitle) rsvpTitle.textContent = 'RSVP';
+  const rsvpSub = document.getElementById('rsvp-subtitle');
+  if (rsvpSub) rsvpSub.textContent = 'Reserve your spot. We\'ll send a confirmation.';
+  // Reset multi-step modals
+  showBookingStep('gallery', 1);
+  showBookingStep('outdoor', 1);
+}
+
+function showSuccess(formId) {
+  document.getElementById(formId).style.display = 'none';
+  document.getElementById('success-' + formId.replace('form-', '')).classList.add('show');
+}
+
+function toggleProfileMenu() {
+  const menu = document.getElementById('profile-menu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function showPortalDash() {
+  document.getElementById('portal-login-view').style.display = 'none';
+  document.getElementById('portal-customer-view').style.display = 'block';
+  const admin = document.getElementById('portal-admin-view');
+  if (admin) admin.style.display = 'none';
+}
+
+function showPortalAdmin() {
+  document.getElementById('portal-login-view').style.display = 'none';
+  document.getElementById('portal-admin-view').style.display = 'block';
+  const customer = document.getElementById('portal-customer-view');
+  if (customer) customer.style.display = 'none';
+}
+
+let _filterDebounce = null;
+function filterUnits() {
+  const sizeVal = document.getElementById('filter-size').value;
+  const activeChips = [...document.querySelectorAll('.filter-chip.active')].map(c => c.querySelector('input').value);
+
+  // If dynamic units loaded, do API-based filtering
+  if (_unitsCache) {
+    clearTimeout(_filterDebounce);
+    _filterDebounce = setTimeout(async () => {
+      const params = {};
+      if (sizeVal && sizeVal !== 'all') params.size_label = sizeVal;
+      if (activeChips.length) params.tag = activeChips[0]; // API supports one tag at a time
+      try {
+        const data = await fetchUnits(params);
+        document.getElementById('units-dynamic').innerHTML = renderUnits(data);
+        const total = (_unitsCache.units || []).length;
+        const shown = (data.units || []).length;
+        document.getElementById('filter-results').textContent = shown === total ? 'Showing all ' + total + ' units' : 'Showing ' + shown + ' of ' + total + ' units';
+      } catch (e) { /* keep current view */ }
+    }, 300);
+    return;
+  }
+
+  // Static fallback filtering (client-side)
+  const cards = document.querySelectorAll('#units-static .unit-card[data-sqft]');
+  let shown = 0;
+  cards.forEach(card => {
+    const sqft = parseInt(card.dataset.sqft);
+    const amenities = (card.dataset.amenities || '').split(',');
+    let sizeMatch = true;
+    if (sizeVal !== 'all') {
+      const [min, max] = sizeVal.split('-').map(Number);
+      sizeMatch = sqft >= min && sqft <= max;
+    }
+    let amenityMatch = activeChips.every(chip => amenities.includes(chip));
+    const show = sizeMatch && amenityMatch;
+    card.style.display = show ? '' : 'none';
+    if (show) shown++;
+  });
+  document.getElementById('filter-results').textContent = shown === cards.length ? 'Showing all ' + cards.length + ' unit types' : 'Showing ' + shown + ' of ' + cards.length + ' unit types';
+}
+
+/* ===== Booking Step Nav ===== */
+function showBookingStep(modalPrefix, n) {
+  [1,2,3].forEach(i => {
+    const el = document.getElementById(modalPrefix + '-step-' + i);
+    if (el) el.style.display = i === n ? '' : 'none';
+  });
+}
+
+/* ===== Portal Tab Nav ===== */
+function showPortalTab(tabId) {
+  document.querySelectorAll('.portal-pane').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.portal-tab').forEach(t => t.classList.remove('active'));
+  const pane = document.getElementById('portal-pane-' + tabId);
+  if (pane) pane.style.display = '';
+  event.target.classList.add('active');
+}
+
+/* ===== Golden Paths Engine ===== */
+const PATHS = {
+  'storage': {
+    title: 'Storage Renter',
+    steps: [
+      { label: 'Homepage', action: () => showScreen('home') },
+      { label: 'Store Tab', action: () => showScreen('store') },
+      { label: 'Filter Units', action: () => { showScreen('store'); document.querySelector('.filter-chip').classList.add('active'); filterUnits(); } },
+      { label: 'Open Unit Detail', action: () => { showScreen('store'); document.querySelectorAll('.unit-card')[1].querySelector('.unit-card-details').classList.add('open'); } },
+      { label: 'Grab It!', action: () => { showScreen('store'); const c = document.querySelectorAll('.unit-card')[1]; c.querySelector('.unit-card-details').classList.add('open'); toggleGrabForm(c); } },
+      { label: 'Portal Redirect', action: () => { showScreen('store'); } }
+    ]
+  },
+  'event-booker': {
+    title: 'Event Booker',
+    steps: [
+      { label: 'Homepage', action: () => showScreen('home') },
+      { label: 'Gather Tab', action: () => showScreen('gather') },
+      { label: 'Gallery Card', action: () => { showScreen('gather'); window.scrollTo(0, 0); } },
+      { label: 'Calendar & Time', action: () => { openModal('booking-gallery'); showBookingStep('gallery', 1); } },
+      { label: 'Payment', action: () => { openModal('booking-gallery'); showBookingStep('gallery', 2); } },
+      { label: 'Confirmation', action: () => { openModal('booking-gallery'); showBookingStep('gallery', 3); } }
+    ]
+  },
+  'kitchen': {
+    title: 'Kitchen Member',
+    steps: [
+      { label: 'Homepage', action: () => showScreen('home') },
+      { label: 'Make Tab', action: () => showScreen('make') },
+      { label: 'Kitchen Card', action: () => { showScreen('make'); setTimeout(() => document.querySelector('#screen-make .space-card[data-category="food"]')?.scrollIntoView({behavior:'smooth'}), 200); } },
+      { label: 'Kitchen Application', action: () => openModal('membership-kitchen') },
+      { label: 'Confirmation', action: () => { openModal('membership-kitchen'); setTimeout(() => showSuccess('form-membership-kitchen'), 300); } }
+    ]
+  },
+  'gallery': {
+    title: 'Gallery Exhibitor',
+    steps: [
+      { label: 'Homepage', action: () => showScreen('home') },
+      { label: 'Gather Tab', action: () => showScreen('gather') },
+      { label: 'Gallery Card', action: () => { showScreen('gather'); setTimeout(() => document.querySelector('#screen-gather .space-card:first-child')?.scrollIntoView({behavior:'smooth'}), 200); } },
+      { label: 'Gallery Booking', action: () => openModal('booking-gallery') },
+      { label: 'Confirmation', action: () => { openModal('booking-gallery'); setTimeout(() => showSuccess('form-booking-gallery'), 300); } }
+    ]
+  },
+  'attendee': {
+    title: 'Event Attendee',
+    steps: [
+      { label: 'Homepage', action: () => showScreen('home') },
+      { label: 'Gather Tab', action: () => showScreen('gather') },
+      { label: 'Event Cards', action: () => { showScreen('gather'); setTimeout(() => document.querySelector('.event-card')?.scrollIntoView({behavior:'smooth'}), 200); } }
+    ]
+  },
+  'portal': {
+    title: 'Returning Customer',
+    steps: [
+      { label: 'Profile Tab', action: () => showScreen('profile') },
+      { label: 'Dashboard', action: () => { showScreen('profile'); setTimeout(showPortalDash, 300); } },
+      { label: 'Billing', action: () => { showScreen('profile'); setTimeout(() => { showPortalDash(); showPortalTab('billing'); }, 300); } },
+      { label: 'Access Info', action: () => { showScreen('profile'); setTimeout(() => { showPortalDash(); showPortalTab('access'); }, 300); } },
+      { label: 'Account', action: () => { showScreen('profile'); setTimeout(() => { showPortalDash(); showPortalTab('account'); }, 300); } },
+      { label: 'Maintenance', action: () => { showScreen('profile'); setTimeout(() => { showPortalDash(); showPortalTab('maint'); }, 300); } }
+    ]
+  }
+};
+
+let currentPath = null;
+let currentStep = 0;
+
+function openGoldenPaths() {
+  document.getElementById('gp-overlay').classList.add('open');
+  document.querySelector('.gp-fab').classList.add('hidden');
+}
+
+function closeGoldenPaths() {
+  document.getElementById('gp-overlay').classList.remove('open');
+  document.querySelector('.gp-fab').classList.remove('hidden');
+}
+
+function startPath(pathId) {
+  currentPath = PATHS[pathId];
+  currentStep = 0;
+  closeGoldenPaths();
+  const tracker = document.getElementById('gp-tracker');
+  tracker.classList.add('active');
+  document.querySelector('.screen-tabs').style.top = '72px';
+  document.querySelector('.gp-fab').classList.add('hidden');
+  renderTracker();
+  currentPath.steps[0].action();
+}
+
+function exitPath() {
+  currentPath = null;
+  currentStep = 0;
+  document.getElementById('gp-tracker').classList.remove('active');
+  document.querySelector('.screen-tabs').style.top = '0';
+  document.querySelector('.gp-fab').classList.remove('hidden');
+  closeModal();
+}
+
+function pathStep(dir) {
+  if (!currentPath) return;
+  const next = currentStep + dir;
+  if (next < 0 || next >= currentPath.steps.length) return;
+  currentStep = next;
+  closeModal();
+  renderTracker();
+  setTimeout(() => currentPath.steps[currentStep].action(), 150);
+}
+
+function renderTracker() {
+  if (!currentPath) return;
+  document.getElementById('gp-tracker-title').textContent = currentPath.title;
+  const stepsEl = document.getElementById('gp-tracker-steps');
+  stepsEl.innerHTML = '';
+  currentPath.steps.forEach((s, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'gp-tracker-dot' + (i < currentStep ? ' done' : i === currentStep ? ' current' : '');
+    stepsEl.appendChild(dot);
+  });
+  document.getElementById('gp-tracker-label').textContent = 'Step ' + (currentStep + 1) + ' of ' + currentPath.steps.length + ': ' + currentPath.steps[currentStep].label;
+  document.getElementById('gp-prev').disabled = currentStep === 0;
+  const nextBtn = document.getElementById('gp-next');
+  if (currentStep >= currentPath.steps.length - 1) {
+    nextBtn.textContent = 'Done \u2713';
+    nextBtn.onclick = exitPath;
+  } else {
+    nextBtn.innerHTML = 'Next &rarr;';
+    nextBtn.onclick = () => pathStep(1);
+  }
+}
+</script>
+</body>
+</html>
