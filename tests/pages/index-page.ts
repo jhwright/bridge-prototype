@@ -66,8 +66,8 @@ export class IndexPage {
     this.page = page;
 
     // Navigation
-    this.screenTabs = page.locator('.screen-tabs button');
-    this.bottomNav = page.locator('.bottom-nav');
+    this.screenTabs = page.locator('.screen-tabs button').first();
+    this.bottomNav = page.locator('.bottom-nav').first();
     this.bottomNavItems = page.locator('.bottom-nav .bottom-nav-item');
 
     // Screens
@@ -99,7 +99,7 @@ export class IndexPage {
     // Gather
     this.spaceCards = page.locator('.space-card');
     this.eventCards = page.locator('.event-card');
-    this.smsInputRow = page.locator('.sms-input-row');
+    this.smsInputRow = page.locator('.sms-input-row').first();
 
     // Profile
     this.profileMenu = page.locator('#profile-menu');
@@ -121,6 +121,7 @@ export class IndexPage {
 
   async goto(): Promise<void> {
     await this.page.goto('/');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /** Navigate to a screen using the showScreen() JS function */

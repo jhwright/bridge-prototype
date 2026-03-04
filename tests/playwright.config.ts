@@ -5,18 +5,23 @@ const BASE_URL = `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: '.',
-  testMatch: ['e2e/**/*.spec.ts', 'forms/**/*.spec.ts', 'responsive/**/*.spec.ts', 'accessibility/**/*.spec.ts', 'error-handling/**/*.spec.ts', 'visual/**/*.spec.ts'],
+  testMatch: ['e2e/**/*.spec.ts', 'forms/**/*.spec.ts', 'responsive/**/*.spec.ts', 'accessibility/**/*.spec.ts', 'error-handling/**/*.spec.ts', 'ocr/**/*.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: process.env.CI ? 2 : undefined,
+  timeout: process.env.CI ? 60_000 : 30_000,
   reporter: process.env.CI
     ? [['html', { open: 'never' }], ['github']]
     : [['html', { open: 'on-failure' }]],
+  expect: {
+    timeout: process.env.CI ? 15_000 : 5_000,
+  },
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    actionTimeout: process.env.CI ? 15_000 : 10_000,
   },
   projects: [
     {

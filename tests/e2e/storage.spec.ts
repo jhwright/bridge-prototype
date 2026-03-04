@@ -44,7 +44,7 @@ test.describe('Storage Page', () => {
     if (filter) {
       await storagePage.toggleChip(filter);
       // Chip should be in active state
-      await expect(storagePage.chip(filter)).toHaveClass(/active|selected/);
+      await expect(storagePage.chip(filter)).toHaveClass(/bg-bridge-orange/);
     }
   });
 

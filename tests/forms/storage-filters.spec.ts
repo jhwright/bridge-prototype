@@ -51,7 +51,7 @@ test.describe('Storage Page Filters', () => {
       const filter = await firstChip.getAttribute('data-filter');
       if (filter) {
         await storagePage.toggleChip(filter);
-        await expect(storagePage.chip(filter)).toHaveClass(/active|selected/);
+        await expect(storagePage.chip(filter)).toHaveClass(/bg-bridge-orange/);
 
         // Toggle off
         await storagePage.toggleChip(filter);

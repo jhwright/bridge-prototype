@@ -120,6 +120,7 @@ export class SpacesPage extends BasePage {
 
   async goto(): Promise<void> {
     await this.page.goto('/spaces.html');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /** Get a space card by its heading text */

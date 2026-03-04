@@ -31,10 +31,12 @@ export class StoragePage extends BasePage {
 
   async goto(): Promise<void> {
     await this.page.goto('/storage.html');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /** Select a size from the dropdown */
   async selectSize(value: string): Promise<void> {
+    await this.filterSize.waitFor({ state: 'visible' });
     await this.filterSize.selectOption(value);
   }
 

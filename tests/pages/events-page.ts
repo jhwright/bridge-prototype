@@ -24,6 +24,7 @@ export class EventsPage extends BasePage {
 
   async goto(): Promise<void> {
     await this.page.goto('/events.html');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /** Get an event card by its title text */

@@ -19,20 +19,23 @@ export const test = base.extend<TestFixtures>({
   },
 
   collectCoverage: [async ({ page }, use) => {
-    // Start V8 JS coverage
-    await page.coverage.startJSCoverage({ resetOnNavigation: false });
+    const skip = !!process.env.CI;
+    if (!skip) {
+      await page.coverage.startJSCoverage({ resetOnNavigation: false });
+    }
 
     await use();
 
-    // Stop and save coverage data
-    const coverage = await page.coverage.stopJSCoverage();
-    if (coverage.length > 0) {
-      fs.mkdirSync(COVERAGE_DIR, { recursive: true });
-      const filename = `cov-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.json`;
-      fs.writeFileSync(
-        path.join(COVERAGE_DIR, filename),
-        JSON.stringify(coverage, null, 2)
-      );
+    if (!skip) {
+      const coverage = await page.coverage.stopJSCoverage();
+      if (coverage.length > 0) {
+        fs.mkdirSync(COVERAGE_DIR, { recursive: true });
+        const filename = `cov-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.json`;
+        fs.writeFileSync(
+          path.join(COVERAGE_DIR, filename),
+          JSON.stringify(coverage, null, 2)
+        );
+      }
     }
   }, { auto: true }],
 });
