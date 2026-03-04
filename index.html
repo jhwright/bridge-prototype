@@ -117,6 +117,7 @@
   .unit-card-details.open { display: block; padding-top: 16px; }
   .unit-card-details .features { font-size: 12px; color: #8a7e72; line-height: 1.8; }
   .unit-card-img { height: 160px; background-size: cover; background-position: center; border-radius: 8px; margin-bottom: 12px; }
+  .unit-card-svg { border-radius: 8px; margin-bottom: 12px; background: #faf7f3; display: flex; align-items: center; justify-content: center; padding: 12px; }
 
   /* --- Tower Scroll Reveal --- */
   .tower-section { position: relative; height: 500px; overflow: hidden; margin: 0 24px 24px; border-radius: 16px; }
@@ -1640,11 +1641,121 @@ async function fetchUnits(params = {}) {
   return resp.json();
 }
 
+/* ===== Excalidraw-style Unit Floor Plan SVG ===== */
+function unitFloorPlanSvg(sizeLabel, typeCode) {
+  const parts = (sizeLabel || '').split('x').map(Number);
+  if (parts.length < 2 || !parts[0] || !parts[1]) return '';
+  const wFt = parts[0], dFt = parts[1];
+
+  // Scale: fit within 280x140 drawing area, leave margins for dimension labels
+  const margin = 36;
+  const maxW = 260, maxH = 110;
+  const scale = Math.min(maxW / wFt, maxH / dFt);
+  const rw = wFt * scale, rh = dFt * scale;
+  const svgW = rw + margin * 2, svgH = rh + margin * 2 + 10;
+  const ox = margin, oy = margin;
+
+  // Seed-based jitter for hand-drawn feel
+  function jitter(v) { return v + (Math.random() - 0.5) * 1.5; }
+
+  // Hand-drawn line: slight wobble via midpoint offset
+  function handLine(x1, y1, x2, y2) {
+    const mx = (x1 + x2) / 2 + (Math.random() - 0.5) * 2;
+    const my = (y1 + y2) / 2 + (Math.random() - 0.5) * 2;
+    return 'M' + jitter(x1) + ',' + jitter(y1) + ' Q' + mx + ',' + my + ' ' + jitter(x2) + ',' + jitter(y2);
+  }
+
+  // Door arc based on type
+  function doorSvg() {
+    const doorW = Math.min(rw * 0.4, 40);
+    if (typeCode === 'SOR') {
+      // Roll-up door: segmented lines across bottom center
+      const dx = ox + (rw - doorW) / 2;
+      const dy = oy + rh;
+      const segs = 5;
+      const segH = 4;
+      let s = '';
+      for (let i = 0; i < segs; i++) {
+        const sy = dy + 3 + i * segH;
+        s += '<path d="' + handLine(dx, sy, dx + doorW, sy) + '" stroke="#DF562A" stroke-width="1.5" fill="none" stroke-linecap="round"/>';
+      }
+      // Arrow indicating roll-up
+      s += '<path d="M' + (dx + doorW / 2) + ',' + (dy + 3 + segs * segH + 2) + ' l0,-' + (segs * segH) + '" stroke="#DF562A" stroke-width="1" fill="none" marker-end="url(#arr-' + uid + ')"/>';
+      return s;
+    }
+    if (typeCode === 'SLL' || typeCode === 'SLS') {
+      // Locker: mesh grid pattern on front face
+      const dx = ox + (rw - doorW) / 2;
+      const dy = oy + rh;
+      const gridSize = 6;
+      let s = '<rect x="' + dx + '" y="' + (dy + 2) + '" width="' + doorW + '" height="' + (gridSize * 3) + '" fill="none" stroke="#DF562A" stroke-width="1.5" rx="1"/>';
+      for (let i = gridSize; i < gridSize * 3; i += gridSize) {
+        s += '<line x1="' + dx + '" y1="' + (dy + 2 + i) + '" x2="' + (dx + doorW) + '" y2="' + (dy + 2 + i) + '" stroke="#DF562A" stroke-width="0.7" opacity="0.5"/>';
+      }
+      for (let j = gridSize; j < doorW; j += gridSize) {
+        s += '<line x1="' + (dx + j) + '" y1="' + (dy + 2) + '" x2="' + (dx + j) + '" y2="' + (dy + 2 + gridSize * 3) + '" stroke="#DF562A" stroke-width="0.7" opacity="0.5"/>';
+      }
+      return s;
+    }
+    // SIH, SCU, SCL: Swing door — arc on bottom-left
+    const dx = ox + 8;
+    const dy = oy + rh;
+    return '<path d="M' + dx + ',' + dy + ' L' + dx + ',' + (dy + doorW * 0.7) + '" stroke="#DF562A" stroke-width="2" fill="none" stroke-linecap="round"/>'
+      + '<path d="M' + dx + ',' + (dy + doorW * 0.7) + ' A' + (doorW * 0.7) + ',' + (doorW * 0.7) + ' 0 0 0 ' + (dx + doorW * 0.7) + ',' + dy + '" stroke="#DF562A" stroke-width="1.5" fill="none" stroke-dasharray="3,3"/>';
+  }
+
+  // Dimension lines
+  function dimLine(x1, y1, x2, y2, label, side) {
+    const tickLen = 5;
+    let s = '';
+    if (side === 'bottom') {
+      const ty = y1 + 8;
+      s += '<line x1="' + x1 + '" y1="' + ty + '" x2="' + x2 + '" y2="' + ty + '" stroke="#8a7e72" stroke-width="1"/>';
+      s += '<line x1="' + x1 + '" y1="' + (ty - tickLen) + '" x2="' + x1 + '" y2="' + (ty + tickLen) + '" stroke="#8a7e72" stroke-width="1"/>';
+      s += '<line x1="' + x2 + '" y1="' + (ty - tickLen) + '" x2="' + x2 + '" y2="' + (ty + tickLen) + '" stroke="#8a7e72" stroke-width="1"/>';
+      s += '<text x="' + ((x1 + x2) / 2) + '" y="' + (ty + 14) + '" text-anchor="middle" font-size="11" font-family="Inter,sans-serif" fill="#8a7e72">' + label + '</text>';
+    } else {
+      const tx = x1 - 8;
+      s += '<line x1="' + tx + '" y1="' + y1 + '" x2="' + tx + '" y2="' + y2 + '" stroke="#8a7e72" stroke-width="1"/>';
+      s += '<line x1="' + (tx - tickLen) + '" y1="' + y1 + '" x2="' + (tx + tickLen) + '" y2="' + y1 + '" stroke="#8a7e72" stroke-width="1"/>';
+      s += '<line x1="' + (tx - tickLen) + '" y1="' + y2 + '" x2="' + (tx + tickLen) + '" y2="' + y2 + '" stroke="#8a7e72" stroke-width="1"/>';
+      s += '<text x="' + (tx - 4) + '" y="' + ((y1 + y2) / 2 + 4) + '" text-anchor="end" font-size="11" font-family="Inter,sans-serif" fill="#8a7e72">' + label + '</text>';
+    }
+    return s;
+  }
+
+  // Build SVG — unique marker ID per instance to avoid clashes
+  const uid = 'u' + wFt + 'x' + dFt + '-' + Math.random().toString(36).slice(2, 6);
+  let svg = '<svg viewBox="0 0 ' + svgW + ' ' + svgH + '" width="100%" height="140" xmlns="http://www.w3.org/2000/svg">';
+  svg += '<defs><marker id="arr-' + uid + '" markerWidth="6" markerHeight="6" refX="3" refY="6" orient="auto"><path d="M0,6 L3,0 L6,6" fill="#DF562A"/></marker></defs>';
+
+  // Floor plan rectangle — hand-drawn edges
+  svg += '<path d="' + handLine(ox, oy, ox + rw, oy) + '" stroke="#2a2520" stroke-width="2" fill="none" stroke-linecap="round"/>';
+  svg += '<path d="' + handLine(ox + rw, oy, ox + rw, oy + rh) + '" stroke="#2a2520" stroke-width="2" fill="none" stroke-linecap="round"/>';
+  svg += '<path d="' + handLine(ox + rw, oy + rh, ox, oy + rh) + '" stroke="#2a2520" stroke-width="2" fill="none" stroke-linecap="round"/>';
+  svg += '<path d="' + handLine(ox, oy + rh, ox, oy) + '" stroke="#2a2520" stroke-width="2" fill="none" stroke-linecap="round"/>';
+
+  // Light fill
+  svg += '<rect x="' + (ox + 1) + '" y="' + (oy + 1) + '" width="' + (rw - 2) + '" height="' + (rh - 2) + '" fill="#faf7f3" opacity="0.5"/>';
+
+  // Sq ft label centered
+  svg += '<text x="' + (ox + rw / 2) + '" y="' + (oy + rh / 2 + 5) + '" text-anchor="middle" font-size="13" font-family="Inter,sans-serif" fill="#2a2520" font-weight="600">' + (wFt * dFt) + ' sq ft</text>';
+
+  // Dimension lines
+  svg += dimLine(ox, oy + rh, ox + rw, oy + rh, wFt + "'", 'bottom');
+  svg += dimLine(ox, oy, ox, oy + rh, dFt + "'", 'left');
+
+  // Door indicator
+  svg += doorSvg();
+
+  svg += '</svg>';
+  return svg;
+}
+
 function renderUnits(data) {
   const units = data.units || [];
   if (!units.length) return '<div style="text-align:center;padding:40px 24px;color:#8a7e72;">No units available right now. Call us at (510) 233-3348.</div>';
   return units.map(u => {
-    const img = u.image_url || 'photos/storage-green-mural-aisle.jpg';
     const desc = u.website_description || '';
     const typeLabel = u.type_label || '';
     const canRent = u.can_rent !== false;
@@ -1652,12 +1763,13 @@ function renderUnits(data) {
     const btnAction = canRent || u.can_reserve
       ? 'event.stopPropagation(); toggleGrabForm(this.closest(\'.unit-card\'))'
       : 'event.stopPropagation(); window.location.href=\'tel:+15102333348\'';
+    const floorPlan = unitFloorPlanSvg(u.size_label, u.type_code);
     return '<div class="unit-card" onclick="toggleUnit(this)" data-unit-id="' + (u.unit_number || u.id) + '" data-sqft="' + (u.square_feet || 0) + '" data-type="' + (u.type_code || '') + '">'
       + '<div class="unit-card-header"><div><h3>Unit ' + escapeHtml(u.unit_number || '') + '</h3><div class="unit-size">' + escapeHtml(u.size_label || '') + ' · ' + (u.square_feet || '?') + ' sq ft</div>'
       + (typeLabel ? '<div class="unit-type" style="font-size:12px;color:#8a7e72;">' + escapeHtml(typeLabel) + '</div>' : '') + '</div>'
       + '<div class="unit-price">$' + (u.price || '?') + '/mo</div></div>'
       + '<div class="unit-card-details">'
-      + '<div class="unit-card-img" style="background-image: url(\'' + escapeHtml(img) + '\');"></div>'
+      + (floorPlan ? '<div class="unit-card-svg">' + floorPlan + '</div>' : '')
       + '<div class="features">' + escapeHtml(desc) + '</div>'
       + '<div class="grab-form" style="display:none;">'
       + '<h4 style="font-size:14px;font-weight:700;margin:12px 0 8px;">Grab This Unit</h4>'
