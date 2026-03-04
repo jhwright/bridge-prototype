@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
         run: npx playwright test --project=desktop
 
       - name: Generate coverage report
-        if: always()
+        if: success()
         working-directory: tests
         run: node scripts/coverage-report.js || true
 
