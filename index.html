@@ -179,7 +179,6 @@
   .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .filter-chip { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1.5px solid #d1ccc5; border-radius: 20px; font-size: 12px; font-weight: 500; color: #2a2520; cursor: pointer; transition: all 0.15s; background: #fff; }
   .filter-chip.active { border-color: #DF562A; background: rgba(223,86,42,0.06); color: #DF562A; }
-  .filter-chip input { display: none; }
   .filter-chip-icon { font-size: 14px; }
   .filter-results { padding: 0 24px; font-size: 12px; color: #8a7e72; margin-bottom: 12px; }
 
@@ -754,11 +753,7 @@
         </select>
       </div>
       <div class="filter-chips" id="filter-chips">
-        <label class="filter-chip" onclick="this.classList.toggle('active'); filterUnits()"><input type="checkbox" value="swing_door"> Swing Door</label>
-        <label class="filter-chip" onclick="this.classList.toggle('active'); filterUnits()"><input type="checkbox" value="outside_rollup"> Outside Roll-Up</label>
-        <label class="filter-chip" onclick="this.classList.toggle('active'); filterUnits()"><input type="checkbox" value="climate_ground"> Climate · Ground</label>
-        <label class="filter-chip" onclick="this.classList.toggle('active'); filterUnits()"><input type="checkbox" value="climate_2nd"> Climate · 2nd Floor</label>
-        <label class="filter-chip" onclick="this.classList.toggle('active'); filterUnits()"><input type="checkbox" value="mailbox"> Mailbox + Packages</label>
+        <!-- Replaced by rebuildFilters() from API data -->
       </div>
     </div>
     <div class="filter-results" id="filter-results">Showing all 4 unit types</div>
@@ -1788,15 +1783,17 @@ function rebuildFilters(filters) {
   if (types && Object.keys(types).length) {
     chipsEl.innerHTML = '';
     Object.entries(types).forEach(([code, label]) => {
-      const el = document.createElement('label');
+      const el = document.createElement('button');
+      el.type = 'button';
       el.className = 'filter-chip';
+      el.dataset.value = code;
+      el.textContent = label;
       el.onclick = function() {
         const wasActive = this.classList.contains('active');
         chipsEl.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
         if (!wasActive) this.classList.add('active');
         filterUnits();
       };
-      el.innerHTML = '<input type="checkbox" value="' + escapeHtml(code) + '"> ' + escapeHtml(label);
       chipsEl.appendChild(el);
     });
   }
@@ -1899,7 +1896,7 @@ function showPortalAdmin() {
 let _filterDebounce = null;
 function filterUnits() {
   const sizeVal = document.getElementById('filter-size').value;
-  const activeChips = [...document.querySelectorAll('.filter-chip.active')].map(c => c.querySelector('input').value);
+  const activeChips = [...document.querySelectorAll('.filter-chip.active')].map(c => c.dataset.value);
 
   // If dynamic units loaded, do API-based filtering
   if (_unitsCache) {
