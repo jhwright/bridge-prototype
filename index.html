@@ -1613,7 +1613,7 @@ async function fetchUnits(params = {}) {
 
 function renderUnits(data) {
   const units = data.units || [];
-  if (!units.length) return '<div style="text-align:center;padding:40px 24px;color:#8a7e72;">No units available right now. Call us at (510) 280-0024.</div>';
+  if (!units.length) return '<div style="text-align:center;padding:40px 24px;color:#8a7e72;">No units available right now. Call us at (510) 233-3348.</div>';
   return units.map(u => {
     const img = u.image_url || 'photos/storage-green-mural-aisle.jpg';
     const desc = u.website_description || '';
@@ -1622,7 +1622,7 @@ function renderUnits(data) {
     const btnLabel = canRent ? 'Grab It!' : (u.can_reserve ? 'Reserve' : 'Call for Availability');
     const btnAction = canRent || u.can_reserve
       ? 'event.stopPropagation(); toggleGrabForm(this.closest(\'.unit-card\'))'
-      : 'event.stopPropagation(); window.location.href=\'tel:+15102800024\'';
+      : 'event.stopPropagation(); window.location.href=\'tel:+15102333348\'';
     return '<div class="unit-card" onclick="toggleUnit(this)" data-unit-id="' + (u.unit_number || u.id) + '" data-sqft="' + (u.square_feet || 0) + '" data-type="' + (u.type_code || '') + '">'
       + '<div class="unit-card-header"><div><h3>Unit ' + escapeHtml(u.unit_number || '') + '</h3><div class="unit-size">' + escapeHtml(u.size_label || '') + ' · ' + (u.square_feet || '?') + ' sq ft</div>'
       + (typeLabel ? '<div class="unit-type" style="font-size:12px;color:#8a7e72;">' + escapeHtml(typeLabel) + '</div>' : '') + '</div>'
@@ -1709,7 +1709,7 @@ async function submitGrab(card) {
       btn.textContent = 'Grab It!';
     }
   } catch (e) {
-    errEl.textContent = 'Could not connect. Please call (510) 280-0024.';
+    errEl.textContent = 'Could not connect. Please call (510) 233-3348.';
     errEl.style.display = 'block';
     btn.disabled = false;
     btn.textContent = 'Grab It!';
