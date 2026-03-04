@@ -1756,7 +1756,12 @@ function rebuildFilters(filters) {
     Object.entries(types).forEach(([code, label]) => {
       const el = document.createElement('label');
       el.className = 'filter-chip';
-      el.onclick = function() { this.classList.toggle('active'); filterUnits(); };
+      el.onclick = function() {
+        const wasActive = this.classList.contains('active');
+        chipsEl.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        if (!wasActive) this.classList.add('active');
+        filterUnits();
+      };
       el.innerHTML = '<input type="checkbox" value="' + escapeHtml(code) + '"> ' + escapeHtml(label);
       chipsEl.appendChild(el);
     });
@@ -1867,8 +1872,12 @@ function filterUnits() {
     clearTimeout(_filterDebounce);
     _filterDebounce = setTimeout(async () => {
       const params = {};
-      if (sizeVal && sizeVal !== 'all') params.size_label = sizeVal;
-      if (activeChips.length) params.type = activeChips[0]; // filter by storage type code
+      if (sizeVal && sizeVal !== 'all') {
+        const [min, max] = sizeVal.split('-').map(Number);
+        params.min_sqft = min;
+        params.max_sqft = max;
+      }
+      if (activeChips.length) params.type = activeChips[0];
       try {
         const data = await fetchUnits(params);
         document.getElementById('units-dynamic').innerHTML = renderUnits(data);
