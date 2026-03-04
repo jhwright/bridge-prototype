@@ -1598,13 +1598,13 @@
 <script src="js/config.js"></script>
 <script>
 /* ===== API Config ===== */
-const API_BASE = (typeof BRIDGE_CONFIG !== 'undefined' ? BRIDGE_CONFIG.API_BASE : 'http://localhost:8000') + '/public';
+const API_BASE = (typeof BRIDGE_CONFIG !== 'undefined' ? BRIDGE_CONFIG.API_BASE : '') + '/api';
 
 /* ===== Unit API ===== */
 let _unitsCache = null;
 
 async function fetchUnits(params = {}) {
-  const url = new URL(API_BASE + '/units/available.json');
+  const url = new URL(API_BASE + '/units/available.json', window.location.origin);
   Object.entries(params).forEach(([k, v]) => { if (v) url.searchParams.set(k, v); });
   const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
   if (!resp.ok) throw new Error('API ' + resp.status);

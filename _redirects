@@ -1,0 +1,2 @@
+# Proxy API requests through Netlify to avoid cross-origin issues
+/api/*  https://bridge-ai-production-55f9.up.railway.app/public/:splat  200
