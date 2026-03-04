@@ -318,7 +318,7 @@
   <!-- Tab Navigation -->
   <div class="screen-tabs">
     <button class="active" onclick="showScreen('home')">Home</button>
-    <button onclick="showScreen('store')">Store</button>
+    <button onclick="showScreen('store')">Storage</button>
     <button onclick="showScreen('make')">Make</button>
     <button onclick="showScreen('gather')">Gather</button>
     <button onclick="showScreen('profile')">Profile</button>
@@ -361,7 +361,7 @@
     <div class="identity-section">
       <div class="identity-card" onclick="showScreen('store')" style="cursor:pointer; background-image: url('photos/storage-green-mural-aisle.jpg');">
         <div class="identity-card-overlay">
-          <div class="identity-badge" style="background: #DF562A;">STORE</div>
+          <div class="identity-badge" style="background: #DF562A;">STORAGE</div>
           <h3>Make Room.</h3>
           <p>Units with murals on the doors. Climate-controlled. Every aisle is different.</p>
         </div>
@@ -527,7 +527,7 @@
 
     <div class="bottom-nav">
       <div class="bottom-nav-item" style="color: #DF562A;"><div class="bottom-nav-icon">&#x2B21;</div>Home</div>
-      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Store</div>
+      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Storage</div>
       <div class="bottom-nav-item" onclick="showScreen('make')"><div class="bottom-nav-icon">&#x25FB;</div>Make</div>
       <div class="bottom-nav-item" onclick="showScreen('gather')"><div class="bottom-nav-icon">&#x25C8;</div>Gather</div>
     </div>
@@ -610,7 +610,7 @@
       <div class="bottom-nav-item" onclick="showScreen('home')"><div class="bottom-nav-icon">&#x2B21;</div>Home</div>
       <div class="bottom-nav-item" style="color: #DF562A;"><div class="bottom-nav-icon">&#x25FB;</div>Make</div>
       <div class="bottom-nav-item" onclick="showScreen('gather')"><div class="bottom-nav-icon">&#x25C8;</div>Gather</div>
-      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Store</div>
+      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Storage</div>
     </div>
   </div>
 
@@ -687,13 +687,13 @@
 
     <div class="bottom-nav">
       <div class="bottom-nav-item" onclick="showScreen('home')"><div class="bottom-nav-icon">&#x2B21;</div>Home</div>
-      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Store</div>
+      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Storage</div>
       <div class="bottom-nav-item" onclick="showScreen('make')"><div class="bottom-nav-icon">&#x25FB;</div>Make</div>
       <div class="bottom-nav-item" style="color: #DF562A;"><div class="bottom-nav-icon">&#x25C8;</div>Gather</div>
     </div>
   </div>
 
-  <!-- ==================== STORE ==================== -->
+  <!-- ==================== STORAGE ==================== -->
   <div class="screen" id="screen-store">
     <div class="screen-header">
       <h1>Rent Storage</h1>
@@ -858,7 +858,7 @@
       <div class="bottom-nav-item" onclick="showScreen('home')"><div class="bottom-nav-icon">&#x2B21;</div>Home</div>
       <div class="bottom-nav-item" onclick="showScreen('make')"><div class="bottom-nav-icon">&#x25FB;</div>Make</div>
       <div class="bottom-nav-item" onclick="showScreen('gather')"><div class="bottom-nav-icon">&#x25C8;</div>Gather</div>
-      <div class="bottom-nav-item" style="color: #DF562A;"><div class="bottom-nav-icon">&#x25A3;</div>Store</div>
+      <div class="bottom-nav-item" style="color: #DF562A;"><div class="bottom-nav-icon">&#x25A3;</div>Storage</div>
     </div>
   </div>
 
@@ -872,7 +872,7 @@
     <!-- Profile Menu (slide-down) -->
     <div id="profile-menu" class="menu-fullscreen" style="display:none;">
       <a href="#" onclick="showScreen('home')">Home<span class="nav-subtitle">Make Room.</span></a>
-      <a href="#" onclick="showScreen('store')">Store<span class="nav-subtitle">Storage units with murals on the doors</span></a>
+      <a href="#" onclick="showScreen('store')">Storage<span class="nav-subtitle">Units with murals on the doors</span></a>
       <a href="#" onclick="showScreen('make')">Make<span class="nav-subtitle">Kitchen, woodshop, studios, coworking</span></a>
       <a href="#" onclick="showScreen('gather')">Gather<span class="nav-subtitle">Book a space, attend events</span></a>
       <div class="menu-footer">
@@ -1104,7 +1104,7 @@
 
     <div class="bottom-nav">
       <div class="bottom-nav-item" onclick="showScreen('home')"><div class="bottom-nav-icon">&#x2B21;</div>Home</div>
-      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Store</div>
+      <div class="bottom-nav-item" onclick="showScreen('store')"><div class="bottom-nav-icon">&#x25A3;</div>Storage</div>
       <div class="bottom-nav-item" onclick="showScreen('make')"><div class="bottom-nav-icon">&#x25FB;</div>Make</div>
       <div class="bottom-nav-item" onclick="showScreen('gather')"><div class="bottom-nav-icon">&#x25C8;</div>Gather</div>
     </div>
@@ -1922,7 +1922,7 @@ const PATHS = {
     title: 'Storage Renter',
     steps: [
       { label: 'Homepage', action: () => showScreen('home') },
-      { label: 'Store Tab', action: () => showScreen('store') },
+      { label: 'Storage Tab', action: () => showScreen('store') },
       { label: 'Filter Units', action: () => { showScreen('store'); document.querySelector('.filter-chip').classList.add('active'); filterUnits(); } },
       { label: 'Open Unit Detail', action: () => { showScreen('store'); document.querySelectorAll('.unit-card')[1].querySelector('.unit-card-details').classList.add('open'); } },
       { label: 'Grab It!', action: () => { showScreen('store'); const c = document.querySelectorAll('.unit-card')[1]; c.querySelector('.unit-card-details').classList.add('open'); toggleGrabForm(c); } },
