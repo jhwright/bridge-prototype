@@ -1,0 +1,26 @@
+[
+  {
+    "resource_id": "space-gallery-001",
+    "name": "The Gallery",
+    "category": "gallery",
+    "capacity": 150,
+    "hourly_rate": 75.00,
+    "description": "A stunning gallery space for exhibitions and events"
+  },
+  {
+    "resource_id": "space-lounge-001",
+    "name": "The Lounge",
+    "category": "lounge",
+    "capacity": 80,
+    "hourly_rate": 50.00,
+    "description": "Comfortable lounge space for intimate gatherings"
+  },
+  {
+    "resource_id": "space-kitchen-001",
+    "name": "Commercial Kitchen",
+    "category": "kitchen",
+    "capacity": 20,
+    "hourly_rate": 45.00,
+    "description": "Fully equipped commercial kitchen"
+  }
+]

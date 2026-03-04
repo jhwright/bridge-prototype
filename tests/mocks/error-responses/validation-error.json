@@ -1,0 +1,8 @@
+{
+  "error": "Validation failed",
+  "details": {
+    "email": "A valid email address is required",
+    "phone": "Phone number must be 10 digits"
+  },
+  "status": 422
+}

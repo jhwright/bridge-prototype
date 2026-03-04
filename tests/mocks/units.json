@@ -1,0 +1,79 @@
+{
+  "units": [
+    {
+      "id": "unit-001",
+      "unit_number": "A101",
+      "size_label": "Nook",
+      "sqft": 25,
+      "type_code": "SOR",
+      "type_label": "Outside Rollup",
+      "monthly_rate": 75.00,
+      "status": "available",
+      "floor": 1,
+      "climate_controlled": false,
+      "features": ["Drive-up access", "Rollup door"]
+    },
+    {
+      "id": "unit-002",
+      "unit_number": "B205",
+      "size_label": "Room",
+      "sqft": 50,
+      "type_code": "SLL",
+      "type_label": "Standard Locker",
+      "monthly_rate": 125.00,
+      "status": "available",
+      "floor": 2,
+      "climate_controlled": true,
+      "features": ["Climate controlled", "Locker-style"]
+    },
+    {
+      "id": "unit-003",
+      "unit_number": "C310",
+      "size_label": "Studio",
+      "sqft": 100,
+      "type_code": "SIH",
+      "type_label": "Interior Hallway",
+      "monthly_rate": 200.00,
+      "status": "available",
+      "floor": 3,
+      "climate_controlled": true,
+      "features": ["Climate controlled", "Swing door", "Interior"]
+    },
+    {
+      "id": "unit-004",
+      "unit_number": "D102",
+      "size_label": "Workshop",
+      "sqft": 200,
+      "type_code": "SCU",
+      "type_label": "Climate Upper",
+      "monthly_rate": 350.00,
+      "status": "available",
+      "floor": 2,
+      "climate_controlled": true,
+      "features": ["Climate controlled", "Large swing door"]
+    },
+    {
+      "id": "unit-005",
+      "unit_number": "E101",
+      "size_label": "Nook",
+      "sqft": 25,
+      "type_code": "SCL",
+      "type_label": "Climate Lower",
+      "monthly_rate": 85.00,
+      "status": "available",
+      "floor": 1,
+      "climate_controlled": true,
+      "features": ["Climate controlled", "Ground floor"]
+    }
+  ],
+  "filters": {
+    "storage_types": [
+      { "code": "SOR", "label": "Outside Rollup", "count": 1 },
+      { "code": "SLL", "label": "Standard Locker", "count": 1 },
+      { "code": "SIH", "label": "Interior Hallway", "count": 1 },
+      { "code": "SCU", "label": "Climate Upper", "count": 1 },
+      { "code": "SCL", "label": "Climate Lower", "count": 1 }
+    ]
+  },
+  "total": 5
+}
