@@ -1598,7 +1598,7 @@
 <script src="js/config.js"></script>
 <script>
 /* ===== API Config ===== */
-const API_BASE = BRIDGE_CONFIG.API_BASE + '/public';
+const API_BASE = (typeof BRIDGE_CONFIG !== 'undefined' ? BRIDGE_CONFIG.API_BASE : 'http://localhost:8000') + '/public';
 
 /* ===== Unit API ===== */
 let _unitsCache = null;
@@ -1616,19 +1616,20 @@ function renderUnits(data) {
   if (!units.length) return '<div style="text-align:center;padding:40px 24px;color:#8a7e72;">No units available right now. Call us at (510) 280-0024.</div>';
   return units.map(u => {
     const img = u.image_url || 'photos/storage-green-mural-aisle.jpg';
-    const tags = (u.tags || []).map(t => t.replace(/_/g, ' ')).join(' · ');
     const desc = u.website_description || '';
+    const typeLabel = u.type_label || '';
     const canRent = u.can_rent !== false;
     const btnLabel = canRent ? 'Grab It!' : (u.can_reserve ? 'Reserve' : 'Call for Availability');
     const btnAction = canRent || u.can_reserve
       ? 'event.stopPropagation(); toggleGrabForm(this.closest(\'.unit-card\'))'
       : 'event.stopPropagation(); window.location.href=\'tel:+15102800024\'';
-    return '<div class="unit-card" onclick="toggleUnit(this)" data-unit-id="' + (u.unit_number || u.id) + '" data-sqft="' + (u.square_feet || 0) + '" data-amenities="' + (u.tags || []).join(',') + '">'
-      + '<div class="unit-card-header"><div><h3>' + escapeHtml(u.size_label || u.unit_number) + '</h3><div class="unit-size">' + (u.square_feet || '?') + ' sq ft</div></div>'
+    return '<div class="unit-card" onclick="toggleUnit(this)" data-unit-id="' + (u.unit_number || u.id) + '" data-sqft="' + (u.square_feet || 0) + '" data-type="' + (u.type_code || '') + '">'
+      + '<div class="unit-card-header"><div><h3>Unit ' + escapeHtml(u.unit_number || '') + '</h3><div class="unit-size">' + escapeHtml(u.size_label || '') + ' · ' + (u.square_feet || '?') + ' sq ft</div>'
+      + (typeLabel ? '<div class="unit-type" style="font-size:12px;color:#8a7e72;">' + escapeHtml(typeLabel) + '</div>' : '') + '</div>'
       + '<div class="unit-price">$' + (u.price || '?') + '/mo</div></div>'
       + '<div class="unit-card-details">'
       + '<div class="unit-card-img" style="background-image: url(\'' + escapeHtml(img) + '\');"></div>'
-      + '<div class="features">' + escapeHtml(desc || tags) + '</div>'
+      + '<div class="features">' + escapeHtml(desc) + '</div>'
       + '<div class="grab-form" style="display:none;">'
       + '<h4 style="font-size:14px;font-weight:700;margin:12px 0 8px;">Grab This Unit</h4>'
       + '<input type="text" class="grab-name" placeholder="Your full name" required style="width:100%;padding:10px;border:1px solid #e0d6cc;border-radius:8px;margin-bottom:8px;font-size:14px;">'
@@ -1743,29 +1744,20 @@ async function loadStoreUnits() {
 }
 
 function rebuildFilters(filters) {
-  // Rebuild size dropdown
-  const sizeSelect = document.getElementById('filter-size');
-  if (sizeSelect && filters.available_sizes && filters.available_sizes.length) {
-    const current = sizeSelect.value;
-    sizeSelect.innerHTML = '<option value="all">All sizes</option>';
-    filters.available_sizes.forEach(s => {
-      const opt = document.createElement('option');
-      opt.value = s;
-      opt.textContent = s;
-      sizeSelect.appendChild(opt);
-    });
-    sizeSelect.value = current;
-  }
-  // Rebuild filter chips
+  // Keep the static sq ft range dropdown — don't replace with raw size_labels
+  // The dropdown already has All / Small / Medium / Large / XL ranges
+
+  // Rebuild filter chips from storage_types (code → label)
   const chipsEl = document.getElementById('filter-chips');
-  if (chipsEl && filters.available_tags && filters.available_tags.length) {
+  if (!chipsEl) return;
+  const types = filters.storage_types;
+  if (types && Object.keys(types).length) {
     chipsEl.innerHTML = '';
-    filters.available_tags.forEach(tag => {
-      const label = tag.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    Object.entries(types).forEach(([code, label]) => {
       const el = document.createElement('label');
       el.className = 'filter-chip';
       el.onclick = function() { this.classList.toggle('active'); filterUnits(); };
-      el.innerHTML = '<input type="checkbox" value="' + escapeHtml(tag) + '"> ' + escapeHtml(label);
+      el.innerHTML = '<input type="checkbox" value="' + escapeHtml(code) + '"> ' + escapeHtml(label);
       chipsEl.appendChild(el);
     });
   }
@@ -1876,7 +1868,7 @@ function filterUnits() {
     _filterDebounce = setTimeout(async () => {
       const params = {};
       if (sizeVal && sizeVal !== 'all') params.size_label = sizeVal;
-      if (activeChips.length) params.tag = activeChips[0]; // API supports one tag at a time
+      if (activeChips.length) params.type = activeChips[0]; // filter by storage type code
       try {
         const data = await fetchUnits(params);
         document.getElementById('units-dynamic').innerHTML = renderUnits(data);
