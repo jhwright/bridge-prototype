@@ -8,8 +8,8 @@ export default defineConfig({
   testMatch: ['e2e/**/*.spec.ts', 'forms/**/*.spec.ts', 'responsive/**/*.spec.ts', 'accessibility/**/*.spec.ts', 'error-handling/**/*.spec.ts', 'visual/**/*.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: process.env.CI ? 1 : 0,
+  workers: process.env.CI ? 2 : undefined,
   reporter: process.env.CI
     ? [['html', { open: 'never' }], ['github']]
     : [['html', { open: 'on-failure' }]],
