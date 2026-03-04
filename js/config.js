@@ -7,5 +7,5 @@ const BRIDGE_CONFIG = {
 
     // Site info
     SITE_NAME: 'Bridge Storage Arts & Events',
-    SITE_URL: 'https://bridge-storage.netlify.app',
+    SITE_URL: 'https://bridgestorage.com',
 };
