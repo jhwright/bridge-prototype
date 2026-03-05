@@ -151,9 +151,14 @@ export class IndexPage {
     return this.unitCard(unitId).locator('.grab-form');
   }
 
-  /** Fill and submit a Grab It form */
+  /** Fill and submit a Grab It form (clicks "Grab It!" button first to show the form) */
   async fillGrabForm(unitId: string, data: { name: string; email: string; phone: string }): Promise<void> {
     const card = this.unitCard(unitId);
+    // Click the "Grab It!" button to show the hidden grab form
+    const grabBtn = card.locator('button', { hasText: /grab it/i });
+    if (await grabBtn.isVisible()) {
+      await grabBtn.click();
+    }
     await card.locator('.grab-name').fill(data.name);
     await card.locator('.grab-email').fill(data.email);
     await card.locator('.grab-phone').fill(data.phone);

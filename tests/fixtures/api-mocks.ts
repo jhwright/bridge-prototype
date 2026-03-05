@@ -12,6 +12,7 @@ function loadMock(name: string): unknown {
 export interface MockOverrides {
   units?: unknown;
   spacesList?: unknown;
+  spaceOptions?: unknown;
   calculatePrice?: unknown;
   smsSend?: unknown;
   smsConfirm?: unknown;
@@ -19,6 +20,7 @@ export interface MockOverrides {
   promoValidate?: unknown;
   eventsCalendar?: unknown;
   unitApply?: unknown;
+  spaceApply?: unknown;
   // Error overrides
   unitsError?: number;
   spacesError?: number;
@@ -76,6 +78,28 @@ export async function setupApiMocks(page: Page, overrides: MockOverrides = {}): 
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify(overrides.spacesList ?? loadMock('spaces-list.json')),
+    });
+  });
+
+  // Space options endpoint (per-space add-ons)
+  await page.route('**/public/spaces/*/options.json', async (route: Route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(overrides.spaceOptions ?? loadMock('space-options.json')),
+    });
+  });
+
+  // Space apply endpoint (application submission)
+  await page.route('**/public/spaces/*/apply/', async (route: Route) => {
+    if (overrides.networkError) {
+      await route.abort('connectionrefused');
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(overrides.spaceApply ?? loadMock('space-apply-success.json')),
     });
   });
 

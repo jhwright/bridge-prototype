@@ -16,8 +16,11 @@ test.describe('Error Handling: Validation Errors', () => {
     const unitId = await firstCard.getAttribute('data-unit-id');
     if (unitId) {
       await firstCard.click();
+      // Click "Grab It!" to show the form
+      const grabBtn = indexPage.unitCard(unitId).locator('button', { hasText: /grab it/i });
+      await grabBtn.click();
       // Submit with empty fields
-      const submitBtn = indexPage.unitCard(unitId).locator('button[type="submit"], .grab-submit');
+      const submitBtn = indexPage.unitCard(unitId).locator('.grab-form button[type="submit"]');
       if (await submitBtn.isVisible()) {
         await submitBtn.click();
         // Should show validation error or prevent submit
@@ -36,11 +39,14 @@ test.describe('Error Handling: Validation Errors', () => {
     const unitId = await firstCard.getAttribute('data-unit-id');
     if (unitId) {
       await firstCard.click();
+      // Click "Grab It!" to show the form
+      const grabBtn = indexPage.unitCard(unitId).locator('button', { hasText: /grab it/i });
+      await grabBtn.click();
       const emailInput = indexPage.unitCard(unitId).locator('.grab-email');
       if (await emailInput.isVisible()) {
         await emailInput.fill('not-an-email');
         // Try to submit
-        const submitBtn = indexPage.unitCard(unitId).locator('button[type="submit"], .grab-submit');
+        const submitBtn = indexPage.unitCard(unitId).locator('.grab-form button[type="submit"]');
         if (await submitBtn.isVisible()) {
           await submitBtn.click();
           await page.waitForTimeout(300);
