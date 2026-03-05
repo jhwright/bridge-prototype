@@ -47,13 +47,18 @@ test.describe('Homepage Forms', () => {
     });
 
     test('grab form shows error on failure', async ({ page, withMocks: setupMocks }) => {
-      // Re-setup mocks with error response for unit apply
-      await setupMocks({
-        unitApply: { success: false, error: 'Unit no longer available' },
-      });
+      await setupMocks();
       await indexPage.goto();
       await indexPage.showScreen('store');
       await expect(indexPage.unitsDynamic).toBeVisible();
+      // Register error route AFTER setupMocks so it takes priority (LIFO)
+      await page.route('**/api/units/*/apply/', async (route) => {
+        await route.fulfill({
+          status: 409,
+          contentType: 'application/json',
+          body: JSON.stringify({ message: 'Unit no longer available' }),
+        });
+      });
 
       const firstCard = indexPage.unitsDynamic.locator('.unit-card').first();
       const unitId = await firstCard.getAttribute('data-unit-id');

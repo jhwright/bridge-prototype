@@ -98,12 +98,19 @@ test.describe('Grab It Forms', () => {
   });
 
   test('error response shows error message', async ({ page, withMocks: setupMocks }) => {
-    await setupMocks({
-      unitApply: { success: false, error: 'Unit no longer available' },
-    });
+    await setupMocks();
     await indexPage.goto();
     await indexPage.showScreen('store');
     await expect(indexPage.unitsDynamic).toBeVisible();
+    // Re-route apply to return 409 (conflict) so resp.ok is false
+    // Registered AFTER setupMocks so this takes priority (LIFO)
+    await page.route('**/api/units/*/apply/', async (route) => {
+      await route.fulfill({
+        status: 409,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Unit no longer available' }),
+      });
+    });
 
     const firstCard = indexPage.unitsDynamic.locator('.unit-card').first();
     const unitId = await firstCard.getAttribute('data-unit-id');
