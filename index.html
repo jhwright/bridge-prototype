@@ -1205,7 +1205,7 @@
   </div>
 
   <!-- Booking: Outdoor (calendar + time grid → redirect to per-space page) -->
-  <div class="modal-overlay" id="modal-booking-outdoor" data-resource-id="22222222-2222-2222-2222-222222222222" data-resource-key="courtyard" data-space-page="spaces/courtyard.html" onclick="if(event.target===this)closeModal()">
+  <div class="modal-overlay" id="modal-booking-outdoor" data-resource-id="2eba6ebb-32e9-41d9-92c0-ba2276514482" data-resource-key="courtyard" data-space-page="spaces/courtyard.html" onclick="if(event.target===this)closeModal()">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
       <div>
@@ -1224,84 +1224,29 @@
     </div>
   </div>
 
-  <!-- Kitchen Intake (fields from backend: OnboardingRequirement + kitchen contract) -->
-  <div class="modal-overlay" id="modal-membership-kitchen" data-resource-id="78ee7c4b-318b-4a93-9bdf-d98664d385ed" data-resource-key="kitchen" data-space-page="spaces/kitchen.html" onclick="if(event.target===this)closeModal()">
+  <!-- Kitchen Booking (calendar + time grid → redirect to per-space page) -->
+  <div class="modal-overlay" id="modal-membership-kitchen" data-resource-id="ea5d8524-3777-4d8e-a8dc-868b5c5ab025" data-resource-key="kitchen" data-space-page="spaces/kitchen.html" onclick="if(event.target===this)closeModal()">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <div id="form-membership-kitchen">
-        <h2>Kitchen Membership Application</h2>
-        <div class="modal-sub">$99/mo membership + $30–60/hr usage · 24/7 · Contra Costa County permitted</div>
-
-        <div style="font-size: 11px; background: #fff; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; color: #8a7e72; line-height: 1.6;">
-          <strong style="color: #2a2520;">What's required:</strong> Health permit, food safety cert, business license, insurance ($1M), $200 deposit. We'll walk you through everything after you apply.
+      <div>
+        <h2>Book the Kitchen</h2>
+        <div class="modal-sub">$30–60/hr · 24/7 access · Contra Costa County permitted</div>
+        <div class="form-group"><label>Type of use</label>
+          <select><option>Food prep / production</option><option>Catering prep</option><option>Baking</option><option>Cooking class</option><option>Food truck prep</option><option>Private chef</option><option>Other</option></select>
         </div>
-
         <div class="booking-cal-grid cal-grid"></div>
+        <div class="cal-legend"><span class="dot avail"></span> Available <span class="dot booked"></span> Booked <span class="dot selected"></span> Selected</div>
         <div class="booking-time-grid"></div>
-
-        <div class="form-row">
-          <div class="form-group"><label>First name *</label><input type="text" placeholder="First"></div>
-          <div class="form-group"><label>Last name *</label><input type="text" placeholder="Last"></div>
-        </div>
-        <div class="form-group"><label>Email *</label><input type="email" placeholder="you@email.com"></div>
-        <div class="form-group"><label>Phone *</label><input type="tel" placeholder="(510) 555-0000"></div>
-        <div class="form-group"><label>Business name</label><input type="text" placeholder="Your food business name"></div>
-        <div class="form-group"><label>What type of food business? *</label>
-          <select>
-            <option value="">Select one...</option>
-            <option>Catering</option>
-            <option>Meal prep / delivery</option>
-            <option>Baked goods</option>
-            <option>Food truck prep</option>
-            <option>Private chef</option>
-            <option>Packaged food (cottage food scaling up)</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="form-group"><label>What do you cook / produce?</label><textarea placeholder="Describe your food products, cuisine type, and typical production volume..."></textarea></div>
-        <div class="form-group"><label>Food Safety Manager Certification (ServSafe or equiv)?</label>
-          <select>
-            <option>Yes, current</option>
-            <option>Expired — will renew</option>
-            <option>No, but I'll get one</option>
-            <option>Not sure what's needed</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Contra Costa County Health Permit?</label>
-          <select>
-            <option>Yes, I have one</option>
-            <option>Applied, waiting on approval</option>
-            <option>No — need to apply</option>
-            <option>I have a permit from another county</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Business license?</label>
-          <select>
-            <option>Yes</option>
-            <option>In process</option>
-            <option>No — need guidance</option>
-          </select>
-        </div>
-        <div class="form-group"><label>General liability insurance ($1M min)?</label>
-          <select>
-            <option>Yes, current policy</option>
-            <option>Need to get it</option>
-            <option>Not sure what's required</option>
-          </select>
-        </div>
-        <div class="form-group"><label>How many people will use the kitchen with you?</label>
+        <div class="form-group"><label>How many people will use the kitchen?</label>
           <select>
             <option>Just me (1 person — $30/hr)</option>
             <option>2 people ($30/hr)</option>
             <option>3+ people ($60/hr)</option>
           </select>
         </div>
-        <div class="form-group"><label>Preferred start date</label><input type="date"></div>
-        <div class="form-group"><label>Anything else we should know?</label><textarea placeholder="Questions, special requirements, preferred hours..."></textarea></div>
-        <button class="btn-primary" style="width: 100%;" onclick="showSuccess('form-membership-kitchen')">Submit Kitchen Application</button>
-        <div style="font-size: 10px; color: #8a7e72; text-align: center; margin-top: 10px;">After approval we'll schedule a kitchen tour and orientation.</div>
+        <div class="booking-price-calc price-calc"></div>
+        <button class="btn-primary btn-continue-booking" disabled>Continue to Booking</button>
       </div>
-      <div class="success-msg" id="success-membership-kitchen"><div class="check">&#10003;</div><h3>Application Received</h3><p>We'll review your info and schedule a kitchen tour within 48 hours. Meanwhile, start gathering your permits — we'll send a checklist to your email.</p></div>
     </div>
   </div>
 
@@ -1341,45 +1286,23 @@
     </div>
   </div>
 
-  <!-- Booking: Lounge (simple inquiry) -->
-  <div class="modal-overlay" id="modal-booking-lounge" onclick="if(event.target===this)closeModal()">
+  <!-- Booking: Lounge (calendar + time grid → redirect to per-space page) -->
+  <div class="modal-overlay" id="modal-booking-lounge" data-resource-id="c8f89097-3719-49b5-9d31-40d61d9757f0" data-resource-key="lounge" data-space-page="spaces/lounge.html" onclick="if(event.target===this)closeModal()">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <div id="form-booking-lounge">
+      <div>
         <h2>Book the Lounge</h2>
         <div class="modal-sub">Couches · Upright piano · Original artwork · Up to 30 guests</div>
-        <div class="form-row">
-          <div class="form-group"><label>First name *</label><input type="text" placeholder="First"></div>
-          <div class="form-group"><label>Last name *</label><input type="text" placeholder="Last"></div>
+        <div class="form-group"><label>Type of event</label>
+          <select><option>Intimate gathering</option><option>Listening party / salon</option><option>Small reception</option><option>Meeting / presentation</option><option>Private party</option><option>Other</option></select>
         </div>
-        <div class="form-group"><label>Email *</label><input type="email" placeholder="you@email.com"></div>
-        <div class="form-group"><label>Phone *</label><input type="tel" placeholder="(510) 555-0000"></div>
-        <div class="form-group"><label>Type of event *</label>
-          <select>
-            <option value="">Select one...</option>
-            <option>Intimate gathering</option>
-            <option>Listening party / salon</option>
-            <option>Small reception</option>
-            <option>Meeting / presentation</option>
-            <option>Private party</option>
-            <option>Other</option>
-          </select>
-        </div>
+        <div class="booking-cal-grid cal-grid"></div>
+        <div class="cal-legend"><span class="dot avail"></span> Available <span class="dot booked"></span> Booked <span class="dot selected"></span> Selected</div>
+        <div class="booking-time-grid"></div>
         <div class="form-group"><label>Expected attendance</label><input type="number" placeholder="e.g. 15" max="30"></div>
-        <div class="form-group"><label>Preferred date</label><input type="date"></div>
-        <div class="form-group"><label>Preferred time</label>
-          <select>
-            <option value="">Select...</option>
-            <option>Morning (10am – 1pm)</option>
-            <option>Afternoon (2pm – 5pm)</option>
-            <option>Evening (6pm – 10pm)</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Anything else?</label><textarea placeholder="Special requests, A/V needs, catering..."></textarea></div>
-        <button class="btn-primary" style="width: 100%;" onclick="showSuccess('form-booking-lounge')">Submit Inquiry</button>
-        <div style="font-size: 10px; color: #8a7e72; text-align: center; margin-top: 10px;">We'll confirm availability and pricing within 24 hours.</div>
+        <div class="booking-price-calc price-calc"></div>
+        <button class="btn-primary btn-continue-booking" disabled>Continue to Booking</button>
       </div>
-      <div class="success-msg" id="success-booking-lounge"><div class="check">&#10003;</div><h3>Inquiry Sent</h3><p>We'll get back to you within 24 hours with availability and pricing details.</p></div>
     </div>
   </div>
 

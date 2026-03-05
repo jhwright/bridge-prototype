@@ -76,7 +76,7 @@ test.describe('Kitchen Page - Calendar Booking', () => {
 
   test('calendar container has resource attributes', async ({ page }) => {
     const calEl = page.locator('#space-calendar');
-    await expect(calEl).toHaveAttribute('data-resource-id', '78ee7c4b-318b-4a93-9bdf-d98664d385ed');
+    await expect(calEl).toHaveAttribute('data-resource-id', 'ea5d8524-3777-4d8e-a8dc-868b5c5ab025');
     await expect(calEl).toHaveAttribute('data-resource-key', 'kitchen');
   });
 

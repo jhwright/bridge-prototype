@@ -28,7 +28,7 @@ test.describe('Modal Time Grid Structure (Phase 4)', () => {
 
   test('courtyard modal has data-resource-id attribute', async ({ page }) => {
     const modal = page.locator('#modal-booking-outdoor');
-    await expect(modal).toHaveAttribute('data-resource-id', '22222222-2222-2222-2222-222222222222');
+    await expect(modal).toHaveAttribute('data-resource-id', '2eba6ebb-32e9-41d9-92c0-ba2276514482');
   });
 
   test('courtyard modal has data-resource-key attribute', async ({ page }) => {
@@ -38,7 +38,7 @@ test.describe('Modal Time Grid Structure (Phase 4)', () => {
 
   test('kitchen modal has data-resource-id attribute', async ({ page }) => {
     const modal = page.locator('#modal-membership-kitchen');
-    await expect(modal).toHaveAttribute('data-resource-id', '78ee7c4b-318b-4a93-9bdf-d98664d385ed');
+    await expect(modal).toHaveAttribute('data-resource-id', 'ea5d8524-3777-4d8e-a8dc-868b5c5ab025');
   });
 
   test('kitchen modal has data-resource-key attribute', async ({ page }) => {
@@ -95,6 +95,36 @@ test.describe('Modal Time Grid Structure (Phase 4)', () => {
   test('kitchen modal has data-space-page attribute', async ({ page }) => {
     const modal = page.locator('#modal-membership-kitchen');
     await expect(modal).toHaveAttribute('data-space-page', 'spaces/kitchen.html');
+  });
+
+  test('lounge modal has data-resource-id attribute', async ({ page }) => {
+    const modal = page.locator('#modal-booking-lounge');
+    await expect(modal).toHaveAttribute('data-resource-id', 'c8f89097-3719-49b5-9d31-40d61d9757f0');
+  });
+
+  test('lounge modal has data-resource-key attribute', async ({ page }) => {
+    const modal = page.locator('#modal-booking-lounge');
+    await expect(modal).toHaveAttribute('data-resource-key', 'lounge');
+  });
+
+  test('lounge modal has data-space-page attribute', async ({ page }) => {
+    const modal = page.locator('#modal-booking-lounge');
+    await expect(modal).toHaveAttribute('data-space-page', 'spaces/lounge.html');
+  });
+
+  test('lounge modal contains booking-cal-grid container', async ({ page }) => {
+    const modal = page.locator('#modal-booking-lounge');
+    await expect(modal.locator('.booking-cal-grid')).toBeAttached();
+  });
+
+  test('lounge modal contains booking-time-grid container', async ({ page }) => {
+    const modal = page.locator('#modal-booking-lounge');
+    await expect(modal.locator('.booking-time-grid')).toBeAttached();
+  });
+
+  test('lounge modal has Continue to Booking button', async ({ page }) => {
+    const modal = page.locator('#modal-booking-lounge');
+    await expect(modal.locator('button:has-text("Continue to Booking")')).toBeAttached();
   });
 });
 
