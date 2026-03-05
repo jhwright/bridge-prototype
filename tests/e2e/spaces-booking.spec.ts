@@ -1,182 +1,165 @@
 import { test, expect } from '../fixtures/test-base';
-import { SpacesPage } from '../pages/spaces-page';
+import { SpaceDetailPage } from '../pages/space-detail-page';
 import { mockFullCalendar, simulateCalendarSelect } from '../helpers/fullcalendar-mock';
 import { mockStripe } from '../helpers/stripe-mock';
 
-// fixme: booking modal UI not yet implemented in spaces.html
-test.describe.fixme('Spaces Booking Flow', () => {
-  let spacesPage: SpacesPage;
+/**
+ * End-to-end spaces booking flow: spaces.html card → per-space page → booking.
+ * Tests the redirect-to-space-page pattern with both self-book and apply paths.
+ */
+
+test.describe('Spaces Booking Flow - Card to Per-Space Page', () => {
+  test('spaces.html card links to per-space page', async ({ page, withMocks }) => {
+    await withMocks();
+    await page.goto('/spaces.html');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Gallery card should link to per-space page
+    const galleryCard = page.locator('.bg-white.rounded-xl.shadow-md', { hasText: 'Gallery' });
+    const link = galleryCard.locator('a', { hasText: /check availability/i });
+    await expect(link).toHaveAttribute('href', /spaces\/gallery\.html/);
+  });
+
+  test('clicking Check Availability navigates to per-space page', async ({ page, withMocks }) => {
+    await mockFullCalendar(page);
+    await withMocks();
+    await page.goto('/spaces.html');
+    await page.waitForLoadState('domcontentloaded');
+
+    const galleryCard = page.locator('.bg-white.rounded-xl.shadow-md', { hasText: 'Gallery' });
+    const link = galleryCard.locator('a', { hasText: /check availability/i });
+    await link.click();
+    await page.waitForLoadState('domcontentloaded');
+
+    // Should be on gallery per-space page
+    expect(page.url()).toContain('spaces/gallery.html');
+    await expect(page.locator('h1')).toContainText('Gallery');
+    await expect(page.locator('#space-calendar')).toBeVisible();
+  });
+});
+
+test.describe('Spaces Booking Flow - Apply Path (Non-Self-Book)', () => {
+  let spacePage: SpaceDetailPage;
 
   test.beforeEach(async ({ page, withMocks }) => {
     await mockFullCalendar(page);
     await mockStripe(page);
+    // Non-self-book customer
+    const noSelfBook = {
+      customer_id: 'cust-test-002',
+      self_book: {
+        gallery: false, courtyard: false, kitchen: false,
+        dance_floor: false, lounge: false,
+      },
+      incomplete_applications: [],
+    };
+    await withMocks({ customerPermissions: noSelfBook });
+    spacePage = new SpaceDetailPage(page);
+    await spacePage.goto('spaces/gallery.html');
+  });
+
+  test('full apply flow: select time → fill form → SMS verify → submit', async ({ page }) => {
+    // 1. Select time on calendar
+    await page.locator('[data-testid="fullcalendar-mock"]').waitFor();
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(14, 0, 0, 0);
+    const end = new Date(tomorrow);
+    end.setHours(17, 0, 0, 0);
+    await simulateCalendarSelect(page, tomorrow.toISOString(), end.toISOString());
+
+    // 2. Invoice modal opens
+    await expect(spacePage.invoiceModal).toBeVisible();
+
+    // 3. Click apply, fill form
+    await spacePage.applyBtn.click();
+    await spacePage.applyName.fill('Test User');
+    await spacePage.applyEmail.fill('test@example.com');
+    await spacePage.applyEventType.selectOption('private_party');
+    await spacePage.applyDescription.fill('Birthday celebration');
+    await spacePage.applyAttendance.fill('50');
+
+    // 4. SMS verify
+    const phoneInput = page.locator('#sms-phone');
+    await phoneInput.fill('+15105551234');
+    const sendBtn = page.locator('#sms-send-btn');
+    await sendBtn.scrollIntoViewIfNeeded();
+    await sendBtn.click();
+    await page.locator('[data-sms-phase="code"]').waitFor({ state: 'visible', timeout: 10000 });
+    await page.evaluate(() => {
+      const digits = document.querySelectorAll('.sms-digit') as NodeListOf<HTMLInputElement>;
+      const code = '123456';
+      digits.forEach((input, i) => {
+        input.value = code[i];
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+    await page.locator('[data-sms-phase="verified"]').waitFor({ state: 'visible', timeout: 10000 });
+
+    // 5. Submit application (non-self-book path)
+    await expect(spacePage.submitApplication).toBeEnabled({ timeout: 5000 });
+    await spacePage.submitApplication.click();
+
+    // 6. Confirmation shown
+    await expect(spacePage.bookingConfirmation).toBeVisible({ timeout: 5000 });
+  });
+});
+
+test.describe('Spaces Booking Flow - Payment Path (Self-Book)', () => {
+  let spacePage: SpaceDetailPage;
+
+  test.beforeEach(async ({ page, withMocks }) => {
+    await mockFullCalendar(page);
+    await mockStripe(page);
+    // Default customer-permissions.json has self_book.gallery: true
     await withMocks();
-    spacesPage = new SpacesPage(page);
-    await spacesPage.goto();
+    spacePage = new SpaceDetailPage(page);
+    await spacePage.goto('spaces/gallery.html');
   });
 
-  test('booking modal opens on Check Availability click', async ({ page }) => {
-    const firstCard = spacesPage.spaceCards.first();
-    const heading = await firstCard.locator('h3, h2').first().textContent();
-    if (heading) {
-      await spacesPage.checkAvailability(heading.trim());
-      await expect(spacesPage.bookingModal).toBeVisible();
-    }
-  });
-
-  test('Step 1: email submission advances to step 2', async ({ page }) => {
-    // Open booking modal
-    const firstCard = spacesPage.spaceCards.first();
-    const heading = await firstCard.locator('h3, h2').first().textContent();
-    if (heading) {
-      await spacesPage.checkAvailability(heading.trim());
-    }
-
-    await spacesPage.submitEmail('test@example.com');
-
-    // Step 2 calendar should be visible
-    await expect(spacesPage.calendarContainer).toBeVisible();
-  });
-
-  test('Step 2: calendar renders and selection updates summary', async ({ page }) => {
-    const firstCard = spacesPage.spaceCards.first();
-    const heading = await firstCard.locator('h3, h2').first().textContent();
-    if (heading) {
-      await spacesPage.checkAvailability(heading.trim());
-    }
-    await spacesPage.submitEmail('test@example.com');
-
-    // Calendar mock should render
-    await expect(page.locator('[data-testid="fullcalendar-mock"]')).toBeVisible();
-
-    // Simulate a time selection (tomorrow 2pm-4pm)
+  test('full payment flow: select time → fill form → SMS verify → Stripe', async ({ page }) => {
+    // 1. Select time
+    await page.locator('[data-testid="fullcalendar-mock"]').waitFor();
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(14, 0, 0, 0);
     const end = new Date(tomorrow);
-    end.setHours(16, 0, 0, 0);
-
+    end.setHours(17, 0, 0, 0);
     await simulateCalendarSelect(page, tomorrow.toISOString(), end.toISOString());
 
-    // Summary should update
-    await expect(spacesPage.dateSummary).not.toBeEmpty();
-  });
+    // 2. Invoice modal opens
+    await expect(spacePage.invoiceModal).toBeVisible();
 
-  test('Step 3: event details form has required fields', async ({ page }) => {
-    // Navigate to step 3 by completing steps 1-2
-    const firstCard = spacesPage.spaceCards.first();
-    const heading = await firstCard.locator('h3, h2').first().textContent();
-    if (heading) {
-      await spacesPage.checkAvailability(heading.trim());
-    }
-    await spacesPage.submitEmail('test@example.com');
+    // 3. Fill form
+    await spacePage.applyBtn.click();
+    await spacePage.applyName.fill('Test User');
+    await spacePage.applyEmail.fill('test@example.com');
+    await spacePage.applyEventType.selectOption('private_party');
 
-    // Simulate calendar selection
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(14, 0, 0, 0);
-    const end = new Date(tomorrow);
-    end.setHours(16, 0, 0, 0);
-    await simulateCalendarSelect(page, tomorrow.toISOString(), end.toISOString());
-    await spacesPage.calendarContinue.click();
-
-    // Step 3 fields should be visible
-    await expect(spacesPage.eventType).toBeVisible();
-    await expect(spacesPage.eventDescription).toBeVisible();
-  });
-
-  test('Step 4: verification requires contact name and SMS', async ({ page }) => {
-    // Navigate to step 4
-    const firstCard = spacesPage.spaceCards.first();
-    const heading = await firstCard.locator('h3, h2').first().textContent();
-    if (heading) {
-      await spacesPage.checkAvailability(heading.trim());
-    }
-    await spacesPage.submitEmail('test@example.com');
-
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(14, 0, 0, 0);
-    const end = new Date(tomorrow);
-    end.setHours(16, 0, 0, 0);
-    await simulateCalendarSelect(page, tomorrow.toISOString(), end.toISOString());
-    await spacesPage.calendarContinue.click();
-
-    // Fill details
-    await spacesPage.fillEventDetails({
-      eventType: 'private',
-      description: 'Test event',
-      attendance: 50,
+    // 4. SMS verify
+    const phoneInput = page.locator('#sms-phone');
+    await phoneInput.fill('+15105551234');
+    const sendBtn = page.locator('#sms-send-btn');
+    await sendBtn.scrollIntoViewIfNeeded();
+    await sendBtn.click();
+    await page.locator('[data-sms-phase="code"]').waitFor({ state: 'visible', timeout: 10000 });
+    await page.evaluate(() => {
+      const digits = document.querySelectorAll('.sms-digit') as NodeListOf<HTMLInputElement>;
+      const code = '123456';
+      digits.forEach((input, i) => {
+        input.value = code[i];
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
     });
-    await spacesPage.detailsContinue.click();
+    await page.locator('[data-sms-phase="verified"]').waitFor({ state: 'visible', timeout: 10000 });
 
-    // Step 4 fields should be visible
-    await expect(spacesPage.contactName).toBeVisible();
-    await expect(spacesPage.phoneInput).toBeVisible();
-  });
-
-  test('Step 5: payment form renders with Stripe', async ({ page }) => {
-    // Navigate to step 5
-    const firstCard = spacesPage.spaceCards.first();
-    const heading = await firstCard.locator('h3, h2').first().textContent();
-    if (heading) {
-      await spacesPage.checkAvailability(heading.trim());
-    }
-    await spacesPage.submitEmail('test@example.com');
-
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(14, 0, 0, 0);
-    const end = new Date(tomorrow);
-    end.setHours(16, 0, 0, 0);
-    await simulateCalendarSelect(page, tomorrow.toISOString(), end.toISOString());
-    await spacesPage.calendarContinue.click();
-
-    await spacesPage.fillEventDetails({
-      eventType: 'private',
-      description: 'Test event',
-      attendance: 50,
-    });
-    await spacesPage.detailsContinue.click();
-
-    await spacesPage.completeVerification('Test User', '5551234567', '123456');
-    await spacesPage.verifyContinue.click();
-
-    // Stripe card element should mount
+    // 5. Payment section appears (self-book path)
+    await expect(spacePage.paymentSection).toBeVisible({ timeout: 5000 });
     await expect(page.locator('[data-testid="stripe-card-mock"]')).toBeVisible();
-    await expect(spacesPage.paymentSubmit).toBeVisible();
-  });
+    await expect(spacePage.payNowBtn).toBeVisible();
 
-  test('Step 6: confirmation displays after payment', async ({ page }) => {
-    // Full booking flow
-    const firstCard = spacesPage.spaceCards.first();
-    const heading = await firstCard.locator('h3, h2').first().textContent();
-    if (heading) {
-      await spacesPage.checkAvailability(heading.trim());
-    }
-    await spacesPage.submitEmail('test@example.com');
-
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(14, 0, 0, 0);
-    const end = new Date(tomorrow);
-    end.setHours(16, 0, 0, 0);
-    await simulateCalendarSelect(page, tomorrow.toISOString(), end.toISOString());
-    await spacesPage.calendarContinue.click();
-
-    await spacesPage.fillEventDetails({
-      eventType: 'private',
-      description: 'Test event',
-      attendance: 50,
-    });
-    await spacesPage.detailsContinue.click();
-
-    await spacesPage.completeVerification('Test User', '5551234567', '123456');
-    await spacesPage.verifyContinue.click();
-
-    await spacesPage.submitPayment();
-
-    // Confirmation should be visible
-    await expect(spacesPage.confirmationMessage).toBeVisible();
+    // 6. Click Pay Now → confirmation
+    await spacePage.payNowBtn.click();
+    await expect(spacePage.bookingConfirmation).toBeVisible({ timeout: 5000 });
   });
 });

@@ -158,6 +158,37 @@ test.describe('Per-Space Detail - Courtyard', () => {
   });
 });
 
+test.describe('URL Param Auto-Open (Phase 6)', () => {
+  test.beforeEach(async ({ page, withMocks }) => {
+    await mockFullCalendar(page);
+    await withMocks();
+  });
+
+  test('URL params auto-open invoice modal', async ({ page }) => {
+    await page.goto('/spaces/gallery.html?date=2026-03-10&start=14:00&end=16:00');
+    await page.waitForTimeout(500);
+    const spacePage = new SpaceDetailPage(page);
+    await expect(spacePage.invoiceModal).toBeVisible();
+  });
+
+  test('URL params set correct time selection in summary', async ({ page }) => {
+    await page.goto('/spaces/gallery.html?date=2026-03-10&start=14:00&end=16:00');
+    await page.waitForTimeout(500);
+    const spacePage = new SpaceDetailPage(page);
+    await expect(spacePage.invoiceSummary).toContainText('2:00');
+    await expect(spacePage.invoiceSummary).toContainText('4:00');
+  });
+
+  test('URL params cleaned after modal opens', async ({ page }) => {
+    await page.goto('/spaces/gallery.html?date=2026-03-10&start=14:00&end=16:00');
+    await page.waitForTimeout(500);
+    const url = page.url();
+    expect(url).not.toContain('date=');
+    expect(url).not.toContain('start=');
+    expect(url).not.toContain('end=');
+  });
+});
+
 test.describe('Spaces List - Card Links', () => {
   test('dance floor card links to per-space page', async ({ page, withMocks }) => {
     await withMocks();

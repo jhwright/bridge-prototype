@@ -21,6 +21,7 @@
 
   const state = {
     resourceId: null,
+    resourceKey: null,
     spaceInfo: null,
     calendar: null,
     selection: null,
@@ -30,6 +31,10 @@
     promoCode: null,
     smsVerify: null,
     smsToken: null,
+    smsPhone: null,
+    canSelfBook: false,
+    stripeInstance: null,
+    stripeCard: null,
     tapStart: null,    // mobile tap-to-select: first tap (start time)
   };
 
@@ -92,6 +97,7 @@
     if (!calEl) return;
 
     state.resourceId = calEl.dataset.resourceId;
+    state.resourceKey = calEl.dataset.resourceKey || null;
     if (!state.resourceId) return;
 
     try {
@@ -104,6 +110,27 @@
 
     initCalendar(calEl);
     initModalEvents();
+
+    // URL param auto-open: ?date=YYYY-MM-DD&start=HH:MM&end=HH:MM
+    handleUrlParams();
+  }
+
+  function handleUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    const date = params.get('date');
+    const startTime = params.get('start');
+    const endTime = params.get('end');
+    if (!date || !startTime || !endTime) return;
+
+    const start = new Date(`${date}T${startTime}:00`);
+    const end = new Date(`${date}T${endTime}:00`);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return;
+
+    state.selection = { start: start, end: end };
+    openInvoiceModal();
+
+    // Clean URL
+    history.replaceState(null, '', window.location.pathname);
   }
 
   function initOptionDefaults() {
@@ -516,18 +543,145 @@
       state.smsVerify = new BridgeSMSVerify({
         container: smsContainer,
         apiBase: API,
-        onVerified: function (token) {
+        onVerified: function (token, phone) {
           state.smsToken = token;
-          const submitBtn = $('#submit-application');
-          if (submitBtn) submitBtn.disabled = false;
+          state.smsPhone = phone;
+          checkPermissionsAndBranch();
         },
       });
     }
 
-    // Submit
+    // Submit application (non-self-book path)
     const submitBtn = $('#submit-application');
     if (submitBtn) {
       submitBtn.addEventListener('click', submitApplication);
+    }
+
+    // Pay Now (self-book path)
+    const payBtn = $('#pay-now-btn');
+    if (payBtn) {
+      payBtn.addEventListener('click', handlePayment);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Auth Branching: Permissions Check + Payment / Apply
+  // ---------------------------------------------------------------------------
+
+  async function checkPermissionsAndBranch() {
+    try {
+      const resp = await fetch(API + '/public/customer/permissions/', {
+        headers: { 'Authorization': 'Bearer ' + state.smsToken },
+      });
+      if (!resp.ok) throw new Error('Permissions check failed');
+      const perms = await resp.json();
+
+      var key = state.resourceKey;
+      state.canSelfBook = key && perms.self_book && perms.self_book[key] === true;
+
+      if (state.canSelfBook) {
+        // Self-book: show Stripe payment
+        hide($('#submit-application'));
+        show($('#payment-section'));
+        initStripePayment();
+      } else {
+        // Non-self-book: enable application submit
+        var submitBtn = $('#submit-application');
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    } catch (err) {
+      console.warn('Permissions check failed, defaulting to apply flow:', err);
+      // Fallback: enable submit button
+      var submitBtn = $('#submit-application');
+      if (submitBtn) submitBtn.disabled = false;
+    }
+  }
+
+  function initStripePayment() {
+    var container = $('#stripe-card-container');
+    if (!container || state.stripeCard) return;
+
+    if (typeof Stripe === 'undefined') {
+      console.error('Stripe.js not loaded');
+      return;
+    }
+
+    var stripeKey = (typeof BRIDGE_CONFIG !== 'undefined' && BRIDGE_CONFIG.STRIPE_PUBLIC_KEY) || 'pk_test_placeholder';
+    state.stripeInstance = Stripe(stripeKey);
+    var elements = state.stripeInstance.elements();
+    state.stripeCard = elements.create('card');
+    state.stripeCard.mount(container);
+  }
+
+  async function handlePayment() {
+    var payBtn = $('#pay-now-btn');
+    var errEl = $('#payment-error');
+    if (payBtn) {
+      payBtn.disabled = true;
+      payBtn.textContent = 'Processing...';
+    }
+    hide(errEl);
+
+    try {
+      // Create booking via book-api to get client secret
+      var bookData = {
+        start: state.selection.start.toISOString(),
+        end: state.selection.end.toISOString(),
+        last_name: ($('#apply-name') || {}).value || '',
+        email: ($('#apply-email') || {}).value || '',
+        phone: state.smsPhone || '',
+        event_type: ($('#apply-event-type') || {}).value || 'other',
+      };
+
+      for (var key in state.optionValues) {
+        bookData[key] = state.optionValues[key];
+      }
+      if (state.promoCode) bookData.promo_code = state.promoCode;
+
+      var bookResp = await fetch(API + '/public/spaces/' + state.resourceId + '/book-api/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + state.smsToken,
+        },
+        body: JSON.stringify(bookData),
+      });
+      var bookResult = await bookResp.json();
+      if (!bookResp.ok) throw new Error(bookResult.error || 'Booking failed');
+
+      // Confirm payment with Stripe if client_secret provided
+      if (bookResult.client_secret && state.stripeCard) {
+        var stripeResult = await state.stripeInstance.confirmCardPayment(bookResult.client_secret, {
+          payment_method: { card: state.stripeCard },
+        });
+        if (stripeResult.error) throw new Error(stripeResult.error.message);
+
+        // Notify backend of payment confirmation
+        await fetch(API + '/public/spaces/' + state.resourceId + '/payment/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + state.smsToken,
+          },
+          body: JSON.stringify({
+            payment_intent_id: stripeResult.paymentIntent.id,
+            booking_id: bookResult.booking_id,
+          }),
+        });
+      }
+
+      // Show confirmation
+      hide($('#invoice-modal'));
+      showConfirmation(bookResult);
+    } catch (err) {
+      if (errEl) {
+        errEl.textContent = err.message;
+        show(errEl);
+      }
+      if (payBtn) {
+        payBtn.disabled = false;
+        payBtn.textContent = 'Pay Now';
+      }
     }
   }
 

@@ -344,6 +344,21 @@
   .login-form p { font-size: 13px; color: #8a7e72; margin-bottom: 20px; }
   .login-actions { display: flex; gap: 8px; margin-top: 16px; }
   .login-actions button { flex: 1; }
+
+  /* Booking time grid */
+  .booking-time-grid { display: grid; grid-template-columns: auto 1fr; gap: 0; margin-bottom: 16px; }
+  .time-grid-label { font-size: 11px; color: #8a7e72; padding: 6px 10px 6px 0; text-align: right; white-space: nowrap; border-bottom: 1px solid #f0ece7; }
+  .time-grid-slot { padding: 6px 10px; border-bottom: 1px solid #f0ece7; font-size: 12px; cursor: pointer; transition: background 0.1s; min-height: 28px; user-select: none; }
+  .time-grid-slot:hover { background: rgba(223,86,42,0.04); }
+  .time-grid-slot.selected { background: rgba(223,86,42,0.10); border-left: 3px solid #DF562A; }
+  .time-grid-slot.booked { background: #f5f2ee; color: #8a7e72; cursor: default; pointer-events: none; }
+  .time-grid-slot.booked .booked-label { font-size: 11px; font-weight: 500; }
+  .time-grid-slot.unavailable { background: #f9f7f4; color: #d1ccc5; cursor: default; pointer-events: none; }
+
+  /* Calendar day event indicator dots */
+  .cal-day .event-dot { width: 5px; height: 5px; border-radius: 50%; background: #94a3b8; display: inline-block; margin-top: 2px; }
+  .cal-day .event-dot.approved { background: #64748b; }
+  .cal-day .event-dot.pending { background: #d1ccc5; }
 </style>
 </head>
 <body>
@@ -1144,16 +1159,15 @@
 
   <!-- Storage Rental (multi-step: select → info → payment → confirmation) -->
   <!-- Booking: Gallery (self-booking with calendar + payment) -->
-  <div class="modal-overlay" id="modal-booking-gallery" onclick="if(event.target===this)closeModal()">
+  <div class="modal-overlay" id="modal-booking-gallery" data-resource-id="700a7529-c203-4914-a228-47131e63338c" data-resource-key="gallery" data-space-page="spaces/gallery.html" onclick="if(event.target===this)closeModal()">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <!-- Step 1: Configuration + Calendar + Time -->
       <div id="gallery-step-1">
         <h2>Book The Gallery</h2>
         <div class="modal-sub">Sprung hardwood · Sound system · Lighting rig · Up to 80 guests</div>
         <div class="form-group"><label>Room Configuration</label>
-          <select id="gallery-config">
-            <option value="open-floor">Open Floor (dance)</option>
+          <select id="gallery-config" onchange="updateGalleryPreview(this.value)">
+            <option value="open-floor">Open Floor (dance/yoga/exercise)</option>
             <option value="chairs">Chairs (ceremony)</option>
             <option value="round-tables">Round Tables (reception)</option>
             <option value="rect-tables">Rectangular Tables (banquet)</option>
@@ -1161,168 +1175,57 @@
             <option value="gallery-walk">Gallery Walk (exhibition)</option>
           </select>
         </div>
+        <div id="gallery-config-preview" class="config-preview">
+          <svg id="config-preview-open-floor" width="120" height="100" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="config-preview-svg">
+            <circle cx="60" cy="14" r="7" stroke="#d64078" stroke-width="2" fill="none"/>
+            <line x1="60" y1="21" x2="60" y2="52" stroke="#d64078" stroke-width="2"/>
+            <line x1="60" y1="30" x2="46" y2="10" stroke="#d64078" stroke-width="2" stroke-linecap="round"/>
+            <line x1="60" y1="30" x2="74" y2="10" stroke="#d64078" stroke-width="2" stroke-linecap="round"/>
+            <line x1="60" y1="52" x2="45" y2="70" stroke="#d64078" stroke-width="2" stroke-linecap="round"/>
+            <line x1="45" y1="70" x2="42" y2="90" stroke="#d64078" stroke-width="2" stroke-linecap="round"/>
+            <line x1="60" y1="52" x2="82" y2="90" stroke="#d64078" stroke-width="2" stroke-linecap="round"/>
+            <line x1="20" y1="92" x2="100" y2="92" stroke="#e5e0db" stroke-width="1"/>
+            <text x="60" y="99" text-anchor="middle" font-size="7" fill="#8a8078" font-family="sans-serif">warrior 1</text>
+          </svg>
+        </div>
         <div class="form-group"><label>Type of event</label>
           <select><option>Dance class / workshop</option><option>Performance / show</option><option>DJ night / party</option><option>Reception / dinner</option><option>Exhibition</option><option>Rehearsal</option><option>Private event</option></select>
         </div>
-        <div style="background:#faf7f3; border:1px solid #e5e0db; border-radius:8px; padding:10px 12px; margin-bottom:12px; font-size:11px; color:#5a5248;">
-          Hosting a catered event? Our <strong>commercial kitchen</strong> is available for your caterer. <a href="#" onclick="showScreen('make'); return false;" style="color:#DF562A;">Learn more</a>
+        <div class="kitchen-tip">
+          Hosting a catered event? Our <strong>commercial kitchen</strong> is available for your caterer. <a href="#" onclick="showScreen('make'); return false;">Learn more</a>
         </div>
-        <div class="cal-month">
-          <button class="cal-nav">&larr;</button>
-          <span>March 2026</span>
-          <button class="cal-nav">&rarr;</button>
-        </div>
-        <div class="cal-grid">
-          <div class="cal-day header">S</div><div class="cal-day header">M</div><div class="cal-day header">T</div><div class="cal-day header">W</div><div class="cal-day header">T</div><div class="cal-day header">F</div><div class="cal-day header">S</div>
-          <div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day past">1</div>
-          <div class="cal-day past">2</div><div class="cal-day past">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day booked">6</div><div class="cal-day">7</div><div class="cal-day selected">8</div>
-          <div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day booked">12</div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day">15</div>
-          <div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day booked">20</div><div class="cal-day">21</div><div class="cal-day">22</div>
-          <div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div>
-          <div class="cal-day">30</div><div class="cal-day">31</div>
-        </div>
+        <div class="booking-cal-grid cal-grid"></div>
         <div class="cal-legend"><span class="dot avail"></span> Available <span class="dot booked"></span> Booked <span class="dot selected"></span> Selected</div>
-        <div class="form-group"><label>Time slot</label></div>
-        <div class="time-slots">
-          <div class="time-slot">9am – 12pm</div>
-          <div class="time-slot selected">2pm – 5pm</div>
-          <div class="time-slot">6pm – 9pm</div>
-          <div class="time-slot">9pm – 12am</div>
-        </div>
+        <div class="booking-time-grid"></div>
         <div class="form-group"><label>Expected attendance</label><input type="number" placeholder="e.g. 40" max="80"></div>
-        <div class="price-calc">
-          <div class="line"><span>Dance Floor · 3 hours</span><span>$225.00</span></div>
-          <div class="line"><span>Sound system (included)</span><span>$0.00</span></div>
-          <div class="line total"><span>Total</span><span>$225.00</span></div>
-        </div>
-        <button class="btn-primary" style="width: 100%;" onclick="showBookingStep('gallery', 2)">Continue to Payment</button>
-      </div>
-      <!-- Step 2: Payment -->
-      <div id="gallery-step-2" style="display:none;">
-        <h2>Payment</h2>
-        <div class="modal-sub">Dance Floor · Mar 8 · 2pm–5pm</div>
-        <div class="payment-summary">
-          <div class="line"><span>Dance Floor · 3 hours</span><span>$225.00</span></div>
-          <div class="line total"><span>Due now</span><span>$225.00</span></div>
-        </div>
-        <div class="ach-encourage">&#x1F4B0; <strong>Save with ACH:</strong> Skip the 2.9% processing fee.</div>
-        <div class="payment-methods">
-          <div class="payment-method selected" onclick="selectPayment(this)"><div class="pm-icon">&#x1F3E6;</div><div class="pm-label">ACH / Bank</div><div class="pm-sub">No fees</div></div>
-          <div class="payment-method" onclick="selectPayment(this)"><div class="pm-icon">&#x1F4B3;</div><div class="pm-label">Card</div><div class="pm-sub">+2.9%</div></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Your name</label><input type="text" placeholder="Full name"></div>
-          <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
-        </div>
-        <div class="form-group"><label>Card number</label><input type="text" placeholder="•••• •••• •••• ••••" style="letter-spacing: 2px;"></div>
-        <div class="form-row">
-          <div class="form-group"><label>Expiry</label><input type="text" placeholder="MM / YY"></div>
-          <div class="form-group"><label>CVC</label><input type="text" placeholder="•••"></div>
-        </div>
-        <button class="btn-primary" style="width: 100%; margin-top:8px;" onclick="showBookingStep('gallery', 3)">Pay $225.00 &amp; Book</button>
-        <div class="payment-secure">&#x1F512; Encrypted · Powered by Stripe</div>
-        <div style="text-align:center; margin-top:8px;"><button style="background:none; border:none; color:#8a7e72; font-size:12px; cursor:pointer;" onclick="showBookingStep('gallery', 1)">&larr; Back</button></div>
-      </div>
-      <!-- Step 3: Confirmation -->
-      <div id="gallery-step-3" style="display:none;">
-        <div class="success-msg show">
-          <div class="check">&#10003;</div>
-          <h3>Booking Confirmed!</h3>
-          <p>The Gallery · Sunday, March 8 · 2pm – 5pm</p>
-          <div style="text-align:left; font-size:12px; color:#8a7e72; line-height:2; margin-top:16px;">
-            &#x2705; Payment confirmed — $225.00<br>
-            &#x1F4E7; Confirmation email sent<br>
-            &#x1F511; Access instructions in email<br>
-            &#x1F3B5; Sound system ready on arrival
-          </div>
-          <button class="btn-primary" style="width: 100%; margin-top:16px;" onclick="closeModal()">Done</button>
-        </div>
+        <div class="booking-price-calc price-calc"></div>
+        <button class="btn-primary btn-continue-booking" disabled>Continue to Booking</button>
       </div>
     </div>
   </div>
 
-  <!-- Booking: Outdoor (self-booking with calendar + payment) -->
-  <div class="modal-overlay" id="modal-booking-outdoor" onclick="if(event.target===this)closeModal()">
+  <!-- Booking: Outdoor (calendar + time grid → redirect to per-space page) -->
+  <div class="modal-overlay" id="modal-booking-outdoor" data-resource-id="22222222-2222-2222-2222-222222222222" data-resource-key="courtyard" data-space-page="spaces/courtyard.html" onclick="if(event.target===this)closeModal()">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
-      <div id="outdoor-step-1">
+      <div>
         <h2>Book the Courtyard</h2>
         <div class="modal-sub">Covered courtyard · Live-edge tables · Mosaic wall · Up to 120 guests</div>
         <div class="form-group"><label>Type of event</label>
           <select><option>Market / vendor event</option><option>Reception / celebration</option><option>Community gathering</option><option>Corporate event</option><option>Other</option></select>
         </div>
-        <div class="cal-month">
-          <button class="cal-nav">&larr;</button>
-          <span>March 2026</span>
-          <button class="cal-nav">&rarr;</button>
-        </div>
-        <div class="cal-grid">
-          <div class="cal-day header">S</div><div class="cal-day header">M</div><div class="cal-day header">T</div><div class="cal-day header">W</div><div class="cal-day header">T</div><div class="cal-day header">F</div><div class="cal-day header">S</div>
-          <div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day past">1</div>
-          <div class="cal-day past">2</div><div class="cal-day past">3</div><div class="cal-day">4</div><div class="cal-day booked">5</div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div>
-          <div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day selected">14</div><div class="cal-day">15</div>
-          <div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day booked">18</div><div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22</div>
-          <div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day booked">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div>
-          <div class="cal-day">30</div><div class="cal-day">31</div>
-        </div>
+        <div class="booking-cal-grid cal-grid"></div>
         <div class="cal-legend"><span class="dot avail"></span> Available <span class="dot booked"></span> Booked <span class="dot selected"></span> Selected</div>
-        <div class="form-group"><label>Time slot</label></div>
-        <div class="time-slots">
-          <div class="time-slot">10am – 2pm</div>
-          <div class="time-slot selected">3pm – 7pm</div>
-          <div class="time-slot">5pm – 9pm</div>
-        </div>
+        <div class="booking-time-grid"></div>
         <div class="form-group"><label>Expected attendance</label><input type="number" placeholder="e.g. 60"></div>
-        <div class="price-calc">
-          <div class="line"><span>Courtyard · 4 hours</span><span>$350.00</span></div>
-          <div class="line"><span>Tables & chairs (included)</span><span>$0.00</span></div>
-          <div class="line total"><span>Total</span><span>$350.00</span></div>
-        </div>
-        <button class="btn-primary" style="width: 100%;" onclick="showBookingStep('outdoor', 2)">Continue to Payment</button>
-      </div>
-      <div id="outdoor-step-2" style="display:none;">
-        <h2>Payment</h2>
-        <div class="modal-sub">Courtyard · Mar 14 · 3pm–7pm</div>
-        <div class="payment-summary">
-          <div class="line"><span>Courtyard · 4 hours</span><span>$350.00</span></div>
-          <div class="line total"><span>Due now</span><span>$350.00</span></div>
-        </div>
-        <div class="payment-methods">
-          <div class="payment-method selected" onclick="selectPayment(this)"><div class="pm-icon">&#x1F3E6;</div><div class="pm-label">ACH / Bank</div><div class="pm-sub">No fees</div></div>
-          <div class="payment-method" onclick="selectPayment(this)"><div class="pm-icon">&#x1F4B3;</div><div class="pm-label">Card</div><div class="pm-sub">+2.9%</div></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label>Your name</label><input type="text" placeholder="Full name"></div>
-          <div class="form-group"><label>Email</label><input type="email" placeholder="you@email.com"></div>
-        </div>
-        <div class="form-group"><label>Card number</label><input type="text" placeholder="•••• •••• •••• ••••" style="letter-spacing: 2px;"></div>
-        <div class="form-row">
-          <div class="form-group"><label>Expiry</label><input type="text" placeholder="MM / YY"></div>
-          <div class="form-group"><label>CVC</label><input type="text" placeholder="•••"></div>
-        </div>
-        <button class="btn-primary" style="width: 100%; margin-top:8px;" onclick="showBookingStep('outdoor', 3)">Pay $350.00 &amp; Book</button>
-        <div class="payment-secure">&#x1F512; Encrypted · Powered by Stripe</div>
-        <div style="text-align:center; margin-top:8px;"><button style="background:none; border:none; color:#8a7e72; font-size:12px; cursor:pointer;" onclick="showBookingStep('outdoor', 1)">&larr; Back</button></div>
-      </div>
-      <div id="outdoor-step-3" style="display:none;">
-        <div class="success-msg show">
-          <div class="check">&#10003;</div>
-          <h3>Booking Confirmed!</h3>
-          <p>Courtyard · Saturday, March 14 · 3pm – 7pm</p>
-          <div style="text-align:left; font-size:12px; color:#8a7e72; line-height:2; margin-top:16px;">
-            &#x2705; Payment confirmed — $350.00<br>
-            &#x1F4E7; Confirmation email sent<br>
-            &#x1F511; Gate code & access instructions in email<br>
-            &#x1FA91; Tables and chairs set up on arrival
-          </div>
-          <button class="btn-primary" style="width: 100%; margin-top:16px;" onclick="closeModal()">Done</button>
-        </div>
+        <div class="booking-price-calc price-calc"></div>
+        <button class="btn-primary btn-continue-booking" disabled>Continue to Booking</button>
       </div>
     </div>
   </div>
 
   <!-- Kitchen Intake (fields from backend: OnboardingRequirement + kitchen contract) -->
-  <div class="modal-overlay" id="modal-membership-kitchen" onclick="if(event.target===this)closeModal()">
+  <div class="modal-overlay" id="modal-membership-kitchen" data-resource-id="78ee7c4b-318b-4a93-9bdf-d98664d385ed" data-resource-key="kitchen" data-space-page="spaces/kitchen.html" onclick="if(event.target===this)closeModal()">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
       <div id="form-membership-kitchen">
@@ -1332,6 +1235,9 @@
         <div style="font-size: 11px; background: #fff; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; color: #8a7e72; line-height: 1.6;">
           <strong style="color: #2a2520;">What's required:</strong> Health permit, food safety cert, business license, insurance ($1M), $200 deposit. We'll walk you through everything after you apply.
         </div>
+
+        <div class="booking-cal-grid cal-grid"></div>
+        <div class="booking-time-grid"></div>
 
         <div class="form-row">
           <div class="form-group"><label>First name *</label><input type="text" placeholder="First"></div>
@@ -1626,6 +1532,7 @@
   </div>
 
 <script src="js/config.js"></script>
+<script src="js/bridge-modal-booking.js"></script>
 <script>
 /* ===== API Config ===== */
 const API_BASE = (typeof BRIDGE_CONFIG !== 'undefined' ? BRIDGE_CONFIG.API_BASE : '') + '/api';
@@ -2059,6 +1966,11 @@ function showBookingStep(modalPrefix, n) {
     const el = document.getElementById(modalPrefix + '-step-' + i);
     if (el) el.style.display = i === n ? '' : 'none';
   });
+}
+
+function updateGalleryPreview(val) {
+  var el = document.getElementById('gallery-config-preview');
+  if (el) el.style.display = val === 'open-floor' ? '' : 'none';
 }
 
 /* ===== Portal Tab Nav ===== */

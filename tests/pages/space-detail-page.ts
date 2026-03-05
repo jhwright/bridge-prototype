@@ -43,6 +43,12 @@ export class SpaceDetailPage extends BasePage {
   readonly applyError: Locator;
   readonly submitApplication: Locator;
 
+  // Payment flow
+  readonly paymentSection: Locator;
+  readonly stripeCardContainer: Locator;
+  readonly payNowBtn: Locator;
+  readonly paymentError: Locator;
+
   // Confirmation
   readonly bookingConfirmation: Locator;
 
@@ -80,6 +86,11 @@ export class SpaceDetailPage extends BasePage {
     this.applySmsVerify = page.locator('#apply-sms-verify');
     this.applyError = page.locator('#apply-error');
     this.submitApplication = page.locator('#submit-application');
+
+    this.paymentSection = page.locator('#payment-section');
+    this.stripeCardContainer = page.locator('#stripe-card-container');
+    this.payNowBtn = page.locator('#pay-now-btn');
+    this.paymentError = page.locator('#payment-error');
 
     this.bookingConfirmation = page.locator('#booking-confirmation');
   }

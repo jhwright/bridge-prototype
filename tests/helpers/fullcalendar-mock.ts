@@ -64,6 +64,10 @@ function getFullCalendarMock(): string {
         this._currentView = view;
       };
 
+      Calendar.prototype.setOption = function(key, val) {
+        this.opts[key] = val;
+      };
+
       Calendar.prototype.refetchEvents = function() {};
       Calendar.prototype.unselect = function() {
         this._unselectCb();
@@ -71,6 +75,20 @@ function getFullCalendarMock(): string {
       Calendar.prototype.destroy = function() {
         this.el.innerHTML = '';
       };
+
+      Calendar.prototype.addEvent = function(evt) {
+        this._events.push(evt);
+      };
+
+      Calendar.prototype.getEventById = function(id) {
+        var found = null;
+        this._events.forEach(function(e) { if (e.id === id) found = e; });
+        return found ? { remove: function() {} } : null;
+      };
+
+      Object.defineProperty(Calendar.prototype, 'view', {
+        get: function() { return { type: this._currentView || 'dayGridMonth' }; }
+      });
 
       // Test helper: simulate a time selection
       Calendar.prototype.simulateSelect = function(start, end) {

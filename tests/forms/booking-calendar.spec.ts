@@ -1,67 +1,115 @@
 import { test, expect } from '../fixtures/test-base';
-import { SpacesPage } from '../pages/spaces-page';
+import { SpaceDetailPage } from '../pages/space-detail-page';
 import { mockFullCalendar, simulateCalendarSelect } from '../helpers/fullcalendar-mock';
-import { mockStripe } from '../helpers/stripe-mock';
 
-// fixme: booking modal UI not yet implemented in spaces.html
-test.describe.fixme('Booking Step 2: Calendar', () => {
-  let spacesPage: SpacesPage;
+/**
+ * Per-space calendar booking tests for gallery and kitchen pages.
+ * Complements space-detail.spec.ts (which covers dance-floor).
+ */
+
+test.describe('Gallery Page - Calendar Booking', () => {
+  let spacePage: SpaceDetailPage;
 
   test.beforeEach(async ({ page, withMocks }) => {
     await mockFullCalendar(page);
-    await mockStripe(page);
     await withMocks();
-    spacesPage = new SpacesPage(page);
-    await spacesPage.goto();
-
-    // Navigate to step 2
-    const firstCard = spacesPage.spaceCards.first();
-    const heading = await firstCard.locator('h3, h2').first().textContent();
-    if (heading) {
-      await spacesPage.checkAvailability(heading.trim());
-    }
-    await spacesPage.submitEmail('test@example.com');
+    spacePage = new SpaceDetailPage(page);
+    await spacePage.goto('spaces/gallery.html');
   });
 
-  test('calendar mock renders', async ({ page }) => {
-    await expect(page.locator('[data-testid="fullcalendar-mock"]')).toBeVisible();
+  test('page renders with space name', async () => {
+    await expect(spacePage.spaceName).toContainText('Gallery');
   });
 
-  test('time selection updates date summary', async ({ page }) => {
+  test('calendar container has resource attributes', async ({ page }) => {
+    const calEl = page.locator('#space-calendar');
+    await expect(calEl).toHaveAttribute('data-resource-id', '700a7529-c203-4914-a228-47131e63338c');
+    await expect(calEl).toHaveAttribute('data-resource-key', 'gallery');
+  });
+
+  test('calendar renders and hint shows', async () => {
+    await expect(spacePage.calendarContainer).toBeVisible();
+    await expect(spacePage.calendarHint).toBeVisible();
+  });
+
+  test('drag-select opens invoice modal', async ({ page }) => {
+    await page.locator('[data-testid="fullcalendar-mock"]').waitFor();
+
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(14, 0, 0, 0);
     const end = new Date(tomorrow);
-    end.setHours(16, 0, 0, 0);
+    end.setHours(17, 0, 0, 0);
 
     await simulateCalendarSelect(page, tomorrow.toISOString(), end.toISOString());
-    await expect(spacesPage.dateSummary).not.toBeEmpty();
+    await expect(spacePage.invoiceModal).toBeVisible();
+    await expect(spacePage.pricingLines).not.toBeEmpty();
   });
 
-  test('time selection updates hours summary', async ({ page }) => {
+  test('invoice modal shows add-ons from API', async ({ page }) => {
+    await page.locator('[data-testid="fullcalendar-mock"]').waitFor();
+
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(14, 0, 0, 0);
+    const end = new Date(tomorrow);
+    end.setHours(17, 0, 0, 0);
+
+    await simulateCalendarSelect(page, tomorrow.toISOString(), end.toISOString());
+    await expect(spacePage.addonOptions).not.toBeEmpty();
+  });
+});
+
+test.describe('Kitchen Page - Calendar Booking', () => {
+  let spacePage: SpaceDetailPage;
+
+  test.beforeEach(async ({ page, withMocks }) => {
+    await mockFullCalendar(page);
+    await withMocks();
+    spacePage = new SpaceDetailPage(page);
+    await spacePage.goto('spaces/kitchen.html');
+  });
+
+  test('page renders with space name', async () => {
+    await expect(spacePage.spaceName).toContainText('Commercial Kitchen');
+  });
+
+  test('calendar container has resource attributes', async ({ page }) => {
+    const calEl = page.locator('#space-calendar');
+    await expect(calEl).toHaveAttribute('data-resource-id', '78ee7c4b-318b-4a93-9bdf-d98664d385ed');
+    await expect(calEl).toHaveAttribute('data-resource-key', 'kitchen');
+  });
+
+  test('drag-select opens invoice modal with pricing', async ({ page }) => {
+    await page.locator('[data-testid="fullcalendar-mock"]').waitFor();
+
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(10, 0, 0, 0);
     const end = new Date(tomorrow);
-    end.setHours(14, 0, 0, 0);
+    end.setHours(13, 0, 0, 0);
 
     await simulateCalendarSelect(page, tomorrow.toISOString(), end.toISOString());
-    await expect(spacesPage.hoursSummary).not.toBeEmpty();
+    await expect(spacePage.invoiceModal).toBeVisible();
+    await expect(spacePage.pricingLines).toContainText('Base rental');
+    await expect(spacePage.pricingLines).toContainText('Deposit');
   });
 
-  test('pricing is fetched after selection', async ({ page }) => {
+  test('apply flow works on kitchen page', async ({ page }) => {
+    await page.locator('[data-testid="fullcalendar-mock"]').waitFor();
+
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(14, 0, 0, 0);
+    tomorrow.setHours(10, 0, 0, 0);
     const end = new Date(tomorrow);
-    end.setHours(16, 0, 0, 0);
+    end.setHours(13, 0, 0, 0);
 
     await simulateCalendarSelect(page, tomorrow.toISOString(), end.toISOString());
-    await expect(spacesPage.priceSummary).not.toBeEmpty();
-  });
+    await spacePage.applyBtn.click();
 
-  test('continue button requires selection', async () => {
-    // Continue button should be disabled or have no effect without selection
-    await expect(spacesPage.calendarContinue).toBeVisible();
+    await expect(spacePage.applyForm).toBeVisible();
+    await expect(spacePage.applyName).toBeVisible();
+    await expect(spacePage.applyEmail).toBeVisible();
+    await expect(spacePage.applyEventType).toBeVisible();
   });
 });
