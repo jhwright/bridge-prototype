@@ -17,7 +17,7 @@ test.describe('Error Handling: Validation Errors', () => {
     if (unitId) {
       await firstCard.click();
       // Click "Grab It!" to show the form
-      const grabBtn = indexPage.unitCard(unitId).locator('button', { hasText: /grab it/i });
+      const grabBtn = indexPage.unitCard(unitId).locator('button[onclick*="toggleGrabForm"]');
       await grabBtn.click();
       // Submit with empty fields
       const submitBtn = indexPage.unitCard(unitId).locator('.grab-form button[type="submit"]');
@@ -40,7 +40,7 @@ test.describe('Error Handling: Validation Errors', () => {
     if (unitId) {
       await firstCard.click();
       // Click "Grab It!" to show the form
-      const grabBtn = indexPage.unitCard(unitId).locator('button', { hasText: /grab it/i });
+      const grabBtn = indexPage.unitCard(unitId).locator('button[onclick*="toggleGrabForm"]');
       await grabBtn.click();
       const emailInput = indexPage.unitCard(unitId).locator('.grab-email');
       if (await emailInput.isVisible()) {

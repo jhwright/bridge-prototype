@@ -128,9 +128,16 @@ export class SpacesPage extends BasePage {
     return this.page.locator('.bg-white.rounded-xl.shadow-md', { hasText: name });
   }
 
-  /** Click "Check Availability" on a space card */
+  /** Click "Check Availability" on a space card (link for BOOKABLE spaces, button for others) */
   async checkAvailability(spaceName: string): Promise<void> {
-    await this.spaceCard(spaceName).getByRole('button', { name: /check availability/i }).click();
+    const card = this.spaceCard(spaceName);
+    const link = card.getByRole('link', { name: /check availability/i });
+    const button = card.getByRole('button', { name: /check availability/i });
+    if (await link.count() > 0) {
+      await link.click();
+    } else {
+      await button.click();
+    }
   }
 
   /** Click "Ask a Question" on a space card */

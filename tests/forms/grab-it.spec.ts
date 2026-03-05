@@ -25,7 +25,7 @@ test.describe('Grab It Forms', () => {
     if (unitId) {
       await firstCard.click();
       // Click "Grab It!" button to show the hidden grab form
-      const grabBtn = indexPage.unitCard(unitId).locator('button', { hasText: /grab it/i });
+      const grabBtn = indexPage.unitCard(unitId).locator('button[onclick*="toggleGrabForm"]');
       await grabBtn.click();
       const nameInput = indexPage.unitCard(unitId).locator('.grab-name');
       await expect(nameInput).toBeVisible();
@@ -37,7 +37,7 @@ test.describe('Grab It Forms', () => {
     const unitId = await firstCard.getAttribute('data-unit-id');
     if (unitId) {
       await firstCard.click();
-      const grabBtn = indexPage.unitCard(unitId).locator('button', { hasText: /grab it/i });
+      const grabBtn = indexPage.unitCard(unitId).locator('button[onclick*="toggleGrabForm"]');
       await grabBtn.click();
       const emailInput = indexPage.unitCard(unitId).locator('.grab-email');
       await expect(emailInput).toBeVisible();
@@ -49,7 +49,7 @@ test.describe('Grab It Forms', () => {
     const unitId = await firstCard.getAttribute('data-unit-id');
     if (unitId) {
       await firstCard.click();
-      const grabBtn = indexPage.unitCard(unitId).locator('button', { hasText: /grab it/i });
+      const grabBtn = indexPage.unitCard(unitId).locator('button[onclick*="toggleGrabForm"]');
       await grabBtn.click();
       const phoneInput = indexPage.unitCard(unitId).locator('.grab-phone');
       await expect(phoneInput).toBeVisible();
