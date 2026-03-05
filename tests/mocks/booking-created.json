@@ -1,0 +1,14 @@
+{
+  "booking_id": "booking-test-001",
+  "stripe_client_secret": "pi_test_secret_abc123",
+  "stripe_publishable_key": "pk_test_mock_key",
+  "is_self_book": true,
+  "invoice_number": "INV-2026-0042",
+  "pricing": {
+    "subtotal": 300.00,
+    "discount_amount": 0,
+    "deposit_percentage": 25,
+    "deposit_amount": 75.00,
+    "balance_due": 225.00
+  }
+}

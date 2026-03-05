@@ -1,0 +1,7 @@
+{
+  "valid": true,
+  "code": "BRIDGE20",
+  "discount_type": "percentage",
+  "discount_value": 20,
+  "message": "20% off applied!"
+}

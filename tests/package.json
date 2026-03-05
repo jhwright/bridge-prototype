@@ -1,0 +1,23 @@
+{
+  "name": "bridgestorage-website-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:report": "npx playwright show-report",
+    "coverage": "node scripts/coverage-report.js"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^25.3.3",
+    "istanbul-lib-coverage": "^3.2.2",
+    "istanbul-lib-report": "^3.0.1",
+    "istanbul-reports": "^3.1.7",
+    "tesseract.js": "^5.1.1",
+    "typescript": "^5.7.0",
+    "v8-to-istanbul": "^9.3.0"
+  }
+}

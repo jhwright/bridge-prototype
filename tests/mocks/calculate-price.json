@@ -1,0 +1,17 @@
+{
+  "hours": 4,
+  "hourly_rate": 75.00,
+  "base_rental": 300.00,
+  "peak_amount": 50.00,
+  "bar_amount": 150.00,
+  "snack_amount": 75.00,
+  "stage_amount": 100.00,
+  "curtain_amount": 50.00,
+  "setup_amount": 75.00,
+  "teardown_amount": 75.00,
+  "subtotal": 875.00,
+  "discount_amount": 0,
+  "deposit_percentage": 25,
+  "deposit_amount": 218.75,
+  "balance_due": 656.25
+}
