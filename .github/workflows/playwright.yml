@@ -28,6 +28,10 @@ jobs:
         working-directory: tests
         run: npx playwright install chromium --with-deps
 
+      - name: Download OCR traineddata
+        working-directory: tests
+        run: curl -sL -o eng.traineddata.gz https://github.com/naptha/tessdata/raw/gh-pages/4.0.0/eng.traineddata.gz
+
       - name: Run Playwright tests
         working-directory: tests
         run: npx playwright test --project=desktop

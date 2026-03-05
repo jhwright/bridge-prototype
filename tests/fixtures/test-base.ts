@@ -18,8 +18,8 @@ export const test = base.extend<TestFixtures>({
     await use(setupMocks);
   },
 
-  collectCoverage: [async ({ page }, use) => {
-    const skip = !!process.env.CI;
+  collectCoverage: [async ({ page, browserName }, use) => {
+    const skip = !!process.env.CI || browserName !== 'chromium';
     if (!skip) {
       await page.coverage.startJSCoverage({ resetOnNavigation: false });
     }

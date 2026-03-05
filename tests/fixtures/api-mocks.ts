@@ -21,6 +21,7 @@ export interface MockOverrides {
   eventsCalendar?: unknown;
   unitApply?: unknown;
   spaceApply?: unknown;
+  customerPermissions?: unknown;
   // Error overrides
   unitsError?: number;
   spacesError?: number;
@@ -122,7 +123,7 @@ export async function setupApiMocks(page: Page, overrides: MockOverrides = {}): 
   });
 
   // SMS send endpoint
-  await page.route('**/public/sms/send/', async (route: Route) => {
+  await page.route('**/public/auth/sms-verify/send/', async (route: Route) => {
     if (overrides.smsError) {
       await route.fulfill({
         status: overrides.smsError,
@@ -139,7 +140,7 @@ export async function setupApiMocks(page: Page, overrides: MockOverrides = {}): 
   });
 
   // SMS confirm endpoint
-  await page.route('**/public/sms/confirm/', async (route: Route) => {
+  await page.route('**/public/auth/sms-verify/confirm/', async (route: Route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -161,6 +162,15 @@ export async function setupApiMocks(page: Page, overrides: MockOverrides = {}): 
       status: 201,
       contentType: 'application/json',
       body: JSON.stringify(overrides.bookingCreated ?? loadMock('booking-created.json')),
+    });
+  });
+
+  // Customer permissions endpoint
+  await page.route('**/public/customer/permissions/', async (route: Route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(overrides.customerPermissions ?? loadMock('customer-permissions.json')),
     });
   });
 

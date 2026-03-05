@@ -1,0 +1,429 @@
+/**
+ * bridge-modal-booking.js
+ * Handles booking modal calendars: month view, time grid, drag-select, redirect.
+ * Data-attribute driven — works for any modal with [data-resource-id].
+ */
+(function () {
+  'use strict';
+
+  const SLOT_MINUTES = 30;
+
+  // State per modal (keyed by modal element id)
+  const modalStates = {};
+
+  function getState(modalEl) {
+    const id = modalEl.id;
+    if (!modalStates[id]) {
+      modalStates[id] = {
+        resourceId: modalEl.dataset.resourceId,
+        resourceKey: modalEl.dataset.resourceKey,
+        spacePage: modalEl.dataset.spacePage,
+        options: null,
+        events: [],
+        currentYear: null,
+        currentMonth: null,
+        selectedDate: null,
+        selectionStart: null,
+        selectionEnd: null,
+        isDragging: false,
+      };
+    }
+    return modalStates[id];
+  }
+
+  // --- API ---
+
+  async function fetchOptions(state) {
+    const url = `${BRIDGE_CONFIG.API_BASE}/public/spaces/${state.resourceId}/options.json`;
+    const res = await fetch(url);
+    return res.json();
+  }
+
+  async function fetchCalendar(state) {
+    const url = `${BRIDGE_CONFIG.API_BASE}/public/spaces/${state.resourceId}/calendar.json`;
+    const res = await fetch(url);
+    return res.json();
+  }
+
+  // --- Month Calendar ---
+
+  function renderMonth(modalEl) {
+    const state = getState(modalEl);
+    const calGrid = modalEl.querySelector('.booking-cal-grid');
+    if (!calGrid) return;
+
+    const year = state.currentYear;
+    const month = state.currentMonth;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const firstDay = new Date(year, month, 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const startDow = firstDay.getDay(); // 0=Sun
+
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    // Build event map: date string -> array of events
+    const eventMap = {};
+    for (const evt of state.events) {
+      const d = evt.start.slice(0, 10);
+      if (!eventMap[d]) eventMap[d] = [];
+      eventMap[d].push(evt);
+    }
+
+    let html = '';
+    // Month nav
+    html += '<div class="cal-month">';
+    html += '<button class="cal-nav cal-prev">&larr;</button>';
+    html += `<span>${monthNames[month]} ${year}</span>`;
+    html += '<button class="cal-nav cal-next">&rarr;</button>';
+    html += '</div>';
+
+    // Day headers
+    const dayHeaders = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    for (const h of dayHeaders) {
+      html += `<div class="cal-day header">${h}</div>`;
+    }
+
+    // Empty cells before first day
+    for (let i = 0; i < startDow; i++) {
+      html += '<div class="cal-day"></div>';
+    }
+
+    // Day cells
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateObj = new Date(year, month, d);
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const isPast = dateObj < today;
+      const isSelected = state.selectedDate === dateStr;
+      const dayEvents = eventMap[dateStr] || [];
+
+      let classes = 'cal-day';
+      if (isPast) classes += ' past';
+      if (isSelected) classes += ' selected';
+
+      html += `<div class="${classes}" data-date="${dateStr}">`;
+      html += d;
+      if (dayEvents.length > 0) {
+        const status = dayEvents[0].extendedProps?.status || 'approved';
+        html += `<span class="event-dot ${status}"></span>`;
+      }
+      html += '</div>';
+    }
+
+    calGrid.innerHTML = html;
+
+    // Bind nav
+    const prevBtn = calGrid.querySelector('.cal-prev');
+    const nextBtn = calGrid.querySelector('.cal-next');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        state.currentMonth--;
+        if (state.currentMonth < 0) {
+          state.currentMonth = 11;
+          state.currentYear--;
+        }
+        renderMonth(modalEl);
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        state.currentMonth++;
+        if (state.currentMonth > 11) {
+          state.currentMonth = 0;
+          state.currentYear++;
+        }
+        renderMonth(modalEl);
+      });
+    }
+
+    // Bind day clicks
+    calGrid.querySelectorAll('.cal-day:not(.header):not(.past)').forEach(function (dayEl) {
+      if (!dayEl.dataset.date) return;
+      dayEl.addEventListener('click', function () {
+        state.selectedDate = dayEl.dataset.date;
+        // Update selected class
+        calGrid.querySelectorAll('.cal-day.selected').forEach(function (el) {
+          el.classList.remove('selected');
+        });
+        dayEl.classList.add('selected');
+        renderTimeGrid(modalEl);
+      });
+    });
+  }
+
+  // --- Time Grid ---
+
+  function renderTimeGrid(modalEl) {
+    const state = getState(modalEl);
+    const container = modalEl.querySelector('.booking-time-grid');
+    if (!container || !state.options || !state.selectedDate) return;
+
+    const openParts = state.options.opening_time.split(':');
+    const closeParts = state.options.closing_time.split(':');
+    const openMin = parseInt(openParts[0]) * 60 + parseInt(openParts[1]);
+    const closeMin = parseInt(closeParts[0]) * 60 + parseInt(closeParts[1]);
+
+    // Build booked ranges for this date
+    const bookedSlots = new Set();
+    const slotLabels = {};
+    for (const evt of state.events) {
+      const evtDate = evt.start.slice(0, 10);
+      if (evtDate !== state.selectedDate) continue;
+      const evtStart = parseTimeMinutes(evt.start);
+      const evtEnd = parseTimeMinutes(evt.end);
+      for (let m = evtStart; m < evtEnd; m += SLOT_MINUTES) {
+        bookedSlots.add(m);
+        slotLabels[m] = evt.title;
+      }
+    }
+
+    let html = '';
+    const totalSlots = (closeMin - openMin) / SLOT_MINUTES;
+
+    for (let i = 0; i < totalSlots; i++) {
+      const slotMin = openMin + i * SLOT_MINUTES;
+      const isBooked = bookedSlots.has(slotMin);
+      const label = formatTime(slotMin);
+
+      html += `<div class="time-grid-label">${label}</div>`;
+
+      let slotClass = 'time-grid-slot';
+      if (isBooked) slotClass += ' booked';
+
+      html += `<div class="${slotClass}" data-slot="${slotMin}">`;
+      if (isBooked) {
+        html += `<span class="booked-label">${slotLabels[slotMin] || 'Booked'}</span>`;
+      }
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+
+    // Reset selection
+    state.selectionStart = null;
+    state.selectionEnd = null;
+    state.isDragging = false;
+    updateContinueButton(modalEl);
+
+    // Bind drag-select events
+    bindDragSelect(modalEl);
+  }
+
+  function bindDragSelect(modalEl) {
+    const state = getState(modalEl);
+    const container = modalEl.querySelector('.booking-time-grid');
+    if (!container) return;
+
+    const slots = container.querySelectorAll('.time-grid-slot:not(.booked)');
+
+    slots.forEach(function (slot) {
+      slot.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        state.isDragging = true;
+        const slotMin = parseInt(slot.dataset.slot);
+        state.selectionStart = slotMin;
+        state.selectionEnd = slotMin;
+        updateSelectionHighlight(modalEl);
+      });
+
+      slot.addEventListener('mouseover', function () {
+        if (!state.isDragging) return;
+        const slotMin = parseInt(slot.dataset.slot);
+        state.selectionEnd = clampSelection(state, slotMin);
+        updateSelectionHighlight(modalEl);
+      });
+
+      slot.addEventListener('mouseup', function () {
+        if (!state.isDragging) return;
+        state.isDragging = false;
+        updateContinueButton(modalEl);
+      });
+
+      // Touch support: two-tap
+      slot.addEventListener('touchend', function (e) {
+        e.preventDefault();
+        const slotMin = parseInt(slot.dataset.slot);
+        if (state.selectionStart === null) {
+          state.selectionStart = slotMin;
+          state.selectionEnd = slotMin;
+        } else {
+          state.selectionEnd = clampSelection(state, slotMin);
+        }
+        updateSelectionHighlight(modalEl);
+        updateContinueButton(modalEl);
+      });
+    });
+
+    // Global mouseup in case user releases outside a slot
+    document.addEventListener('mouseup', function () {
+      if (state.isDragging) {
+        state.isDragging = false;
+        updateContinueButton(modalEl);
+      }
+    });
+  }
+
+  function clampSelection(state, targetMin) {
+    const startMin = state.selectionStart;
+    if (startMin === null) return targetMin;
+
+    const lo = Math.min(startMin, targetMin);
+    const hi = Math.max(startMin, targetMin);
+
+    // Find booked slots in range for current date
+    const bookedInRange = [];
+    for (const evt of state.events) {
+      if (evt.start.slice(0, 10) !== state.selectedDate) continue;
+      const evtStart = parseTimeMinutes(evt.start);
+      const evtEnd = parseTimeMinutes(evt.end);
+      for (let m = evtStart; m < evtEnd; m += SLOT_MINUTES) {
+        if (m >= lo && m <= hi) bookedInRange.push(m);
+      }
+    }
+
+    if (bookedInRange.length === 0) return targetMin;
+
+    // Clamp: if dragging forward, stop before first booked slot
+    if (targetMin >= startMin) {
+      const firstBooked = Math.min(...bookedInRange);
+      return Math.min(targetMin, firstBooked - SLOT_MINUTES);
+    } else {
+      // Dragging backward, stop after last booked slot
+      const lastBooked = Math.max(...bookedInRange);
+      return Math.max(targetMin, lastBooked + SLOT_MINUTES);
+    }
+  }
+
+  function updateSelectionHighlight(modalEl) {
+    const state = getState(modalEl);
+    const container = modalEl.querySelector('.booking-time-grid');
+    if (!container) return;
+
+    const lo = Math.min(state.selectionStart || 0, state.selectionEnd || 0);
+    const hi = Math.max(state.selectionStart || 0, state.selectionEnd || 0);
+
+    container.querySelectorAll('.time-grid-slot').forEach(function (slot) {
+      const slotMin = parseInt(slot.dataset.slot);
+      if (!isNaN(slotMin) && slotMin >= lo && slotMin <= hi && !slot.classList.contains('booked')) {
+        slot.classList.add('selected');
+      } else {
+        slot.classList.remove('selected');
+      }
+    });
+  }
+
+  function updateContinueButton(modalEl) {
+    const state = getState(modalEl);
+    const btn = modalEl.querySelector('.btn-continue-booking');
+    if (!btn) return;
+    const hasSelection = state.selectionStart !== null && state.selectionEnd !== null;
+    btn.disabled = !hasSelection;
+  }
+
+  // --- Helpers ---
+
+  function parseTimeMinutes(isoStr) {
+    const timePart = isoStr.slice(11, 16);
+    const parts = timePart.split(':');
+    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  }
+
+  function formatTime(totalMinutes) {
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    const period = h >= 12 ? 'PM' : 'AM';
+    const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    return `${h12}:${String(m).padStart(2, '0')} ${period}`;
+  }
+
+  // --- Continue Button Handler ---
+
+  function handleContinue(modalEl) {
+    const state = getState(modalEl);
+    if (!state.selectedDate || state.selectionStart === null || state.selectionEnd === null) return;
+
+    const lo = Math.min(state.selectionStart, state.selectionEnd);
+    const hi = Math.max(state.selectionStart, state.selectionEnd) + SLOT_MINUTES;
+
+    const startTime = minutesToTimeStr(lo);
+    const endTime = minutesToTimeStr(hi);
+
+    const url = `${state.spacePage}?date=${state.selectedDate}&start=${startTime}&end=${endTime}`;
+    window.location.href = url;
+  }
+
+  function minutesToTimeStr(totalMinutes) {
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
+
+  // --- Init ---
+
+  async function initModal(modalEl) {
+    const state = getState(modalEl);
+    if (state.options) return; // Already initialized
+
+    try {
+      const [options, events] = await Promise.all([
+        fetchOptions(state),
+        fetchCalendar(state),
+      ]);
+      state.options = options;
+      state.events = events;
+
+      // Set current month to today
+      const now = new Date();
+      state.currentYear = now.getFullYear();
+      state.currentMonth = now.getMonth();
+
+      renderMonth(modalEl);
+
+      // Bind continue button
+      const btn = modalEl.querySelector('.btn-continue-booking');
+      if (btn) {
+        btn.addEventListener('click', function () {
+          handleContinue(modalEl);
+        });
+      }
+    } catch (err) {
+      console.error('[bridge-modal-booking] Failed to initialize:', err);
+    }
+  }
+
+  // --- Auto-Init on Modal Open ---
+
+  // Watch for .open class being added to booking modals
+  function observeModals() {
+    const modals = document.querySelectorAll('[data-resource-id]');
+    if (modals.length === 0) return;
+
+    const observer = new MutationObserver(function (mutations) {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const el = mutation.target;
+          if (el.classList.contains('open') && el.dataset.resourceId) {
+            initModal(el);
+          }
+        }
+      }
+    });
+
+    modals.forEach(function (modal) {
+      observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+    });
+  }
+
+  // Start observing when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', observeModals);
+  } else {
+    observeModals();
+  }
+})();

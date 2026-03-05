@@ -1,16 +1,47 @@
 [
   {
     "id": "evt-001",
-    "title": "Gallery Opening",
+    "title": "Dance Class: Friday Salsa",
     "start": "2026-03-15T18:00:00",
     "end": "2026-03-15T21:00:00",
-    "color": "#DF562A"
+    "backgroundColor": "#94a3b8",
+    "borderColor": "#64748b",
+    "textColor": "#1e293b",
+    "editable": false,
+    "overlap": false,
+    "extendedProps": {
+      "status": "approved",
+      "event_type": "dance_class"
+    }
   },
   {
     "id": "evt-002",
-    "title": "Private Event",
+    "title": "Private Party",
     "start": "2026-03-20T14:00:00",
     "end": "2026-03-20T18:00:00",
-    "color": "#6b7280"
+    "backgroundColor": "#94a3b8",
+    "borderColor": "#64748b",
+    "textColor": "#1e293b",
+    "editable": false,
+    "overlap": false,
+    "extendedProps": {
+      "status": "approved",
+      "event_type": "private_party"
+    }
+  },
+  {
+    "id": "evt-003",
+    "title": "Hold",
+    "start": "2026-03-22T10:00:00",
+    "end": "2026-03-22T13:00:00",
+    "backgroundColor": "#94a3b8",
+    "borderColor": "#64748b",
+    "textColor": "#1e293b",
+    "editable": false,
+    "overlap": false,
+    "extendedProps": {
+      "status": "pending",
+      "event_type": "meeting"
+    }
   }
 ]

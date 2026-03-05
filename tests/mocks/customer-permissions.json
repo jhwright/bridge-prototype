@@ -1,0 +1,11 @@
+{
+  "customer_id": "cust-test-001",
+  "self_book": {
+    "gallery": true,
+    "courtyard": true,
+    "kitchen": false,
+    "dance_floor": false,
+    "lounge": false
+  },
+  "incomplete_applications": []
+}
