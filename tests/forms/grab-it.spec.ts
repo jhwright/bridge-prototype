@@ -73,7 +73,7 @@ test.describe('Grab It Forms', () => {
   test('submit calls POST to unit apply API', async ({ page }) => {
     let apiCalled = false;
     let requestBody: any;
-    await page.route('**/api/units/*/apply/', async (route) => {
+    await page.route('**/public/units/*/apply/', async (route) => {
       apiCalled = true;
       requestBody = route.request().postDataJSON();
       await route.fulfill({
@@ -104,7 +104,7 @@ test.describe('Grab It Forms', () => {
     await expect(indexPage.unitsDynamic).toBeVisible();
     // Re-route apply to return 409 (conflict) so resp.ok is false
     // Registered AFTER setupMocks so this takes priority (LIFO)
-    await page.route('**/api/units/*/apply/', async (route) => {
+    await page.route('**/public/units/*/apply/', async (route) => {
       await route.fulfill({
         status: 409,
         contentType: 'application/json',

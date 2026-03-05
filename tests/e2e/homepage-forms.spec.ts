@@ -52,7 +52,7 @@ test.describe('Homepage Forms', () => {
       await indexPage.showScreen('store');
       await expect(indexPage.unitsDynamic).toBeVisible();
       // Register error route AFTER setupMocks so it takes priority (LIFO)
-      await page.route('**/api/units/*/apply/', async (route) => {
+      await page.route('**/public/units/*/apply/', async (route) => {
         await route.fulfill({
           status: 409,
           contentType: 'application/json',

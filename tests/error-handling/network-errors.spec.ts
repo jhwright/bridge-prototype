@@ -41,7 +41,7 @@ test.describe('Error Handling: Network Errors', () => {
   test('fetch abort does not crash page', async ({ page, withMocks }) => {
     await withMocks();
     // Intercept and abort a request
-    await page.route('**/api/units/available*', (route) => route.abort());
+    await page.route('**/public/units/available*', (route) => route.abort());
     const indexPage = new IndexPage(page);
     await indexPage.goto();
     await indexPage.showScreen('store');

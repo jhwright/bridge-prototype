@@ -64,7 +64,7 @@ test.describe('Error Handling: Validation Errors', () => {
 
   test('API 422 response shows field errors', async ({ page }) => {
     // Route apply to return 422 with field errors
-    await page.route('**/api/units/*/apply/', async (route) => {
+    await page.route('**/public/units/*/apply/', async (route) => {
       await route.fulfill({
         status: 422,
         contentType: 'application/json',
