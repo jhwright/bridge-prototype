@@ -6,15 +6,43 @@
 
 ---
 
+## TDD Workflow
+
+**All feature changes require test-driven development:**
+
+1. Write Playwright test specs first (define expected behavior)
+2. Run tests, confirm they fail (red)
+3. Implement the feature
+4. Run tests, confirm they pass (green)
+5. Use `/cpm` to commit, push, and merge
+
+## OCR in UI Testing
+
+**All UI tests MUST include OCR verification.** Use Tesseract OCR (via `tesseract.js` or system `tesseract`) to validate that rendered text content matches expectations. This catches:
+
+- Text truncation or overflow issues
+- Font rendering failures
+- Dynamic content not loading
+- Z-index / overlay problems hiding text
+
+Example Playwright OCR pattern:
+```javascript
+// Screenshot the element, then OCR to verify visible text
+const screenshot = await page.locator('.hero-section').screenshot();
+// Use tesseract to extract text from screenshot
+// Assert extracted text contains expected strings
+```
+
 ## Testing Approach
 
 This is a static frontend site with API integration. Testing focuses on:
 
 1. **Visual verification** — Does the site render correctly?
-2. **Accessibility** — Does it meet WCAG AA standards?
-3. **Responsive** — Does it work on mobile, tablet, and desktop?
-4. **API integration** — Do fetch() calls to bridge-ai work correctly?
-5. **Error handling** — Does the site degrade gracefully when the API is unavailable?
+2. **OCR verification** — Does rendered text match expected content?
+3. **Accessibility** — Does it meet WCAG AA standards?
+4. **Responsive** — Does it work on mobile, tablet, and desktop?
+5. **API integration** — Do fetch() calls to bridge-ai work correctly?
+6. **Error handling** — Does the site degrade gracefully when the API is unavailable?
 
 ## Manual Verification Checklist
 
