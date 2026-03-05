@@ -1,0 +1,51 @@
+{
+  "name": "Sprung Dance Floor",
+  "capacity": 80,
+  "hourly_rate": 75.00,
+  "opening_time": "08:00",
+  "closing_time": "23:00",
+  "options": [
+    {
+      "key": "bar_service",
+      "label": "Bar Service",
+      "type": "select",
+      "choices": [
+        {"value": "none", "label": "No bar"},
+        {"value": "beer_wine", "label": "Beer & Wine"},
+        {"value": "full_bar", "label": "Full Bar"}
+      ],
+      "price_note": "$150-$300",
+      "default": "none"
+    },
+    {
+      "key": "include_snacks",
+      "label": "Snack Platters",
+      "type": "toggle",
+      "price_note": "$8/person",
+      "default": false,
+      "depends_on": null
+    },
+    {
+      "key": "snack_count",
+      "label": "Number of guests for snacks",
+      "type": "number",
+      "price_note": "",
+      "default": 25,
+      "depends_on": "include_snacks"
+    },
+    {
+      "key": "include_stage",
+      "label": "Stage Setup",
+      "type": "toggle",
+      "price_note": "$75",
+      "default": false
+    },
+    {
+      "key": "privacy_curtains",
+      "label": "Privacy Curtains",
+      "type": "toggle",
+      "price_note": "$25",
+      "default": false
+    }
+  ]
+}
