@@ -30,6 +30,7 @@
     promoCode: null,
     smsVerify: null,
     smsToken: null,
+    tapStart: null,    // mobile tap-to-select: first tap (start time)
   };
 
   // ---------------------------------------------------------------------------
@@ -42,6 +43,10 @@
 
   function $$(sel, ctx) {
     return Array.from((ctx || document).querySelectorAll(sel));
+  }
+
+  function isMobile() {
+    return window.innerWidth < 768;
   }
 
   function show(el) { if (el) el.classList.remove('hidden'); }
@@ -136,17 +141,31 @@
       },
       dateClick: function (info) {
         if (info.date < new Date(new Date().toDateString())) return;
-        state.calendar.changeView('timeGridWeek', info.date);
-        state.calendar.setOption('headerToolbar', {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'backToMonth',
-        });
+        var currentView = state.calendar.view.type;
+
+        // In month view: zoom into day/week
+        if (currentView === 'dayGridMonth') {
+          var targetView = isMobile() ? 'timeGridDay' : 'timeGridWeek';
+          state.calendar.changeView(targetView, info.date);
+          state.calendar.setOption('headerToolbar', {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'backToMonth',
+          });
+          return;
+        }
+
+        // In timeGrid views on mobile: tap-to-select flow
+        if (isMobile() && currentView.startsWith('timeGrid')) {
+          handleMobileTap(info.date);
+        }
       },
       customButtons: {
         backToMonth: {
           text: 'Month',
           click: function () {
+            state.tapStart = null;
+            clearTapHighlight();
             state.calendar.changeView('dayGridMonth');
             state.calendar.setOption('headerToolbar', {
               left: 'prev,next today',
@@ -154,6 +173,7 @@
               right: 'dayGridMonth',
             });
             state.calendar.setOption('selectable', false);
+            updateHint('Tap a date to see available times');
           },
         },
       },
@@ -172,29 +192,98 @@
         openInvoiceModal();
       },
       viewDidMount: function (info) {
-        if (info.view.type === 'timeGridWeek' || info.view.type === 'timeGridDay') {
-          state.calendar.setOption('selectable', true);
-        } else {
+        var isTimeGrid = info.view.type === 'timeGridWeek' || info.view.type === 'timeGridDay';
+        // On mobile, disable drag-select and use tap-to-select instead
+        if (isMobile()) {
           state.calendar.setOption('selectable', false);
+          if (isTimeGrid) {
+            updateHint('Tap a time slot to select your start time');
+          }
+        } else {
+          state.calendar.setOption('selectable', isTimeGrid);
+          if (isTimeGrid) {
+            updateHint('Click and drag to select your time slot');
+          }
         }
+        // Reset tap state on view change
+        state.tapStart = null;
+        clearTapHighlight();
       },
       windowResize: function () {
-        const currentView = state.calendar.view.type;
-        if (currentView.startsWith('timeGrid') && window.innerWidth < 768) {
-          state.calendar.changeView('timeGridDay');
+        var currentView = state.calendar.view.type;
+        if (currentView.startsWith('timeGrid')) {
+          if (isMobile()) {
+            state.calendar.changeView('timeGridDay');
+            state.calendar.setOption('selectable', false);
+          } else {
+            state.calendar.setOption('selectable', true);
+          }
         }
       },
     });
-
-    if (window.innerWidth < 768) {
-      // On mobile, start with month but use day when they click in
-    }
 
     state.calendar.render();
 
     // Show instruction text
     const hint = $('#calendar-hint');
     if (hint) show(hint);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Mobile tap-to-select: tap start time, tap end time
+  // ---------------------------------------------------------------------------
+
+  function handleMobileTap(date) {
+    if (!state.tapStart) {
+      // First tap: set start time
+      state.tapStart = date;
+      highlightTapStart(date);
+      updateHint('Now tap an end time (at least 1 hour later)');
+    } else {
+      // Second tap: set end time
+      var start = state.tapStart;
+      var end = date;
+
+      // Ensure end is after start; if user tapped earlier, swap
+      if (end <= start) {
+        var tmp = start;
+        start = end;
+        end = tmp;
+      }
+
+      // Enforce minimum 1 hour
+      if ((end - start) < 3600000) {
+        end = new Date(start.getTime() + 3600000);
+      }
+
+      clearTapHighlight();
+      state.tapStart = null;
+      updateHint('Tap a time slot to select your start time');
+
+      state.selection = { start: start, end: end };
+      openInvoiceModal();
+    }
+  }
+
+  function highlightTapStart(date) {
+    // Add a temporary background event to show the selected start
+    state.calendar.addEvent({
+      id: '_tap_start',
+      start: date,
+      end: new Date(date.getTime() + 3600000),
+      display: 'background',
+      color: '#DF562A',
+    });
+  }
+
+  function clearTapHighlight() {
+    var ev = state.calendar.getEventById('_tap_start');
+    if (ev) ev.remove();
+  }
+
+  function updateHint(text) {
+    var hint = $('#calendar-hint');
+    if (hint) hint.textContent = text;
   }
 
   // ---------------------------------------------------------------------------
@@ -217,6 +306,8 @@
     hide($('#invoice-modal'));
     if (state.calendar) state.calendar.unselect();
     state.selection = null;
+    state.tapStart = null;
+    clearTapHighlight();
   }
 
   function renderSelectionSummary() {

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprung Dance Floor — Bridge Storage Arts & Events</title>
-    <meta name="description" content="Book the professional sprung dance floor at Bridge Storage. Sound system, lighting, licensed bar available. Up to 80 guests.">
-    <link rel="canonical" href="https://bridgestorage.com/spaces/dance-floor.html">
-    <meta property="og:title" content="Sprung Dance Floor — Bridge Storage Arts & Events">
-    <meta property="og:description" content="Professional sprung hardwood floor with sound system, lighting rig, and licensed bar. Up to 80 guests.">
-    <meta property="og:image" content="https://bridgestorage.com/photos/dancefloor.jpg">
+    <title>Gallery — Bridge Storage Arts & Events</title>
+    <meta name="description" content="Book the gallery space at Bridge Storage. Track-lit gallery with grand piano, rotating exhibitions. Up to 80 guests.">
+    <link rel="canonical" href="https://bridgestorage.com/spaces/gallery.html">
+    <meta property="og:title" content="Gallery — Bridge Storage Arts & Events">
+    <meta property="og:description" content="Track-lit gallery space with grand piano. Rotating exhibitions, private events, and workshops. Up to 80 guests.">
+    <meta property="og:image" content="https://bridgestorage.com/photos/gallery-interior.jpg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -62,16 +62,16 @@
     <a href="../spaces.html" class="text-sm text-bridge-orange hover:underline mb-4 inline-block">&larr; All Spaces</a>
     <div class="flex flex-col md:flex-row gap-6">
         <div class="md:w-1/2">
-            <img src="../photos/dancefloor.jpg" alt="Professional sprung dance floor with lighting" class="w-full h-64 md:h-80 object-cover rounded-xl">
+            <img src="../photos/gallery-interior.jpg" alt="Gallery space with track lighting and art" class="w-full h-64 md:h-80 object-cover rounded-xl">
         </div>
         <div class="md:w-1/2">
-            <h1 class="text-3xl md:text-4xl font-black mb-2">Sprung Dance Floor</h1>
+            <h1 class="text-3xl md:text-4xl font-black mb-2">Gallery</h1>
             <p class="text-bridge-orange font-semibold text-lg mb-3">From $75/hr</p>
-            <p class="text-gray-600 mb-4">Professional sprung hardwood floor. Sound system, lighting rig, licensed bar available. Up to 80 guests.</p>
+            <p class="text-gray-600 mb-4">Track-lit gallery space with grand piano. Host exhibitions, private parties, workshops, and dance events. Up to 80 guests.</p>
             <div class="flex flex-wrap gap-3 text-sm">
                 <span class="bg-gray-100 rounded-full px-3 py-1">80 guests max</span>
-                <span class="bg-gray-100 rounded-full px-3 py-1">Sound system</span>
-                <span class="bg-gray-100 rounded-full px-3 py-1">Lighting rig</span>
+                <span class="bg-gray-100 rounded-full px-3 py-1">Track lighting</span>
+                <span class="bg-gray-100 rounded-full px-3 py-1">Grand piano</span>
                 <span class="bg-gray-100 rounded-full px-3 py-1">Licensed bar</span>
             </div>
         </div>
@@ -83,7 +83,7 @@
     <h2 class="text-2xl font-bold mb-2">Availability</h2>
     <p id="calendar-hint" class="text-sm text-gray-500 mb-4 hidden">Tap a date to see available times.</p>
     <p id="calendar-error" class="text-sm text-red-600 mb-4 hidden"></p>
-    <div id="space-calendar" data-resource-id="11111111-1111-1111-1111-111111111111"></div>
+    <div id="space-calendar" data-resource-id="700a7529-c203-4914-a228-47131e63338c"></div>
 </section>
 
 <!-- Invoice Modal -->
@@ -94,22 +94,15 @@
             <button data-close-invoice class="text-gray-400 hover:text-gray-900 text-2xl leading-none" aria-label="Close">&times;</button>
         </div>
         <div class="p-4 space-y-4">
-            <!-- Selection summary -->
             <div id="invoice-summary"></div>
-
-            <!-- Add-ons -->
             <div>
                 <h4 class="text-sm font-semibold text-bridge-dark mb-2">Add-Ons</h4>
                 <div id="addon-options"></div>
             </div>
-
-            <!-- Pricing -->
             <div id="pricing-section">
                 <h4 class="text-sm font-semibold text-bridge-dark mb-2">Pricing</h4>
                 <div id="pricing-lines" class="text-sm"></div>
             </div>
-
-            <!-- Promo code -->
             <div>
                 <div id="promo-form" class="flex gap-2">
                     <input id="promo-input" type="text" placeholder="Promo code" class="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:ring-bridge-orange focus:border-bridge-orange">
@@ -120,32 +113,25 @@
                     <button id="promo-remove" class="text-red-500 hover:underline text-xs">Remove</button>
                 </div>
             </div>
-
-            <!-- Apply section -->
             <div id="apply-section" class="hidden">
                 <button id="apply-btn" class="w-full text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg px-6 py-3 transition-colors">
                     Apply for This Time
                 </button>
-
-                <!-- Application form (appears after clicking Apply) -->
                 <div id="apply-form" class="hidden space-y-3 mt-4">
                     <input id="apply-name" type="text" placeholder="Your name" class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-bridge-orange focus:border-bridge-orange">
                     <input id="apply-email" type="email" placeholder="Email address" class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-bridge-orange focus:border-bridge-orange">
                     <select id="apply-event-type" class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-bridge-orange focus:border-bridge-orange">
                         <option value="">Select event type</option>
-                        <option value="dance_class">Dance Class</option>
                         <option value="private_party">Private Party</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="dance_class">Dance Class</option>
                         <option value="yoga_session">Yoga Session</option>
                         <option value="other">Other</option>
                     </select>
                     <textarea id="apply-description" placeholder="Describe your event" rows="2" class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-bridge-orange focus:border-bridge-orange"></textarea>
                     <input id="apply-attendance" type="number" min="1" placeholder="Expected guests" class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-bridge-orange focus:border-bridge-orange">
-
-                    <!-- SMS Verify -->
                     <div id="apply-sms-verify"></div>
-
                     <p id="apply-error" class="hidden text-sm text-red-600"></p>
-
                     <button id="submit-application" disabled class="w-full text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg px-6 py-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         Submit Application
                     </button>
@@ -155,7 +141,6 @@
     </div>
 </div>
 
-<!-- Booking Confirmation -->
 <div id="booking-confirmation" class="hidden max-w-lg mx-auto px-4 py-8"></div>
 
 <!-- Footer -->
