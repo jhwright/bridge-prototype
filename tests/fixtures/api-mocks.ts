@@ -32,7 +32,7 @@ export interface MockOverrides {
 
 export async function setupApiMocks(page: Page, overrides: MockOverrides = {}): Promise<void> {
   // Units available endpoint
-  await page.route('**/api/units/available.json*', async (route: Route) => {
+  await page.route('**/public/units/available.json*', async (route: Route) => {
     if (overrides.networkError) {
       await route.abort('connectionrefused');
       return;
@@ -53,7 +53,7 @@ export async function setupApiMocks(page: Page, overrides: MockOverrides = {}): 
   });
 
   // Unit apply (Grab It form)
-  await page.route('**/api/units/*/apply/', async (route: Route) => {
+  await page.route('**/public/units/*/apply/', async (route: Route) => {
     if (overrides.networkError) {
       await route.abort('connectionrefused');
       return;

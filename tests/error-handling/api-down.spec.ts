@@ -41,7 +41,7 @@ test.describe('Error Handling: API Down (500)', () => {
     await expect(indexPage.unitsDynamic).toBeVisible();
 
     // Route the apply endpoint to 500
-    await page.route('**/api/units/*/apply/', async (route) => {
+    await page.route('**/public/units/*/apply/', async (route) => {
       await route.fulfill({
         status: 500,
         contentType: 'application/json',
