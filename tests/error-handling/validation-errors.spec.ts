@@ -20,7 +20,7 @@ test.describe('Error Handling: Validation Errors', () => {
       const grabBtn = indexPage.unitCard(unitId).locator('button[onclick*="toggleGrabForm"]');
       await grabBtn.click();
       // Submit with empty fields
-      const submitBtn = indexPage.unitCard(unitId).locator('.grab-form button[type="submit"]');
+      const submitBtn = indexPage.unitCard(unitId).locator('.grab-form button[onclick*="submitGrab"]');
       if (await submitBtn.isVisible()) {
         await submitBtn.click();
         // Should show validation error or prevent submit
@@ -46,7 +46,7 @@ test.describe('Error Handling: Validation Errors', () => {
       if (await emailInput.isVisible()) {
         await emailInput.fill('not-an-email');
         // Try to submit
-        const submitBtn = indexPage.unitCard(unitId).locator('.grab-form button[type="submit"]');
+        const submitBtn = indexPage.unitCard(unitId).locator('.grab-form button[onclick*="submitGrab"]');
         if (await submitBtn.isVisible()) {
           await submitBtn.click();
           await page.waitForTimeout(300);

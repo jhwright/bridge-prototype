@@ -162,7 +162,7 @@ export class IndexPage {
     await card.locator('.grab-name').fill(data.name);
     await card.locator('.grab-email').fill(data.email);
     await card.locator('.grab-phone').fill(data.phone);
-    await card.locator('.grab-form button[type="submit"]').click();
+    await card.locator('.grab-form button[onclick*="submitGrab"]').click();
   }
 
   /** Get Grab It success message for a unit */
