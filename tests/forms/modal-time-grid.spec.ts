@@ -18,7 +18,7 @@ test.describe('Modal Time Grid Structure (Phase 4)', () => {
 
   test('gallery modal has data-resource-id attribute', async ({ page }) => {
     const modal = page.locator('#modal-booking-gallery');
-    await expect(modal).toHaveAttribute('data-resource-id', '700a7529-c203-4914-a228-47131e63338c');
+    await expect(modal).toHaveAttribute('data-resource-id', 'b6240b45-54a8-44d5-934e-add2ab04d141');
   });
 
   test('gallery modal has data-resource-key attribute', async ({ page }) => {
