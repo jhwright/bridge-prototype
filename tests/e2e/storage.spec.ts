@@ -31,7 +31,7 @@ test.describe('Storage Page', () => {
 
   test('selecting a size filters units', async () => {
     const initialCount = await storagePage.unitCards.count();
-    await storagePage.selectSize('Nook');
+    await storagePage.selectSize('0-50');
     // Result count text should update
     const resultText = await storagePage.getResultCount();
     expect(resultText).toBeTruthy();
@@ -50,7 +50,7 @@ test.describe('Storage Page', () => {
 
   test('result count updates on filter change', async () => {
     const initialResult = await storagePage.getResultCount();
-    await storagePage.selectSize('Room');
+    await storagePage.selectSize('50-100');
     const newResult = await storagePage.getResultCount();
     // Results text should be present (may or may not change depending on data)
     expect(newResult).toBeTruthy();

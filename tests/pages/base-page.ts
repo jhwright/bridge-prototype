@@ -27,7 +27,7 @@ export class BasePage {
     this.navLinks = page.locator('nav a');
     this.hamburgerButton = page.locator('[data-collapse-toggle="mobile-menu"]');
     this.mobileMenu = page.locator('#mobile-menu');
-    this.logo = page.locator('nav img[alt]').first();
+    this.logo = page.locator('nav a.text-xl, nav img[alt]').first();
 
     // Footer
     this.footer = page.locator('footer');

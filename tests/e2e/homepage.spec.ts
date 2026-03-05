@@ -34,7 +34,7 @@ test.describe('Homepage', () => {
 
   test('screen navigation via tabs', async ({ page }) => {
     // Click Store tab
-    await indexPage.clickTab('Store');
+    await indexPage.clickTab('Stash');
     await expect(indexPage.storeScreen).toBeVisible();
 
     // Click Make tab
@@ -51,7 +51,7 @@ test.describe('Homepage', () => {
   });
 
   test('screen navigation via bottom nav', async () => {
-    await indexPage.clickBottomNav('Store');
+    await indexPage.clickBottomNav('Stash');
     await expect(indexPage.storeScreen).toBeVisible();
 
     await indexPage.clickBottomNav('Home');

@@ -47,6 +47,8 @@ function getFullCalendarMock(): string {
       Calendar.prototype.render = function() {
         this.el.innerHTML = '<div class="fc-mock" data-testid="fullcalendar-mock">Calendar Mock</div>';
         this.el.dataset.rendered = 'true';
+        window.__fcInstances = window.__fcInstances || [];
+        window.__fcInstances.push(this);
         // Load events if URL provided
         if (this.opts.events && this.opts.events.url) {
           fetch(this.opts.events.url)

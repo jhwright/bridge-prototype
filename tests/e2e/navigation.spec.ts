@@ -60,7 +60,7 @@ test.describe('Navigation', () => {
       await indexPage.goto();
 
       // Navigate through tabs
-      await indexPage.clickTab('Store');
+      await indexPage.clickTab('Stash');
       await expect(indexPage.storeScreen).toBeVisible();
       await expect(indexPage.homeScreen).not.toBeVisible();
 
@@ -74,7 +74,7 @@ test.describe('Navigation', () => {
       await indexPage.goto();
 
       // Click Store in bottom nav
-      await indexPage.clickBottomNav('Store');
+      await indexPage.clickBottomNav('Stash');
       await expect(indexPage.storeScreen).toBeVisible();
     });
   });

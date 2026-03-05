@@ -23,13 +23,13 @@ test.describe('Spaces Page', () => {
 
   test('space card has Check Availability link', async () => {
     const firstCard = spacesPage.spaceCards.first();
-    const link = firstCard.getByRole('link', { name: /check availability/i });
-    await expect(link).toBeVisible();
+    const btn = firstCard.getByRole('button', { name: /check availability/i });
+    await expect(btn).toBeVisible();
   });
 
   test('space card has Ask a Question link', async () => {
     const firstCard = spacesPage.spaceCards.first();
-    const link = firstCard.getByRole('link', { name: /ask a question/i });
-    await expect(link).toBeVisible();
+    const btn = firstCard.getByRole('button', { name: /ask a question/i });
+    await expect(btn).toBeVisible();
   });
 });

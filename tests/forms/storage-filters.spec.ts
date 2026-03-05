@@ -15,26 +15,26 @@ test.describe('Storage Page Filters', () => {
       await expect(storagePage.filterSize).toBeVisible();
     });
 
-    test('selecting Nook filters units', async () => {
-      await storagePage.selectSize('Nook');
+    test('selecting Small filters units', async () => {
+      await storagePage.selectSize('0-50');
       const result = await storagePage.getResultCount();
       expect(result).toBeTruthy();
     });
 
-    test('selecting Room filters units', async () => {
-      await storagePage.selectSize('Room');
+    test('selecting Medium filters units', async () => {
+      await storagePage.selectSize('50-100');
       const result = await storagePage.getResultCount();
       expect(result).toBeTruthy();
     });
 
-    test('selecting Studio filters units', async () => {
-      await storagePage.selectSize('Studio');
+    test('selecting Large filters units', async () => {
+      await storagePage.selectSize('100-200');
       const result = await storagePage.getResultCount();
       expect(result).toBeTruthy();
     });
 
-    test('selecting Workshop filters units', async () => {
-      await storagePage.selectSize('Workshop');
+    test('selecting Extra Large filters units', async () => {
+      await storagePage.selectSize('200-9999');
       const result = await storagePage.getResultCount();
       expect(result).toBeTruthy();
     });
@@ -71,7 +71,7 @@ test.describe('Storage Page Filters', () => {
 
   test.describe('Combined Filters', () => {
     test('size + chip filter combines correctly', async () => {
-      await storagePage.selectSize('Room');
+      await storagePage.selectSize('50-100');
       const firstChip = storagePage.filterChips.first();
       const filter = await firstChip.getAttribute('data-filter');
       if (filter) {

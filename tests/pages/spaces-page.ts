@@ -130,12 +130,12 @@ export class SpacesPage extends BasePage {
 
   /** Click "Check Availability" on a space card */
   async checkAvailability(spaceName: string): Promise<void> {
-    await this.spaceCard(spaceName).getByRole('link', { name: /check availability/i }).click();
+    await this.spaceCard(spaceName).getByRole('button', { name: /check availability/i }).click();
   }
 
   /** Click "Ask a Question" on a space card */
   async askQuestion(spaceName: string): Promise<void> {
-    await this.spaceCard(spaceName).getByRole('link', { name: /ask a question/i }).click();
+    await this.spaceCard(spaceName).getByRole('button', { name: /ask a question/i }).click();
   }
 
   // --- Booking flow helpers ---
