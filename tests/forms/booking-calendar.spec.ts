@@ -23,7 +23,7 @@ test.describe('Gallery Page - Calendar Booking', () => {
 
   test('calendar container has resource attributes', async ({ page }) => {
     const calEl = page.locator('#space-calendar');
-    await expect(calEl).toHaveAttribute('data-resource-id', '700a7529-c203-4914-a228-47131e63338c');
+    await expect(calEl).toHaveAttribute('data-resource-id', 'b6240b45-54a8-44d5-934e-add2ab04d141');
     await expect(calEl).toHaveAttribute('data-resource-key', 'gallery');
   });
 
