@@ -1694,7 +1694,9 @@ async function submitGrab(card) {
     });
     const data = await resp.json();
     if (resp.ok) {
-      successEl.innerHTML = '<strong>It\'s yours!</strong> Check your email to finish setup. <a href="' + (data.portal_url || '/portal/') + '" style="color:#DF562A;font-weight:600;">Go to Portal &rarr;</a>';
+      const portalBase = (typeof BRIDGE_CONFIG !== 'undefined' && BRIDGE_CONFIG.PORTAL_BASE) ? BRIDGE_CONFIG.PORTAL_BASE : '';
+      const portalHref = portalBase + (data.portal_url || '/portal/');
+      successEl.innerHTML = '<strong>It\'s yours!</strong> We\'ll be in touch soon. <a href="' + portalHref + '" style="color:#DF562A;font-weight:600;" target="_blank" rel="noopener">Go to Portal &rarr;</a>';
       successEl.style.display = 'block';
       card.querySelector('.grab-form input.grab-name').disabled = true;
       card.querySelector('.grab-form input.grab-email').disabled = true;
