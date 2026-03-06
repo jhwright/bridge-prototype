@@ -152,9 +152,65 @@
           el.classList.remove('selected');
         });
         dayEl.classList.add('selected');
+        // Collapse calendar and show date bar
+        collapseCalendar(modalEl);
         renderTimeGrid(modalEl);
       });
     });
+  }
+
+  // --- Calendar Collapse ---
+
+  function collapseCalendar(modalEl) {
+    const state = getState(modalEl);
+    const calGrid = modalEl.querySelector('.booking-cal-grid');
+    if (calGrid) calGrid.classList.add('collapsed');
+
+    // Create or update date bar
+    let dateBar = modalEl.querySelector('.selected-date-bar');
+    if (!dateBar) {
+      dateBar = document.createElement('div');
+      dateBar.className = 'selected-date-bar';
+      // Insert after cal-legend
+      const legend = modalEl.querySelector('.cal-legend');
+      if (legend) {
+        legend.after(dateBar);
+      } else if (calGrid) {
+        calGrid.after(dateBar);
+      }
+    }
+
+    // Format the selected date
+    const parts = state.selectedDate.split('-');
+    const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const formatted = dayNames[dateObj.getDay()] + ' ' + monthNames[dateObj.getMonth()] + ' ' + dateObj.getDate();
+
+    dateBar.innerHTML = '<span>' + formatted + '</span><a class="change-date-link">Change</a>';
+    dateBar.style.display = '';
+
+    // Bind Change link
+    dateBar.querySelector('.change-date-link').addEventListener('click', function () {
+      expandCalendar(modalEl);
+    });
+  }
+
+  function expandCalendar(modalEl) {
+    const state = getState(modalEl);
+    const calGrid = modalEl.querySelector('.booking-cal-grid');
+    if (calGrid) calGrid.classList.remove('collapsed');
+
+    const dateBar = modalEl.querySelector('.selected-date-bar');
+    if (dateBar) dateBar.style.display = 'none';
+
+    // Clear time selection
+    state.selectionStart = null;
+    state.selectionEnd = null;
+    state.isDragging = false;
+    const timeGrid = modalEl.querySelector('.booking-time-grid');
+    if (timeGrid) timeGrid.innerHTML = '';
+    updateContinueButton(modalEl);
   }
 
   // --- Time Grid ---
