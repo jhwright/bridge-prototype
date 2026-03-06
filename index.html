@@ -211,6 +211,11 @@
   .cal-day.selected { background: #DF562A; color: #fff; font-weight: 700; }
   .cal-day.today { border: 1px solid #DF562A; }
   .cal-legend { display: flex; gap: 16px; font-size: 10px; color: #8a7e72; margin-bottom: 16px; }
+  .booking-cal-grid { max-height: 600px; overflow: hidden; transition: max-height 0.3s ease; }
+  .booking-cal-grid.collapsed { max-height: 0; }
+  .booking-cal-grid.collapsed + .cal-legend { display: none; }
+  .selected-date-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-bottom: 12px; background: rgba(223,86,42,0.06); border: 1.5px solid #DF562A; border-radius: 10px; font-size: 14px; font-weight: 600; color: #2a2520; }
+  .selected-date-bar .change-date-link { color: #DF562A; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: underline; }
   .cal-legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
   .time-slots { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
   .time-slot { padding: 8px 14px; border: 1.5px solid #d1ccc5; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.15s; background: #fff; }
@@ -1165,29 +1170,6 @@
       <div id="gallery-step-1">
         <h2>Book The Gallery</h2>
         <div class="modal-sub">Sprung hardwood · Sound system · Lighting rig · Up to 80 guests</div>
-        <div class="form-group"><label>Room Configuration</label>
-          <select id="gallery-config" onchange="updateGalleryPreview(this.value)">
-            <option value="open-floor">Open Floor (dance/yoga/exercise)</option>
-            <option value="chairs">Chairs (ceremony)</option>
-            <option value="round-tables">Round Tables (reception)</option>
-            <option value="rect-tables">Rectangular Tables (banquet)</option>
-            <option value="stage">Stage (performance)</option>
-            <option value="gallery-walk">Gallery Walk (exhibition)</option>
-          </select>
-        </div>
-        <div id="gallery-config-preview" class="config-preview">
-          <svg id="config-preview-open-floor" width="120" height="100" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="config-preview-svg">
-            <circle cx="60" cy="14" r="7" stroke="#d64078" stroke-width="2" fill="none"/>
-            <line x1="60" y1="21" x2="60" y2="52" stroke="#d64078" stroke-width="2"/>
-            <line x1="60" y1="30" x2="46" y2="10" stroke="#d64078" stroke-width="2" stroke-linecap="round"/>
-            <line x1="60" y1="30" x2="74" y2="10" stroke="#d64078" stroke-width="2" stroke-linecap="round"/>
-            <line x1="60" y1="52" x2="45" y2="70" stroke="#d64078" stroke-width="2" stroke-linecap="round"/>
-            <line x1="45" y1="70" x2="42" y2="90" stroke="#d64078" stroke-width="2" stroke-linecap="round"/>
-            <line x1="60" y1="52" x2="82" y2="90" stroke="#d64078" stroke-width="2" stroke-linecap="round"/>
-            <line x1="20" y1="92" x2="100" y2="92" stroke="#e5e0db" stroke-width="1"/>
-            <text x="60" y="99" text-anchor="middle" font-size="7" fill="#8a8078" font-family="sans-serif">warrior 1</text>
-          </svg>
-        </div>
         <div class="form-group"><label>Type of event</label>
           <select><option>Dance class / workshop</option><option>Performance / show</option><option>DJ night / party</option><option>Reception / dinner</option><option>Exhibition</option><option>Rehearsal</option><option>Private event</option></select>
         </div>
@@ -1889,11 +1871,6 @@ function showBookingStep(modalPrefix, n) {
     const el = document.getElementById(modalPrefix + '-step-' + i);
     if (el) el.style.display = i === n ? '' : 'none';
   });
-}
-
-function updateGalleryPreview(val) {
-  var el = document.getElementById('gallery-config-preview');
-  if (el) el.style.display = val === 'open-floor' ? '' : 'none';
 }
 
 /* ===== Portal Tab Nav ===== */

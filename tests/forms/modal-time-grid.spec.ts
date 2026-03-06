@@ -265,3 +265,109 @@ test.describe('Modal Booking Calendar Interaction (Phase 5)', () => {
     await expect(modal.locator('.booking-cal-grid .cal-day').first()).toBeVisible();
   });
 });
+
+test.describe('Gallery Modal Cleanup (PR1)', () => {
+  test.beforeEach(async ({ page, withMocks }) => {
+    await withMocks();
+    await page.goto('/index.html');
+  });
+
+  test('warrior SVG and gallery config preview are removed', async ({ page }) => {
+    await expect(page.locator('#gallery-config-preview')).not.toBeAttached();
+  });
+
+  test('gallery room configuration select is removed', async ({ page }) => {
+    await expect(page.locator('#gallery-config')).not.toBeAttached();
+  });
+});
+
+test.describe('Calendar Collapse on Date Selection (PR1)', () => {
+  test.beforeEach(async ({ page, withMocks }) => {
+    await withMocks();
+    await page.goto('/index.html');
+  });
+
+  test('clicking a date collapses the calendar grid', async ({ page }) => {
+    await openBookingModal(page, 'modal-booking-gallery');
+    const modal = page.locator('#modal-booking-gallery');
+    const calGrid = modal.locator('.booking-cal-grid');
+    // Click a future day
+    await modal.locator('.booking-cal-grid .cal-day:not(.header):not(.past)').filter({ hasText: '10' }).click();
+    await page.waitForTimeout(200);
+    await expect(calGrid).toHaveClass(/collapsed/);
+  });
+
+  test('selected date bar appears after date selection', async ({ page }) => {
+    await openBookingModal(page, 'modal-booking-gallery');
+    const modal = page.locator('#modal-booking-gallery');
+    await modal.locator('.booking-cal-grid .cal-day:not(.header):not(.past)').filter({ hasText: '10' }).click();
+    await page.waitForTimeout(200);
+    const dateBar = modal.locator('.selected-date-bar');
+    await expect(dateBar).toBeVisible();
+    // Should contain the date text
+    await expect(dateBar).toContainText('Mar');
+    await expect(dateBar).toContainText('10');
+  });
+
+  test('selected date bar has a Change link', async ({ page }) => {
+    await openBookingModal(page, 'modal-booking-gallery');
+    const modal = page.locator('#modal-booking-gallery');
+    await modal.locator('.booking-cal-grid .cal-day:not(.header):not(.past)').filter({ hasText: '10' }).click();
+    await page.waitForTimeout(200);
+    const changeLink = modal.locator('.selected-date-bar .change-date-link');
+    await expect(changeLink).toBeVisible();
+    await expect(changeLink).toContainText('Change');
+  });
+
+  test('clicking Change re-expands the calendar', async ({ page }) => {
+    await openBookingModal(page, 'modal-booking-gallery');
+    const modal = page.locator('#modal-booking-gallery');
+    const calGrid = modal.locator('.booking-cal-grid');
+    // Select a date
+    await modal.locator('.booking-cal-grid .cal-day:not(.header):not(.past)').filter({ hasText: '10' }).click();
+    await page.waitForTimeout(200);
+    await expect(calGrid).toHaveClass(/collapsed/);
+    // Click Change
+    await modal.locator('.selected-date-bar .change-date-link').click();
+    await page.waitForTimeout(200);
+    // Calendar should be expanded again
+    await expect(calGrid).not.toHaveClass(/collapsed/);
+  });
+
+  test('clicking Change hides the date bar', async ({ page }) => {
+    await openBookingModal(page, 'modal-booking-gallery');
+    const modal = page.locator('#modal-booking-gallery');
+    await modal.locator('.booking-cal-grid .cal-day:not(.header):not(.past)').filter({ hasText: '10' }).click();
+    await page.waitForTimeout(200);
+    await modal.locator('.selected-date-bar .change-date-link').click();
+    await page.waitForTimeout(200);
+    await expect(modal.locator('.selected-date-bar')).not.toBeVisible();
+  });
+
+  test('clicking Change clears time selection', async ({ page }) => {
+    await openBookingModal(page, 'modal-booking-gallery');
+    const modal = page.locator('#modal-booking-gallery');
+    // Select date and time
+    await modal.locator('.booking-cal-grid .cal-day:not(.header):not(.past)').filter({ hasText: '10' }).click();
+    await page.waitForTimeout(200);
+    const slots = modal.locator('.booking-time-grid .time-grid-slot');
+    await slots.nth(4).dispatchEvent('mousedown');
+    await slots.nth(7).dispatchEvent('mouseover');
+    await slots.nth(7).dispatchEvent('mouseup');
+    // Click Change
+    await modal.locator('.selected-date-bar .change-date-link').click();
+    await page.waitForTimeout(200);
+    // Time grid should be cleared
+    const timeGrid = modal.locator('.booking-time-grid');
+    await expect(timeGrid).toBeEmpty();
+  });
+
+  test('cal-legend is hidden when calendar is collapsed', async ({ page }) => {
+    await openBookingModal(page, 'modal-booking-gallery');
+    const modal = page.locator('#modal-booking-gallery');
+    await modal.locator('.booking-cal-grid .cal-day:not(.header):not(.past)').filter({ hasText: '10' }).click();
+    await page.waitForTimeout(200);
+    const legend = modal.locator('.cal-legend');
+    await expect(legend).not.toBeVisible();
+  });
+});
