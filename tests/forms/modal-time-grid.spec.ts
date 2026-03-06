@@ -238,7 +238,7 @@ test.describe('Modal Booking Calendar Interaction (Phase 5)', () => {
     expect(count).toBeLessThanOrEqual(2);
   });
 
-  test('continue button enables after selection and redirects', async ({ page }) => {
+  test('continue button enables after selection and shows invoice', async ({ page }) => {
     await openBookingModal(page, 'modal-booking-gallery');
     const modal = page.locator('#modal-booking-gallery');
     // Click day 10
@@ -252,11 +252,13 @@ test.describe('Modal Booking Calendar Interaction (Phase 5)', () => {
     // Continue button should be enabled
     const btn = modal.locator('.btn-continue-booking');
     await expect(btn).toBeEnabled();
-    // Click and check navigation
-    const [response] = await Promise.all([
-      page.waitForURL(/spaces\/gallery\.html\?date=.*&start=.*&end=.*/),
-      btn.click(),
-    ]);
+    // Click continue — should show invoice section (not redirect)
+    await btn.click();
+    await page.waitForTimeout(500);
+    const invoice = modal.locator('.booking-invoice-section');
+    await expect(invoice).toBeVisible();
+    // Should NOT have navigated away
+    expect(page.url()).toContain('/index.html');
   });
 
   test('courtyard modal also initializes calendar on open', async ({ page }) => {
@@ -369,5 +371,116 @@ test.describe('Calendar Collapse on Date Selection (PR1)', () => {
     await page.waitForTimeout(200);
     const legend = modal.locator('.cal-legend');
     await expect(legend).not.toBeVisible();
+  });
+});
+
+// Helper: select date + time range, then click Continue to open invoice
+async function openInvoiceInModal(page: import('@playwright/test').Page, modalId: string) {
+  await openBookingModal(page, modalId);
+  const modal = page.locator('#' + modalId);
+  await modal.locator('.booking-cal-grid .cal-day:not(.header):not(.past)').filter({ hasText: '10' }).click();
+  await page.waitForTimeout(200);
+  const slots = modal.locator('.booking-time-grid .time-grid-slot');
+  await slots.nth(4).dispatchEvent('mousedown');
+  await slots.nth(7).dispatchEvent('mouseover');
+  await slots.nth(7).dispatchEvent('mouseup');
+  await modal.locator('.btn-continue-booking').click();
+  await page.waitForTimeout(500);
+  return modal;
+}
+
+test.describe('Inline Invoice Flow (PR2)', () => {
+  test.beforeEach(async ({ page, withMocks }) => {
+    await withMocks();
+    await page.goto('/index.html');
+  });
+
+  test('continue button text shows selected date and time', async ({ page }) => {
+    await openBookingModal(page, 'modal-booking-gallery');
+    const modal = page.locator('#modal-booking-gallery');
+    await modal.locator('.booking-cal-grid .cal-day:not(.header):not(.past)').filter({ hasText: '10' }).click();
+    await page.waitForTimeout(200);
+    const slots = modal.locator('.booking-time-grid .time-grid-slot');
+    await slots.nth(4).dispatchEvent('mousedown');
+    await slots.nth(7).dispatchEvent('mouseover');
+    await slots.nth(7).dispatchEvent('mouseup');
+    const btn = modal.locator('.btn-continue-booking');
+    // Button should show date/time info instead of generic text
+    const btnText = await btn.textContent();
+    expect(btnText).toContain('10:00');
+  });
+
+  test('invoice section shows pricing lines after continue', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-booking-gallery');
+    const pricingLines = modal.locator('.booking-invoice-section .pricing-line');
+    await expect(pricingLines.first()).toBeVisible();
+  });
+
+  test('invoice shows base rental line', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-booking-gallery');
+    await expect(modal.locator('.booking-invoice-section')).toContainText('Base rental');
+  });
+
+  test('invoice shows deposit amount', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-booking-gallery');
+    await expect(modal.locator('.booking-invoice-section')).toContainText('Deposit');
+  });
+
+  test('gallery modal shows addon options', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-booking-gallery');
+    const addons = modal.locator('.booking-invoice-section .addon-option');
+    // Gallery has bar_service, include_snacks, include_stage, privacy_curtains
+    const count = await addons.count();
+    expect(count).toBeGreaterThanOrEqual(3);
+  });
+
+  test('toggling an addon triggers price recalculation', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-booking-gallery');
+    // Find a toggle addon and click it
+    const toggle = modal.locator('.booking-invoice-section .addon-option input[type="checkbox"]').first();
+    await toggle.check();
+    await page.waitForTimeout(500);
+    // Pricing should still be visible (recalculated)
+    await expect(modal.locator('.booking-invoice-section')).toContainText('Base rental');
+  });
+
+  test('invoice shows special notes textarea', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-booking-gallery');
+    const notes = modal.locator('.booking-invoice-section textarea.special-notes');
+    await expect(notes).toBeVisible();
+  });
+
+  test('invoice shows apply button', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-booking-gallery');
+    const applyBtn = modal.locator('.booking-invoice-section .btn-apply');
+    await expect(applyBtn).toBeVisible();
+  });
+
+  test('apply button submits application and shows confirmation', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-booking-gallery');
+    // Fill required fields
+    await modal.locator('.booking-invoice-section input.apply-name').fill('Test User');
+    await modal.locator('.booking-invoice-section input.apply-email').fill('test@example.com');
+    // Click apply
+    await modal.locator('.booking-invoice-section .btn-apply').click();
+    await page.waitForTimeout(500);
+    // Should show success confirmation
+    await expect(modal.locator('.booking-confirmation')).toBeVisible();
+    await expect(modal.locator('.booking-confirmation')).toContainText('Application Submitted');
+  });
+
+  test('courtyard modal shows invoice on continue', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-booking-outdoor');
+    await expect(modal.locator('.booking-invoice-section')).toBeVisible();
+  });
+
+  test('kitchen modal shows invoice on continue', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-membership-kitchen');
+    await expect(modal.locator('.booking-invoice-section')).toBeVisible();
+  });
+
+  test('lounge modal shows invoice on continue', async ({ page }) => {
+    const modal = await openInvoiceInModal(page, 'modal-booking-lounge');
+    await expect(modal.locator('.booking-invoice-section')).toBeVisible();
   });
 });
