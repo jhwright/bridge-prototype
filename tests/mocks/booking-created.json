@@ -1,9 +1,10 @@
 {
-  "booking_id": "booking-test-001",
-  "stripe_client_secret": "pi_test_secret_abc123",
-  "stripe_publishable_key": "pk_test_mock_key",
+  "id": "booking-test-001",
+  "confirmation_number": "BK-2026-0042",
+  "portal_url": "https://bridge-ai-production.up.railway.app/magic-link/test-token-abc123/?next=/portal/dashboard/",
+  "amount": 7500,
+  "currency": "usd",
   "is_self_book": true,
-  "invoice_number": "INV-2026-0042",
   "pricing": {
     "subtotal": 300.00,
     "discount_amount": 0,

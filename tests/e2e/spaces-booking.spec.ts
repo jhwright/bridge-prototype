@@ -1,11 +1,11 @@
 import { test, expect } from '../fixtures/test-base';
 import { SpaceDetailPage } from '../pages/space-detail-page';
 import { mockFullCalendar, simulateCalendarSelect } from '../helpers/fullcalendar-mock';
-import { mockStripe } from '../helpers/stripe-mock';
 
 /**
  * End-to-end spaces booking flow: spaces.html card → per-space page → booking.
  * Tests the redirect-to-space-page pattern with both self-book and apply paths.
+ * Self-book path now returns a portal_url with magic link instead of Stripe payment.
  */
 
 test.describe('Spaces Booking Flow - Card to Per-Space Page', () => {
@@ -43,7 +43,6 @@ test.describe('Spaces Booking Flow - Apply Path (Non-Self-Book)', () => {
 
   test.beforeEach(async ({ page, withMocks }) => {
     await mockFullCalendar(page);
-    await mockStripe(page);
     // Non-self-book customer
     const noSelfBook = {
       customer_id: 'cust-test-002',
@@ -105,19 +104,18 @@ test.describe('Spaces Booking Flow - Apply Path (Non-Self-Book)', () => {
   });
 });
 
-test.describe('Spaces Booking Flow - Payment Path (Self-Book)', () => {
+test.describe('Spaces Booking Flow - Self-Book with Portal Link', () => {
   let spacePage: SpaceDetailPage;
 
   test.beforeEach(async ({ page, withMocks }) => {
     await mockFullCalendar(page);
-    await mockStripe(page);
     // Default customer-permissions.json has self_book.gallery: true
     await withMocks();
     spacePage = new SpaceDetailPage(page);
     await spacePage.goto('spaces/gallery.html');
   });
 
-  test('full payment flow: select time → fill form → SMS verify → Stripe', async ({ page }) => {
+  test('full booking flow: select time → fill form → SMS verify → portal link', async ({ page }) => {
     // 1. Select time
     await page.locator('[data-testid="fullcalendar-mock"]').waitFor();
     const tomorrow = new Date();
@@ -153,13 +151,21 @@ test.describe('Spaces Booking Flow - Payment Path (Self-Book)', () => {
     });
     await page.locator('[data-sms-phase="verified"]').waitFor({ state: 'visible', timeout: 10000 });
 
-    // 5. Payment section appears (self-book path)
+    // 5. Book Now button appears (no Stripe card element)
     await expect(spacePage.paymentSection).toBeVisible({ timeout: 5000 });
-    await expect(page.locator('[data-testid="stripe-card-mock"]')).toBeVisible();
+    await expect(page.locator('[data-testid="stripe-card-mock"]')).not.toBeVisible();
     await expect(spacePage.payNowBtn).toBeVisible();
+    await expect(spacePage.payNowBtn).toHaveText('Book Now');
 
-    // 6. Click Pay Now → confirmation
+    // 6. Click Book Now → confirmation with portal link
     await spacePage.payNowBtn.click();
     await expect(spacePage.bookingConfirmation).toBeVisible({ timeout: 5000 });
+
+    // 7. Confirmation shows portal link with magic link URL
+    const portalLink = page.locator('.portal-link');
+    await expect(portalLink).toBeVisible();
+    await expect(portalLink).toHaveText('Complete Your Booking');
+    const href = await portalLink.getAttribute('href');
+    expect(href).toContain('/magic-link/');
   });
 });
