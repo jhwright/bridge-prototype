@@ -1,12 +1,11 @@
 import { test, expect } from '../fixtures/test-base';
 import { SpaceDetailPage } from '../pages/space-detail-page';
 import { mockFullCalendar, simulateCalendarSelect } from '../helpers/fullcalendar-mock';
-import { mockStripe } from '../helpers/stripe-mock';
 
 /**
  * Phase 7: Auth branching tests for per-space booking flow.
  * After SMS verify + permissions check:
- * - Self-book customers see Stripe payment form
+ * - Self-book customers see Book Now button (portal link handoff)
  * - Non-self-book customers see "Apply for This Time" button
  */
 
@@ -49,19 +48,18 @@ async function completeSmsVerify(page: import('@playwright/test').Page) {
   await page.locator('[data-sms-phase="verified"]').waitFor({ state: 'visible', timeout: 10000 });
 }
 
-test.describe('Self-Book Customer - Payment Flow', () => {
+test.describe('Self-Book Customer - Portal Link Flow', () => {
   let spacePage: SpaceDetailPage;
 
   test.beforeEach(async ({ page, withMocks }) => {
     await mockFullCalendar(page);
-    await mockStripe(page);
     // Default customer-permissions.json has self_book.gallery: true
     await withMocks();
     spacePage = new SpaceDetailPage(page);
     await spacePage.goto('spaces/gallery.html');
   });
 
-  test('self-book customer sees payment section after SMS verify', async ({ page }) => {
+  test('self-book customer sees Book Now button after SMS verify', async ({ page }) => {
     await openGalleryInvoice(page);
     await expect(spacePage.invoiceModal).toBeVisible();
 
@@ -79,13 +77,14 @@ test.describe('Self-Book Customer - Payment Flow', () => {
 
     // After SMS verify, payment section should appear for self-book customer
     await expect(spacePage.paymentSection).toBeVisible({ timeout: 5000 });
-    // Stripe card mock should be mounted
-    await expect(page.locator('[data-testid="stripe-card-mock"]')).toBeVisible();
-    // Pay Now button should be visible
+    // No Stripe card element — portal link handoff instead
+    await expect(page.locator('[data-testid="stripe-card-mock"]')).not.toBeVisible();
+    // Book Now button should be visible
     await expect(spacePage.payNowBtn).toBeVisible();
+    await expect(spacePage.payNowBtn).toHaveText('Book Now');
   });
 
-  test('payment section has Stripe card element mounted in container', async ({ page }) => {
+  test('Book Now click shows confirmation with portal link', async ({ page }) => {
     await openGalleryInvoice(page);
     await expect(spacePage.invoiceModal).toBeVisible();
 
@@ -99,9 +98,15 @@ test.describe('Self-Book Customer - Payment Flow', () => {
     await completeSmsVerify(page);
 
     await expect(spacePage.paymentSection).toBeVisible({ timeout: 5000 });
-    // Stripe card element should be inside the container
-    const stripeCard = page.locator('#stripe-card-container [data-testid="stripe-card-mock"]');
-    await expect(stripeCard).toBeVisible();
+    await spacePage.payNowBtn.click();
+
+    // Confirmation with portal link
+    await expect(spacePage.bookingConfirmation).toBeVisible({ timeout: 5000 });
+    const portalLink = page.locator('.portal-link');
+    await expect(portalLink).toBeVisible();
+    await expect(portalLink).toHaveText('Complete Your Booking');
+    const href = await portalLink.getAttribute('href');
+    expect(href).toContain('/magic-link/');
   });
 });
 
@@ -110,7 +115,6 @@ test.describe('Non-Self-Book Customer - Apply Flow', () => {
 
   test.beforeEach(async ({ page, withMocks }) => {
     await mockFullCalendar(page);
-    await mockStripe(page);
     // Override permissions to no-self-book variant
     const noSelfBook = {
       customer_id: 'cust-test-002',
@@ -172,14 +176,12 @@ test.describe('Non-Self-Book Customer - Apply Flow', () => {
 test.describe('Payment Section HTML Structure', () => {
   test('gallery page has payment section elements', async ({ page, withMocks }) => {
     await mockFullCalendar(page);
-    await mockStripe(page);
     await withMocks();
     const spacePage = new SpaceDetailPage(page);
     await spacePage.goto('spaces/gallery.html');
 
     // Payment section should exist in DOM (hidden by default)
     await expect(spacePage.paymentSection).toBeAttached();
-    await expect(spacePage.stripeCardContainer).toBeAttached();
     await expect(spacePage.payNowBtn).toBeAttached();
     await expect(spacePage.paymentError).toBeAttached();
   });

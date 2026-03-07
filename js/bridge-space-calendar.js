@@ -33,8 +33,6 @@
     smsToken: null,
     smsPhone: null,
     canSelfBook: false,
-    stripeInstance: null,
-    stripeCard: null,
     tapStart: null,    // mobile tap-to-select: first tap (start time)
   };
 
@@ -580,10 +578,9 @@
       state.canSelfBook = key && perms.self_book && perms.self_book[key] === true;
 
       if (state.canSelfBook) {
-        // Self-book: show Stripe payment
+        // Self-book: show book button (payment happens in portal)
         hide($('#submit-application'));
         show($('#payment-section'));
-        initStripePayment();
       } else {
         // Non-self-book: enable application submit
         var submitBtn = $('#submit-application');
@@ -597,22 +594,6 @@
     }
   }
 
-  function initStripePayment() {
-    var container = $('#stripe-card-container');
-    if (!container || state.stripeCard) return;
-
-    if (typeof Stripe === 'undefined') {
-      console.error('Stripe.js not loaded');
-      return;
-    }
-
-    var stripeKey = (typeof BRIDGE_CONFIG !== 'undefined' && BRIDGE_CONFIG.STRIPE_PUBLIC_KEY) || 'pk_test_placeholder';
-    state.stripeInstance = Stripe(stripeKey);
-    var elements = state.stripeInstance.elements();
-    state.stripeCard = elements.create('card');
-    state.stripeCard.mount(container);
-  }
-
   async function handlePayment() {
     var payBtn = $('#pay-now-btn');
     var errEl = $('#payment-error');
@@ -623,7 +604,7 @@
     hide(errEl);
 
     try {
-      // Create booking via book-api to get client secret
+      // Create booking via book-api
       var bookData = {
         start: state.selection.start.toISOString(),
         end: state.selection.end.toISOString(),
@@ -649,28 +630,7 @@
       var bookResult = await bookResp.json();
       if (!bookResp.ok) throw new Error(bookResult.error || 'Booking failed');
 
-      // Confirm payment with Stripe if client_secret provided
-      if (bookResult.client_secret && state.stripeCard) {
-        var stripeResult = await state.stripeInstance.confirmCardPayment(bookResult.client_secret, {
-          payment_method: { card: state.stripeCard },
-        });
-        if (stripeResult.error) throw new Error(stripeResult.error.message);
-
-        // Notify backend of payment confirmation
-        await fetch(API + '/public/spaces/' + state.resourceId + '/payment/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + state.smsToken,
-          },
-          body: JSON.stringify({
-            payment_intent_id: stripeResult.paymentIntent.id,
-            booking_id: bookResult.booking_id,
-          }),
-        });
-      }
-
-      // Show confirmation
+      // Show confirmation with portal link for payment
       hide($('#invoice-modal'));
       showConfirmation(bookResult);
     } catch (err) {
@@ -680,7 +640,7 @@
       }
       if (payBtn) {
         payBtn.disabled = false;
-        payBtn.textContent = 'Pay Now';
+        payBtn.textContent = 'Book Now';
       }
     }
   }
@@ -744,15 +704,28 @@
     const el = $('#booking-confirmation');
     if (!el) return;
 
+    const portalUrl = result.portal_url || '/portal/';
+    const hasPortalLink = result.portal_url && result.portal_url.includes('/magic-link/');
+    const heading = hasPortalLink ? 'Booking Submitted!' : 'Application Submitted';
+    const message = hasPortalLink
+      ? 'Complete your deposit payment in the portal to confirm your booking.'
+      : "We'll review your request and get back to you within 24 hours.";
+
     el.innerHTML = `
       <div class="bg-green-50 rounded-xl p-6 text-center">
         <svg class="w-12 h-12 text-green-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
         </svg>
-        <h3 class="text-xl font-bold text-bridge-dark mb-2">Application Submitted</h3>
-        <p class="text-gray-600 mb-4">We'll review your request and get back to you within 24 hours.</p>
+        <h3 class="text-xl font-bold text-bridge-dark mb-2">${heading}</h3>
+        <p class="text-gray-600 mb-4">${message}</p>
+        ${result.confirmation_number ? `<p class="text-sm text-gray-500 mb-4">Confirmation: <span class="font-medium">${result.confirmation_number}</span></p>` : ''}
         ${result.conflict_warning ? `<p class="text-amber-600 text-sm mb-4">${result.conflict_warning}</p>` : ''}
-        <button onclick="location.reload()" class="text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg px-6 py-2.5 transition-colors">
+        ${hasPortalLink ? `
+        <a href="${portalUrl}" class="portal-link inline-block text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg px-6 py-2.5 transition-colors mb-3">
+          Complete Your Booking
+        </a>
+        <br>` : ''}
+        <button onclick="location.reload()" class="text-bridge-dark border border-bridge-dark hover:bg-bridge-dark hover:text-white font-semibold rounded-lg px-6 py-2.5 transition-colors">
           Back to Calendar
         </button>
       </div>

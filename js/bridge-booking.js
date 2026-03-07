@@ -2,12 +2,12 @@
  * Bridge Storage — Space Booking Flow
  *
  * Handles FullCalendar drag-select, live pricing, promo codes,
- * Stripe card payment, and booking confirmation.
+ * and booking confirmation with portal handoff.
  *
- * Dependencies: FullCalendar v6 (CDN), Stripe.js (CDN), Flowbite, js/config.js
+ * Dependencies: FullCalendar v6 (CDN), Flowbite, js/config.js
  */
 
-/* global FullCalendar, Stripe, BRIDGE_CONFIG, BridgeSMSVerify */
+/* global FullCalendar, BRIDGE_CONFIG, BridgeSMSVerify */
 
 (function () {
   'use strict';
@@ -26,12 +26,10 @@
     promoCode: null,
     promoDiscount: null,
     bookingId: null,
-    stripe: null,
-    stripeElements: null,
-    cardElement: null,
+    portalUrl: null,
     smsVerify: null,
     smsToken: null,
-    step: 1, // 1=email, 2=calendar, 3=details, 4=verify, 5=payment, 6=confirmation
+    step: 1, // 1=email, 2=calendar, 3=details, 4=verify, 5=submit, 6=confirmation
   };
 
   const API = BRIDGE_CONFIG.API_BASE || '';
@@ -397,8 +395,7 @@
           return;
         }
         hideError();
-        goToStep(5);
-        initPaymentStep();
+        submitBooking();
       });
     }
   }
@@ -455,47 +452,14 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Step 4: Payment (Stripe Card Element)
+  // Step 5: Submit Booking
   // ---------------------------------------------------------------------------
 
-  function initPaymentStep() {
-    // Re-render pricing in payment step
-    if (state.pricing) {
-      renderPaymentSummary();
-    }
-  }
-
-  function renderPaymentSummary() {
-    const el = $('#payment-summary');
-    if (!el || !state.pricing || !state.selection) return;
-
-    el.innerHTML = `
-      <div class="text-sm space-y-1">
-        <div class="flex justify-between font-semibold">
-          <span>${state.spaceName}</span>
-          <span>${formatCurrency(state.pricing.subtotal - (state.pricing.discount_amount || 0))}</span>
-        </div>
-        <div class="flex justify-between text-gray-500">
-          <span>${formatDate(state.selection.start)}</span>
-          <span>${formatTime(state.selection.start)} – ${formatTime(state.selection.end)}</span>
-        </div>
-        ${state.pricing.discount_amount > 0 ? `
-          <div class="flex justify-between text-green-600">
-            <span>Promo discount</span>
-            <span>-${formatCurrency(state.pricing.discount_amount)}</span>
-          </div>` : ''}
-        <div class="border-t pt-2 mt-2 flex justify-between font-bold text-bridge-orange text-lg">
-          <span>Deposit due now</span>
-          <span>${formatCurrency(state.pricing.deposit_amount)}</span>
-        </div>
-      </div>`;
-  }
-
   async function submitBooking() {
-    const payBtn = $('#pay-deposit-btn');
-    if (payBtn) {
-      payBtn.disabled = true;
-      payBtn.textContent = 'Processing...';
+    const submitBtn = $('#verify-continue');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
     }
 
     hideError();
@@ -539,93 +503,36 @@
       const booking = await bookResp.json();
       if (!bookResp.ok) throw new Error(booking.error || 'Booking request failed');
 
-      state.bookingId = booking.booking_id;
+      state.bookingId = booking.id;
+      state.portalUrl = booking.portal_url;
 
-      // Init Stripe lazily if key came from booking response
-      if (booking.stripe_publishable_key && !state.stripe) {
-        initStripe(booking.stripe_publishable_key);
-      }
-
-      // 2. Confirm card payment with Stripe
-      if (booking.stripe_client_secret && state.cardElement) {
-        const { error, paymentIntent } = await state.stripe.confirmCardPayment(
-          booking.stripe_client_secret,
-          { payment_method: { card: state.cardElement } }
-        );
-
-        if (error) {
-          showError(error.message);
-          if (payBtn) {
-            payBtn.disabled = false;
-            payBtn.textContent = 'Pay Deposit';
-          }
-          return;
-        }
-
-        // 3. Confirm payment with backend
-        await apiPost(`/public/spaces/${state.resourceId}/payment/`, {
-          booking_id: booking.booking_id,
-          payment_intent_id: paymentIntent.id,
-        });
-      }
-
-      // 4. Show confirmation
+      // Show confirmation with portal link
       renderConfirmation(booking);
       goToStep(6);
     } catch (err) {
       showError(err.message || 'Something went wrong. Please try again.');
-      if (payBtn) {
-        payBtn.disabled = false;
-        payBtn.textContent = 'Pay Deposit';
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Booking';
       }
     }
   }
 
-  function initStripe(publishableKey) {
-    if (!publishableKey || state.stripe) return;
-
-    state.stripe = Stripe(publishableKey);
-    state.stripeElements = state.stripe.elements();
-    state.cardElement = state.stripeElements.create('card', {
-      style: {
-        base: {
-          fontSize: '16px',
-          color: '#2a2520',
-          fontFamily: 'Inter, system-ui, sans-serif',
-          '::placeholder': { color: '#9ca3af' },
-        },
-        invalid: { color: '#dc2626' },
-      },
-    });
-
-    const mountEl = $('#card-element');
-    if (mountEl) {
-      state.cardElement.mount(mountEl);
-      state.cardElement.on('change', function (event) {
-        const errEl = $('#card-errors');
-        if (errEl) errEl.textContent = event.error ? event.error.message : '';
-      });
-    }
-  }
-
   // ---------------------------------------------------------------------------
-  // Step 5: Confirmation
+  // Step 6: Confirmation
   // ---------------------------------------------------------------------------
 
   function renderConfirmation(booking) {
     const el = $('#confirmation-content');
     if (!el) return;
 
-    const isSelfBook = booking.is_self_book;
-    const statusMsg = isSelfBook
-      ? 'Your booking is confirmed!'
-      : 'Your booking request is being reviewed. We\'ll notify you within 24 hours. Your deposit is held and will be refunded if not approved.';
-
-    const statusClass = isSelfBook ? 'bg-green-50 text-green-800' : 'bg-amber-50 text-amber-800';
+    const portalUrl = booking.portal_url || '/portal/';
+    const confirmNum = booking.confirmation_number || '';
 
     el.innerHTML = `
-      <div class="${statusClass} rounded-lg p-4 mb-6">
-        <p class="font-semibold">${statusMsg}</p>
+      <div class="bg-green-50 text-green-800 rounded-lg p-4 mb-6">
+        <p class="font-semibold">Your booking request has been submitted!</p>
+        <p class="text-sm mt-1">Complete your deposit payment in the portal to confirm.</p>
       </div>
       <div class="space-y-3 text-sm">
         <div class="flex justify-between">
@@ -640,27 +547,29 @@
           <span class="text-gray-500">Time</span>
           <span class="font-medium">${formatTime(state.selection.start)} – ${formatTime(state.selection.end)}</span>
         </div>
+        ${state.pricing ? `
         <div class="flex justify-between">
-          <span class="text-gray-500">Deposit paid</span>
-          <span class="font-medium text-bridge-orange">${formatCurrency(booking.pricing.deposit_amount)}</span>
-        </div>
+          <span class="text-gray-500">Deposit amount</span>
+          <span class="font-medium text-bridge-orange">${formatCurrency(state.pricing.deposit_amount)}</span>
+        </div>` : ''}
+        ${confirmNum ? `
         <div class="flex justify-between">
-          <span class="text-gray-500">Balance due</span>
-          <span class="font-medium">${formatCurrency(booking.pricing.balance_due)}</span>
-        </div>
-        ${booking.invoice_number ? `
-        <div class="flex justify-between">
-          <span class="text-gray-500">Invoice</span>
-          <span class="font-medium">${booking.invoice_number}</span>
+          <span class="text-gray-500">Confirmation</span>
+          <span class="font-medium">${confirmNum}</span>
         </div>` : ''}
       </div>
-      <div class="mt-6 flex gap-3">
-        <button id="rebook-btn" class="text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg text-sm px-4 py-2 transition-colors">
-          Rebook This Space
-        </button>
-        <button onclick="document.getElementById('booking-modal').classList.add('hidden')" class="text-bridge-dark border border-bridge-dark hover:bg-bridge-dark hover:text-white font-semibold rounded-lg text-sm px-4 py-2 transition-colors">
-          Close
-        </button>
+      <div class="mt-6 flex flex-col gap-3">
+        <a href="${portalUrl}" class="portal-link text-center text-white bg-bridge-orange hover:bg-orange-700 font-semibold rounded-lg text-sm px-4 py-2.5 transition-colors">
+          Complete Your Booking
+        </a>
+        <div class="flex gap-3">
+          <button id="rebook-btn" class="text-white bg-bridge-dark hover:bg-gray-800 font-semibold rounded-lg text-sm px-4 py-2 transition-colors">
+            Rebook This Space
+          </button>
+          <button onclick="document.getElementById('booking-modal').classList.add('hidden')" class="text-bridge-dark border border-bridge-dark hover:bg-bridge-dark hover:text-white font-semibold rounded-lg text-sm px-4 py-2 transition-colors">
+            Close
+          </button>
+        </div>
       </div>`;
 
     // Wire rebook button
@@ -713,6 +622,7 @@
     state.promoCode = null;
     state.promoDiscount = null;
     state.bookingId = null;
+    state.portalUrl = null;
     state.smsToken = null;
     state.step = 1;
 
@@ -797,20 +707,6 @@
     initBackButtons();
     initCalendarContinue();
     initPromoCode();
-
-    // Payment form submit
-    const payForm = $('#payment-form');
-    if (payForm) {
-      payForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        submitBooking();
-      });
-    }
-
-    // Load Stripe publishable key from config or wait for booking response
-    if (BRIDGE_CONFIG.STRIPE_PUBLISHABLE_KEY) {
-      initStripe(BRIDGE_CONFIG.STRIPE_PUBLISHABLE_KEY);
-    }
   }
 
   // Run init when DOM is ready
